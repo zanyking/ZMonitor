@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="ZMonitor">
+        <wb-resource deploy-path="/" source-path="/WebContent"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src_monitor"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src_test"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src_core"/>
+        <property name="context-root" value="ZMonitor"/>
+        <property name="java-output-path" value="/ZMonitor/build/classes"/>
+    </wb-module>
+</project-modules>
