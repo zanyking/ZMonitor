@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration PUBLIC "-//APACHE//DTD LOG4J 1.2//EN" "log4j.dtd">
+<log4j:configuration>
+
+	<appender name="stdout" class="org.apache.log4j.ConsoleAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{ABSOLUTE} %5p %c{1}:%L - %m%n"/>
+		</layout>
+	</appender>
+	
+	
+	<!-- ****** Initialize ZMonitor using log4j ****** 
+	If you are using ZMonitor in a Standalone Java application with Log4j, this configuration is designed for you. 
+	If you are using ZMonitor in a Java Web Application( Java Servlet), 
+	please use org.zkoss.monitor.web.ZMonitorServletFilter in WEB-INF/web.xml instead.  
+	--> 
+	<appender name="ZMonitorIgnition" 
+		class="org.zkoss.monitor.logger.log4j.ZMonitorAppender"/>
+
+
+	<root>
+		<priority value="debug" />
+		<appender-ref ref="stdout" />
+		<appender-ref ref="ZMonitorIgnition" />
+	</root>
+
+</log4j:configuration>

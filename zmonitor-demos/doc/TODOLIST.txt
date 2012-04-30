@@ -1,0 +1,59 @@
+
+
+2011/04/03
+FINISHED:
+	CONFIGURATION:
+		+. Load zmonitor.xml from: 
+			-. System Property: URL given by user.
+			-. web Resource: WEB-INF/zmonitor.xml
+			-. Java Class Path: /zmonitor.xml
+			X. zk Class Path: ~./zmonitor.xml
+TODOLIST:
+	REFACTORING:
+		+. Merge HttpRequestContext with TimelineLifecycle in Web & ZK mode.
+	CONFIGURATION:
+		+. XmlConfigurator Impl.
+	PURE JAVA SUPPORT:
+		+. Find a solution, use Runtime.addShutDownHook() to do timeline flush.
+		+. inititalze MonitorManager and init TimelineLifeCycle while pure Java mode. 
+
+2011/04/01 
+FINISHED:
+	PROJECT MANAGEMENT:
+		+. This project will be LGPL.
+	TIMELINE PERSISTENCE & PIPING:
+		X. JDBC TimelineHandler implementation
+		X. Socket TimelineHandler implementation
+TODOLIST:
+	PROJECT MANAGEMENT:
+		+. Require a ZK EE ZOL License
+	LOG4J SUPPORT:
+		+. Apache Log4J Appender NDC support.
+			-. Need this support to make zMonitor to fully support 
+			   pure Java performance monitoring without ZProiler API interfere.
+		+. Think about the MDC concept could bring any good part to the performance monitoring.
+	PURE JAVA SUPPORT:
+		+. Give at least 2 different Sample code to illustrate pure Java pref Monitoring.
+			-. Simple Normal case.
+			-. Multithread scenario, Should start different Timeline.
+				   (can give extra meta to illustrate the relationship) 
+			
+	PURE JAVA EE WEB SUPPORT:
+		+. Session Attribute onChange monitor.
+		+. Give 3 sample code to illustrate the PURE Java EE Web situation.
+		+. Extra meta of Web to Timeline. 
+	ZK WEB APPLICATION SUPPORT:
+		+. Global Initiator
+		+. Extra meta of ZK Web to Timeline. 
+	TIMELINE PERSISTENCE & PIPING:
+		+. Http Post TimelineHandler implementation
+		+. File TimelineHandler implementation
+		+. Java Object Streaming.
+	Z_PERFORMANCE ANALYZER (ZK Web Application):
+		+. Embedded Jetty
+		+. Embedded Derby
+		+. Spring Framework
+		+. Hibernate? 
+		+. Result Analysis & Statistic UI
+
+

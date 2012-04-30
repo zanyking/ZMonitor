@@ -1,0 +1,6 @@
+<zk>
+	<window title="demo" border="normal" apply="demo.Ctrl1">
+		<button id="act1" label="Act1" />
+		<button id="act2" label="Act2" />
+	</window>
+</zk>

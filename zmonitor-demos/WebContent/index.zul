@@ -1,0 +1,7 @@
+<zk xmlns:n="native" >
+	<html id="html" apply="demo.PerformanceOverviewCtrl"/>
+	<button label="refresh" onClick='cnt.getChildren().clear();execution.createComponents("longloading.zul",cnt,null);execution.createComponents("longloading.zul",cnt,null)'/>
+	<div id="cnt">
+	<include src="includee.zul"/>
+	</div>
+</zk>

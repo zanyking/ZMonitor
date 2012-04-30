@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- do not use Id here, let TestBase generate the ID by class name -->
+<zmonitor>
+
+	
+	<timeline-handler name="console-LOG4J" class="org.zkoss.monitor.handler.ToStringTimelineHandler"/>
+
+
+</zmonitor>

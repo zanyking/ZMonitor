@@ -1,0 +1,8 @@
+<zk>
+	<window>
+	<div apply="demo.LongLoadingCtrl">
+		<label id="lab" value="long loading"/>
+	</div>
+	<include src="includee.zul"/>
+	</window>
+</zk>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<zmonitor uuid="manual_id_client_01">
+	 
+	
+	
+	<!-- 
+	<agent-conf> represents an agent which will connect to a remote Server (as a stub object) that this ZMonitor instance will work with.     
+		0. masterHost & masterPort are required.
+		1. master will be initialized very early, if ZMonitor failed to communicate with Master, <init-failover> will be used. 
+			(the default impl will simply throw Error to stop application) 
+		2. After init, any error related to the communication with Master will handled by<communication-failover>  
+		3. Master has the ability to intercept the Init process of ZMonitor and change ZMonitor's configuration at Runtime if necessary.
+		
+		POSSIBLE FEATURE in the future...
+		<init-failover class=""  />
+		<communication-failover class="" />
+		
+	-->
+	<agent-conf masterHost="localhost" masterPort="8799">
+	<!-- 
+		<communicator class="org.zkoss.monitor.impl.JObjSStreamCommunicator">
+			<property name=""></property>
+			<property name=""></property>
+			<property name=""></property>
+			<property name=""></property>
+		</communicator>
+	 -->
+	</agent-conf>
+	
+	
+	
+	<!--
+	 <timeline-handler> is designed to handle incoming timeline instance.
+	 	+. the handle(Timeline) method must be implemented in a thread safe manor.
+	 	+. For Customization, Timeline handler can implement Configuration interface to make it's self configurable.   
+	 	+. Timeline Handler is a ZMonitor Component with lifecycle, it can be initialized and destroyed at Runtime. 
+	 -->
+	 <!-- 	 -->
+	<timeline-handler name="console-LOG4J" class="org.zkoss.monitor.handler.ToStringTimelineHandler"/>
+
+	 
+	<!-- *********** Java Object Socket streaming *********** -->
+	<!-- 	 
+	<timeline-handler name="obj-socket-stream" class="org.zkoss.monitor.handler.TransmissionTimelineHandler"/>
+	 	-->
+
+	<!-- 
+	<timeline-handler name="vtree-WEB" class="org.zkoss.monitor.handler.VersionTreeTimelineHandler"/>
+	 -->
+
+
+
+</zmonitor>

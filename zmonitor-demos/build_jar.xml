@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project basedir="." default="build_jar" name="zmonitor">
+	<property environment="env" />
+	<property name="debuglevel" value="source,lines,vars" />
+	<property name="target" value="1.5" />
+	<property name="source" value="1.5" />
+
+	<path id="j2eelib">
+		<fileset dir="lib/">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+	<path id="applib">
+		<fileset dir="WebContent/WEB-INF/lib/">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+	<path id="zmonitor.classpath">
+        <pathelement location="build_jar/classes"/>
+        <path refid="j2eelib"/>
+        <path refid="applib"/>
+    </path>
+
+	<target name="init">
+		<mkdir dir="build_jar/classes" />
+		<copy includeemptydirs="false" todir="build_jar/classes">
+			<fileset dir="src_monitor">
+				<exclude name="**/*.launch" />
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+	<target name="clean">
+        <delete dir="build_jar/classes"/>
+    </target>
+
+	<target name="build-project" depends="init">
+		<echo message="${ant.project.name}: ${ant.file}" />
+		<javac debug="true" debuglevel="${debuglevel}" destdir="build_jar/classes"
+			source="${source}" target="${target}">
+			<src path="src_monitor" />
+			<classpath refid="zmonitor.classpath" />
+		</javac>
+	</target>
+
+	<target name="build_jar" depends="build-project">
+		<jar destfile="build_jar/zmonitor.jar" basedir="build_jar/classes">
+			<manifest>
+				<attribute name="Main-Class" value="org.zkoss.monitor" />
+			</manifest>
+		</jar>
+		<jar destfile="build_jar/zmonitor-src.jar" basedir="src_monitor">
+			<manifest>
+				<attribute name="Main-Class" value="org.zkoss.monitor" />
+			</manifest>
+		</jar>
+	</target>
+</project>

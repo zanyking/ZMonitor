@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 
+	<id> is a conceptual identity for Master or any analysing tools to determine which "logical Node" the timeline should belongs to.
+		+. You can give an <id> manually. 
+		+. You can provide fetcherClass to to fetch & generate a proper id.
+			-. any ID value which is get from fetcher will stored in  Local Repository, so if there's already one, the fetcherClass won't be used.
+			-. UuIdFetcher will use Java UUID to generate the Id.
+			-. OSIdFetcher will generate Id according to System information.
+			-. MasterIdFetcher will gather current ZMonitor's information(System, network) first, send them to Master and get the generated Id  
+				from the Master.  
+		id="manual_id_client_01"
+		idFetcherClass="org.zkoss.zmonitor.id.UuIdFetcher" 
+		idFetcherClass="org.zkoss.zmonitor.id.OSIdFetcher"
+		idFetcherClass="org.zkoss.zmonitor.id.MasterIdFetcher"		
+	 -->
+<zmonitor uuid="manual_web_client_01">
+	<!-- 
+		Give multiple configurations for those suppose to be singleton won't cause error, but the rest would be ignored.
+	 -->
+	
+	<!-- 
+	internal-log is the log of ZMonitor it's self 
+		+. It must implement LogCore interface 
+		+. The default impl simply use System.out.println().
+		+. You can chose log4j as another choices.
+		+. core=["log4j"|"console"] 
+		+. class= UsersOwnImpl
+	-->
+	<!-- NOT SUPPORTED YET, it's still a draft. 
+	<internal-log device="console" />
+	 -->
+	 
+	 
+	<!-- 
+	<repository> is designed for temporary storage & persistence purpose.   
+		 For example, a File Rotate TimelineHandler without given location could use <repository> as it's default file location.
+		 Virtual Memory, Configuration persistency & internal Error Log can use this to store objects.
+		 	+. repository could be null, in these case, ZMonitor is running in stateless mode.  
+			+. class is for customization. rarely need to implement one. 
+			+. you can simply erase the configuration memory by deleting the configure entries inside.
+			+. "baseDir" is must have
+			+.  
+	-->
+	<repository class="DefaultLocalRepository">
+		<property name="baseDir"><![CDATA[C:\TEMP\MyWebProject_zmonitor_persistence\]]></property>
+	</repository>
+	<repository baseDir="C:\TEMP\MyWebProject_zmonitor_persistence\" />
+	
+	
+	
+	<!-- 
+	<agent-conf> represents an agent which will connect to a remote Server (as a stub object) that this ZMonitor instance will work with.     
+		0. masterHost & masterPort are required.
+		1. master will be initialized very early, if ZMonitor failed to communicate with Master, <init-failover> will be used. 
+			(the default impl will simply throw Error to stop application) 
+		2. After init, any error related to the communication with Master will handled by<communication-failover>  
+		3. Master has the ability to intercept the Init process of ZMonitor and change ZMonitor's configuration at Runtime if necessary.
+		
+		POSSIBLE FEATURE in the future...
+		<init-failover class=""  />
+		<communication-failover class="" />
+		
+	-->
+	<agent-conf masterHost="localhost" masterPort="8799">
+	<!-- 
+		<communicator class="org.zkoss.monitor.impl.JObjSStreamCommunicator">
+			<property name=""></property>
+			<property name=""></property>
+			<property name=""></property>
+			<property name=""></property>
+		</communicator>
+	 -->
+	</agent-conf>
+	
+	<!-- 
+	configuration is a way to configure and customize ZMonitor Components  
+		+. the Identity of a configuration is it's qualified class name.
+		+. org.zkoss.monitor.web.JavaWebConfiguration and org.zkoss.monitor.web.zk.ZKInterceptorConfiguration are the two already existed.
+		+. configuration is a ZMonitor Component with lifecycle, it can be initialized and destroyed at Runtime.
+		+. url-filter is used to determine an incoming request "should accept" by ZMonitor.
+			for example, if url-filer has rule=["not"|null] and mode=["or"|"and"], that means:
+			-. if any condition bellow get a match (condition.match == true) then return NOT true, which is "false".  
+			-. if none of the condition has a match, return NOT false, which is "true";
+		+. condition is used to test the incoming URL has a match, it support attributes: 
+			-. rule=[null | "not"], if not is specified then match Result will evaluated by NOT operation before return.  
+			-. match=[ "endWith" | "contains" | "match" ],"endWith" and "contains" are intuitive and will treat your pattern as String.  
+			-. pattern=[ string | regex ], depends on match to decide how to treat the value.
+		+. User can provide it's own Url-Filter impl, what he need to do is to assign "class" attribute to url-filter
+		+. Custom url-filter can also implements Configuration interface to get it's own custom configuration.
+		
+		PS: this filter mechanism is just for convenience not a very smart implementation, 
+		should changed to some kind of rule engine that has Compiler with DSL support in the future.
+		if you are not comfortable with the performance of this, use single condition with complex regex instead.
+		
+		class="org.zkoss.monitor.web.JavaWebConfiguration"   
+	-->
+	<servlet-container-conf>
+		<url-filer rule="not" mode="or">
+			<condition match="endWith" pattern=".dsp" />
+			<condition match="contains" pattern="/images/" />
+			<condition match="endWith" pattern=".css" />
+			<condition match="endWith" pattern=".wcs" />
+			<condition match="endWith" pattern=".wpd" />
+			<condition match="endWith" pattern=".html" />
+			<condition match="endWith" pattern=".htm" />
+			<condition match="endWith" pattern=".js" />
+			<condition match="endWith" pattern=".png" />
+			<condition match="endWith" pattern=".jpg" />
+			<condition match="endWith" pattern=".gif" />
+			<condition match="endWith" pattern=".txt" />
+		</url-filer>
+	</servlet-container-conf>
+	<!--
+	 zk-interceptor-conf is used to configure the ZK Interceptor 
+	 if you are using ZK Framework in your Java web application. 
+	 -->
+	<!-- class="org.zkoss.monitor.web.zk.ZKInterceptorConfiguration" -->
+	<zk-interceptor-conf>
+		<property name="renderURIIntercepter" value="true"/>
+		<property name="renderExecutionInit" value="true"/>
+		<property name="renderBeforeSendEvent" value="true"/>
+		<property name="renderBeforePostEvent" value="true"/>
+		<property name="renderProcessEvent" value="true"/>
+		<property name="renderMonitorAsyncUpdate" value="true"/>
+	</zk-interceptor-conf>
+
+
+	<!-- 
+	<configuration class="org.zkoss.monitor.log4j.ZPLogConfiguration">
+		<property name="enable" value="true"/>
+	</configuration>
+	 -->
+	
+	
+	
+	
+	<!--
+	 <timeline-handler> is designed to handle incoming timeline instance.
+	 	+. the handle(Timeline) method must be implemented in a thread safe manor.
+	 	+. For Customization, Timeline handler can implement Configuration interface to make it's self configurable.   
+	 	+. Timeline Handler is a ZMonitor Component with lifecycle, it can be initialized and destroyed at Runtime. 
+	 -->
+	 <!-- 	
+	<timeline-handler name="console" 
+		class="org.zkoss.monitor.handler.ToStringTimelineHandler"/>
+ 		-->
+ 		
+	 
+	<!-- *********** Java Object Socket streaming *********** -->
+	<!----> 	 
+	<timeline-handler name="transmission" 
+		class="org.zkoss.monitor.handler.TransmissionTimelineHandler"/>
+	 	
+
+	<!-- 
+	<timeline-handler name="vtree-WEB" class="org.zkoss.monitor.handler.VersionTreeTimelineHandler"/>
+	 -->
+	 
+	 <!-- 
+	<timeline-handler name="zul-WEB" class="org.zkoss.monitor.handler.ZulLog4jTimelineHandler"/>
+	 -->
+	 
+	 <!-- *********** A RESTful service *********** -->
+	 <!-- 
+	<timeline-handler name="http-post-WEB" class="org.zkoss.monitor.handler.HttpPostTimelineHandler">
+		<property name="protocol" value="http"/>
+		<property name="host" value="localhost"/>
+		<property name="port" value="8080"/>
+		<property name="path" ><![CDATA[/zmonitor/zanalyzerDummyService?&clientId=ZM_node_11]]></property>
+	</timeline-handler>
+	  -->
+
+
+
+</zmonitor>

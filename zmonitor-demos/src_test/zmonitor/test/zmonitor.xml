@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<zmonitor uuid="junit_test_1">
+	 
+
+	<agent-conf masterHost="localhost" masterPort="8799">
+	</agent-conf>
+	
+	
+	<timeline-handler name="console-LOG4J" class="org.zkoss.monitor.handler.ToStringTimelineHandler"/>
+
+
+</zmonitor>
