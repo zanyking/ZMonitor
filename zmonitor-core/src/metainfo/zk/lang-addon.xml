@@ -1,0 +1,11 @@
+<language-addon>
+	<addon-name>zmonitor</addon-name>
+	<language-name>xul/html</language-name>
+
+	<component>
+		<component-name>pflabel</component-name>
+		<component-class>org.zkoss.monitor.web.zk.MonitoringLabel</component-class>
+		<extends>label</extends>
+	</component>
+
+</language-addon>
