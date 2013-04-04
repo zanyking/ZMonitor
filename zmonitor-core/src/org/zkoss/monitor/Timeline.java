@@ -9,7 +9,7 @@ import org.zkoss.monitor.spi.Name;
 
 
 /**
- * A request scope context object focused on collecting time stamps of the life time of this request.<br>
+ * A request scope context object focused on collecting time stamps of the life time of a request.<br>
  *  
  * @author Ian YT Tsai(Zanyking)
  */

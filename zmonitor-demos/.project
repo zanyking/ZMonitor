@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>ZMonitor</name>
+	<name>ZMonitor_demos</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -44,7 +44,7 @@
 		<link>
 			<name>src_core</name>
 			<type>2</type>
-			<locationURI>WORKSPACE_LOC/zmonitor/zmonitor-core/src</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/zmonitor-core/src</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
