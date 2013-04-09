@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<config-name>zmonitor</config-name><!-- used to resolve dependency -->
+	<version>
+		<version-class>org.zkoss.monitor.Version</version-class>
+		<version-uid>0.5.1</version-uid>
+		<zk-version>5.0.0</zk-version>
+	</version>
+
+	<listener>
+    	<listener-class>org.zkoss.monitor.web.zk.ZKInterceptor</listener-class>
+	</listener>
+</config>
