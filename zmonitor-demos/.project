@@ -40,11 +40,4 @@
 		<nature>org.eclipse.wst.jsdt.core.jsNature</nature>
 		<nature>net.sourceforge.metrics.nature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>src_core</name>
-			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/zmonitor-core/src</locationURI>
-		</link>
-	</linkedResources>
 </projectDescription>

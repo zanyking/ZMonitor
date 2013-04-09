@@ -5,6 +5,8 @@
 package zmonitor.test.util;
 
 import org.junit.Test;
+import org.zkoss.monitor.server.EventBusMessageHandler;
+import org.zkoss.monitor.server.MessageEvent;
 import org.zmonitor.message.Message;
 import org.zmonitor.message.NewTimelineMessage;
 import org.zmonitor.message.StringMessage;
