@@ -8,6 +8,6 @@
 	</version>
 
 	<listener>
-    	<listener-class>org.zkoss.monitor.web.zk.ZKInterceptor</listener-class>
+    	<listener-class>org.zmonitor.web.zk.ZKInterceptor</listener-class>
 	</listener>
 </config>
