@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- do not use Id here, let TestBase generate the ID by class name -->
+<zmonitor>
+
+	<core-conf>
+		<timeline-handler name="console-LOG4J" class="org.zmonitor.handler.ToStringTimelineHandler"/>
+		
+	</core-conf>
+	<web-conf>
+		
+		
+	</web-conf>
+
+
+</zmonitor>

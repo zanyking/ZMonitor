@@ -41,7 +41,7 @@ public class SimpleTimelineLifecycle implements TimelineLifecycle {
 		if(!isInitialized())return false;
 		return timeline.isStarted();
 	}
-	public void reset() {
+	public void flush() {
 		ZMonitorManager.getInstance().getTimelineHandlerRepository().handle(timeline);
 		timeline = null;
 	}

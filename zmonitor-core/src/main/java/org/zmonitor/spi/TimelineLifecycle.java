@@ -46,7 +46,7 @@ public interface TimelineLifecycle {
 	/**
 	 * finish current Timeline lifecycle, clear state.  
 	 */
-	public void reset();
+	public void flush();
 	/**
 	 * put something into lifecycle.
 	 * @param key

@@ -90,9 +90,6 @@ public final class ZMonitor {
 		return ZMonitorManager.getInstance().getTimelineLifecycle();
 	}
 	
-	private static MPInterceptor getMPInterceptor(){
-		return ZMonitorManager.getInstance().getMPInterceptor();
-	}
 	/* **********************************
 	 * Profilers utility methods.
 	 * **********************************/
@@ -126,7 +123,6 @@ public final class ZMonitor {
 		long createMillis = System.currentTimeMillis();
 		if(!getLifecycle().shouldMeasure(name, mesg, createMillis))return null;
 		MPContext mpCtx = new MPContext(getOuterCallerInfo(traceCallerStack, 2), START, name, mesg, createMillis);
-		getMPInterceptor().doBeforeCompose(mpCtx);
 		MeasurePoint mp = getInstance().start(mpCtx.getName(), mpCtx.getMesg(), createMillis);
 		
 		mp.timeline.accumulateSelfSpendNanosec(System.nanoTime()- nanosec);
@@ -172,7 +168,6 @@ public final class ZMonitor {
 		MPContext mpCtx = new MPContext(getOuterCallerInfo(traceCallerStack, 3), 
 				START, name, mesg, createMillis);
 		
-		getMPInterceptor().doBeforeCompose(mpCtx);
 		name = (mpCtx.getName()==null) ? 
 				new StringName(START): mpCtx.getName();
 				
@@ -241,7 +236,6 @@ public final class ZMonitor {
 		boolean started = getLifecycle().hasTimelineStarted();
 		MPContext mpCtx = new MPContext(getOuterCallerInfo(traceCallerStack, 3), 
 				started?RECORDING:START, name, mesg, createMillis);
-		getMPInterceptor().doBeforeCompose(mpCtx);
 		MeasurePoint mp = started ? getInstance().record(mpCtx.getName(), mpCtx.getMesg(), createMillis) 
 				: getInstance().start(mpCtx.getName(), mpCtx.getMesg(), createMillis);
 		
@@ -251,7 +245,7 @@ public final class ZMonitor {
 	
 	/**
 	 * This method will end the current level of the {@link Timeline}, if the level is 0( it's the root level of {@link Timeline}), 
-	 * the {@link TimelineLifecycle#reset()} will be called to end this {@link Timeline}'s life-cycle.<br>
+	 * the {@link TimelineLifecycle#flush()} will be called to end this {@link Timeline}'s life-cycle.<br>
 	 * The caller of this method need to guarantee the corresponding {@link #push(Name, String)} has been called before,
 	 * otherwise the profiling result will be corrupted.<br>
 	 * 
@@ -307,7 +301,7 @@ public final class ZMonitor {
 		
 		tl.accumulateSelfSpendNanosec(System.nanoTime()- nanosec);
 		if(tl.isFinished()){
-			getLifecycle().reset();
+			getLifecycle().flush();
 		}
 		
 		return mp;

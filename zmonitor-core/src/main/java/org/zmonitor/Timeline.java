@@ -9,7 +9,9 @@ import org.zmonitor.spi.Name;
 
 
 /**
- * A request scope context object focused on collecting time stamps of the life time of a request.<br>
+ * A measurement of a call sequence.
+ * 
+ *  scope context object focused on collecting time stamps of the life time of a request.<br>
  *  
  * @author Ian YT Tsai(Zanyking)
  */

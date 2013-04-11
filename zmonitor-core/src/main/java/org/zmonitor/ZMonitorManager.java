@@ -76,17 +76,6 @@ public class ZMonitorManager {
 		timelineHandlerRepository.remove(name);
 	}
 	
-	private static final MPInterceptor NULL_MPInterceptor = new MPInterceptor() {
-		public void doBeforeCompose(MPContext mpCtx) {}
-	}; 
-	private  MPInterceptor mPInterceptor = NULL_MPInterceptor;
-	public MPInterceptor getMPInterceptor() {
-		return mPInterceptor;
-	}
-	public void setMPInterceptor(MPInterceptor mPInterceptor) {
-		this.mPInterceptor = mPInterceptor;
-	}
-	
 	
 	private TimelineLifecycleManager lifecycleManager;
 	/**

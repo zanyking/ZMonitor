@@ -14,7 +14,8 @@ import org.zmonitor.impl.ZMLog;
 import org.zmonitor.spi.TimelineHandler;
 
 /**
- * Used to manage all {@link TimelineHandler} instances in {@link ZMonitorManager}.
+ * An aggregation class to aggregate all {@link TimelineHandler} instances of {@link ZMonitorManager}.
+ * 
  * @author Ian YT Tsai(Zanyking)
  */
 public class TimelineHandlerRepository implements TimelineHandler {
