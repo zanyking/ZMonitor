@@ -6,7 +6,6 @@ package zmonitor.test;
 
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 
 import org.junit.After;
 import org.junit.AfterClass;

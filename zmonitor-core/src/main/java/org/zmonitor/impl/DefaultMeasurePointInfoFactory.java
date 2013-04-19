@@ -4,7 +4,7 @@
  */
 package org.zmonitor.impl;
 
-import org.zmonitor.spi.MeasurePointInfoFactory;
+import org.zmonitor.spi.MonitorPointInfoFactory;
 import org.zmonitor.spi.Name;
 import org.zmonitor.util.Strings;
 
@@ -12,7 +12,7 @@ import org.zmonitor.util.Strings;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class DefaultMeasurePointInfoFactory implements MeasurePointInfoFactory{
+public class DefaultMeasurePointInfoFactory implements MonitorPointInfoFactory{
 	
 	public Name getName(StackTraceElement sElemt, String mpType) {
 		Name name;

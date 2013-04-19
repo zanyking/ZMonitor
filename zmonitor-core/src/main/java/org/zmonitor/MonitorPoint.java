@@ -17,16 +17,16 @@ import org.zmonitor.spi.Name;
  * 
  * @author Ian YT Tsai(Zanyking)
  */
-public class MeasurePoint implements Serializable{
+public class MonitorPoint implements Serializable{
 	private static final long serialVersionUID = 1772552143735347953L;
 	
-	public Timeline timeline;
-	public long createTime;
+	public MonitorSequence mSequence;
+	public long createMillis;
 	public long tickPeriod;
 	public int stack;
 	public int index;
-	public MeasurePoint parent;
-	public ArrayList<MeasurePoint> children;	
+	public MonitorPoint parent;
+	public ArrayList<MonitorPoint> children;	
 	
 	public Name name;
 	public String message;
@@ -37,27 +37,27 @@ public class MeasurePoint implements Serializable{
 	 * @param parent
 	 * @param mesg
 	 */
-	public MeasurePoint(Name name, String mesg, MeasurePoint parent, boolean isLeaf, Timeline bb, long createTime) {
+	public MonitorPoint(Name name, String mesg, MonitorPoint parent, boolean isLeaf, MonitorSequence bb, long createMillis) {
 		
-		timeline = bb;
-		timeline.increament();
-		this.createTime = createTime;
+		mSequence = bb;
+		mSequence.increament();
+		this.createMillis = createMillis;
 		this.name = name;
 		this.message = mesg;//TODO: has potential to be an object...
 		this.parent = parent;
 		this.stack = (parent==null) ? 0 : parent.stack+1;
 		
-		this.children = isLeaf ? null : new ArrayList<MeasurePoint>(10);
-		MeasurePoint previousSibling = (parent==null) ?  
+		this.children = isLeaf ? null : new ArrayList<MonitorPoint>(10);
+		MonitorPoint previousSibling = (parent==null) ?  
 				null : parent.getLastChild();
 		if(previousSibling==null){
 			if(parent!=null){
-				tickPeriod = createTime - parent.createTime;
+				tickPeriod = createMillis - parent.createMillis;
 			}else{
 				tickPeriod = 0;	
 			}
 		}else{
-			tickPeriod = createTime - previousSibling.createTime;
+			tickPeriod = createMillis - previousSibling.createMillis;
 		}
 		if(parent!=null){
 			index = parent.children.size(); 
@@ -67,6 +67,10 @@ public class MeasurePoint implements Serializable{
 		}
 	}
 
+	/**
+	 * search the 
+	 * @param finalMillis
+	 */
 	public void markFinalEnd(long finalMillis) {
 		finalEnd = finalMillis;
 		if(parent!=null){
@@ -76,29 +80,29 @@ public class MeasurePoint implements Serializable{
 
 	public long getAfterPeriod(){
 		if(parent==null) {
-			return finalEnd - this.createTime;
+			return finalEnd - this.createMillis;
 		}
 		
-		MeasurePoint next = getNext(this);
+		MonitorPoint next = getNext(this);
 		if(next==null)return 0;
-		return next.createTime - this.createTime;
+		return next.createMillis - this.createMillis;
 	}
 	
 	public long getSelfPeriod(){
 		long self = getAfterPeriod();
 		if(isLeaf()) return self;
-		MeasurePoint mp1 = children.get(0);
-		return self - (finalEnd - mp1.createTime);
+		MonitorPoint mp1 = children.get(0);
+		return self - (finalEnd - mp1.createMillis);
 	}
 	
 	public long getBranchElipsedByEndTag(){
 		if(isLeaf()){//is leaf
 			return 0;
 		}
-		return finalEnd - this.createTime;
+		return finalEnd - this.createMillis;
 	}
 	
-	public MeasurePoint getLastChild(){
+	public MonitorPoint getLastChild(){
 		if(children==null|| children.size()==0)return null;
 		int k = children.size();
 		return  children.get(k-1);
@@ -112,17 +116,17 @@ public class MeasurePoint implements Serializable{
 	 * @param current
 	 * @return
 	 */
-	public static MeasurePoint getVeryEnd(MeasurePoint current){
-		MeasurePoint lastChild = current.getLastChild();
+	public static MonitorPoint getVeryEnd(MonitorPoint current){
+		MonitorPoint lastChild = current.getLastChild();
 		return (lastChild==null)? current : getVeryEnd(lastChild);
 	}
 	
-	private static MeasurePoint getNext(MeasurePoint current){
+	private static MonitorPoint getNext(MonitorPoint current){
 		if(current==null)
 			throw new IllegalArgumentException("shouldn't be null");
 		if(current.parent == null)return null;//this is a root record.
 		
-		MeasurePoint next = null;
+		MonitorPoint next = null;
 		int parentChildrenSize = current.parent.children.size();
 		if(current.index+1 >= parentChildrenSize){// this is the last one of parent child
 			next = getNext(current.parent);

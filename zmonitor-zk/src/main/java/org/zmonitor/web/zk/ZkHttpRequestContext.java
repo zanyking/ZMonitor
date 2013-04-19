@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.zkoss.zk.ui.Executions;
-import org.zmonitor.spi.TimelineLifecycle;
+import org.zmonitor.spi.MonitorSequenceLifecycle;
 import org.zmonitor.web.HttpRequestContext;
 
 /**
@@ -55,7 +55,7 @@ public class ZkHttpRequestContext implements HttpRequestContext{
 	public String getOriginalRequestURL() {
 		return inner.getOriginalRequestURL();
 	}
-	public TimelineLifecycle getTimelineLifecycle() {
+	public MonitorSequenceLifecycle getTimelineLifecycle() {
 		return inner.getTimelineLifecycle();
 	}
 

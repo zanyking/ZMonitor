@@ -4,10 +4,10 @@
  */
 package org.zmonitor.logger.log4j;
 
-import org.zmonitor.Timeline;
+import org.zmonitor.MonitorSequence;
 import org.zmonitor.ZMonitor;
 import org.zmonitor.spi.Name;
-import org.zmonitor.spi.TimelineLifecycle;
+import org.zmonitor.spi.MonitorSequenceLifecycle;
 
 /**
  * @author Ian YT Tsai(Zanyking)
@@ -16,11 +16,11 @@ import org.zmonitor.spi.TimelineLifecycle;
 /*package*/ class NdcContext {
 
 	
-	private final TimelineLifecycle lfc;
+	private final MonitorSequenceLifecycle lfc;
 	/**
 	 * @param lfc
 	 */
-	public NdcContext(TimelineLifecycle lfc) {
+	public NdcContext(MonitorSequenceLifecycle lfc) {
 		this.lfc = lfc;
 	}
 	
@@ -54,7 +54,7 @@ import org.zmonitor.spi.TimelineLifecycle;
 	
 	
 	private int getCurrentTlDepth(){
-		Timeline tl = lfc.getTimeline();
+		MonitorSequence tl = lfc.getMonitorSequence();
 		return (tl==null)? -1 : tl.getCurrentDepth();
 	}
 	

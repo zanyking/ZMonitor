@@ -9,11 +9,11 @@ package org.zmonitor.spi;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public interface TimelineLifecycleManager {
+public interface MonitorSequenceLifecycleManager {
 	/**
 	 * 
 	 * @return
 	 */
-	public TimelineLifecycle getLifecycle();
+	public MonitorSequenceLifecycle getLifecycle();
 	
 }

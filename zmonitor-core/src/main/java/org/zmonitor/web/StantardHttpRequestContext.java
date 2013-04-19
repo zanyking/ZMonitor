@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.zmonitor.spi.TimelineLifecycle;
+import org.zmonitor.spi.MonitorSequenceLifecycle;
 
 /**
  * @author Ian YT Tsai(Zanyking)
@@ -78,7 +78,7 @@ public class StantardHttpRequestContext implements HttpRequestContext {
 		return  requestURL;
 	}
 	
-	public TimelineLifecycle getTimelineLifecycle() {
+	public MonitorSequenceLifecycle getTimelineLifecycle() {
 		return lifecycle;
 	}
 

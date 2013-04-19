@@ -10,11 +10,11 @@ import org.zmonitor.util.DOMRetriever;
 
 /**
  * A way to let your ZMonitor Components be configurable.<br> 
- * A component(by now {@link TimelineHandler}, {@link CustomConfiguration} and {@link MeasurePointInfoFactory}) which implements this interface and declared in zmonitor.xml will has a chance to retrieve it's sub XML elements to configure it's self.<br>  
+ * A component(by now {@link MonitorSequenceHandler}, {@link CustomConfiguration} and {@link MonitorPointInfoFactory}) which implements this interface and declared in zmonitor.xml will has a chance to retrieve it's sub XML elements to configure it's self.<br>  
  * please take a look at {@link #apply(ZMonitorManager, DOMRetriever, Node)} method's javadoc, and {@link org.zmonitor.impl.XMLConfigurator XMLConfigurator}'s constants to get detail.
  * 
- * @see TimelineHandler
- * @see MeasurePointInfoFactory
+ * @see MonitorSequenceHandler
+ * @see MonitorPointInfoFactory
  * @author Ian YT Tsai(Zanyking)
  */
 public interface CustomConfiguration {

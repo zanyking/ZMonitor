@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.zmonitor.spi.TimelineLifecycle;
+import org.zmonitor.spi.MonitorSequenceLifecycle;
 
 /**
  * 
@@ -55,5 +55,5 @@ public interface HttpRequestContext {
 	 * 
 	 * @return
 	 */
-	public TimelineLifecycle getTimelineLifecycle();
+	public MonitorSequenceLifecycle getTimelineLifecycle();
 }

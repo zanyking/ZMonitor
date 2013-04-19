@@ -5,7 +5,7 @@
 package org.zmonitor;
 
 import org.zmonitor.impl.StringName;
-import org.zmonitor.spi.MeasurePointInfoFactory;
+import org.zmonitor.spi.MonitorPointInfoFactory;
 import org.zmonitor.spi.Name;
 
 /**
@@ -19,7 +19,7 @@ public class MPContext {
 	private String mesg;
 	private final long createMillis;
 	
-	private static MeasurePointInfoFactory getRenderer(){
+	private static MonitorPointInfoFactory getRenderer(){
 		 return ZMonitorManager.getInstance().getMeasurePointInfoFactory() ;
 	}
 	

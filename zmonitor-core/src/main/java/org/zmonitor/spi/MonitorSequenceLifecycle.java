@@ -4,34 +4,34 @@
  */
 package org.zmonitor.spi;
 
-import org.zmonitor.Timeline;
+import org.zmonitor.MonitorSequence;
 
 
 /**
  * <p>
- * Used to manage the life-cycle of a {@link Timeline} instance.
+ * Used to manage the life-cycle of a {@link MonitorSequence} instance.
  * The entire profiler framework should always depends on the 
- * implementation of this interface to retrieve a {@link Timeline} instance.<br>
+ * implementation of this interface to retrieve a {@link MonitorSequence} instance.<br>
  * 
  * </p>
  * 
  * @author Ian YT Tsai(Zanyking)
- * @see org.zmonitor.impl.SimpleTimelineLifecycle
+ * @see org.zmonitor.impl.SimpleMonitorSequenceLifecycle
  * @see org.zmonitor.web.HttpRequestTimelineLifcycle
  */
-public interface TimelineLifecycle {
+public interface MonitorSequenceLifecycle {
 	/**
 	 * Initialize a Timeline instance if not exist, or just return the exists one.<br>
 	 * The first time to call this method will initialize a new Timeline lifecycle. 
 	 * @return a Timeline instance, shouldn't return null.
 	 */
-	public Timeline getInstance();
+	public MonitorSequence getInstance();
 	/**
 	 * 
 	 * @return the current Timeline, could be null if {@link #getInstance()} 
 	 * hasn't been called before.  
 	 */
-	public Timeline getTimeline();
+	public MonitorSequence getMonitorSequence();
 	/**
 	 * 
 	 * @return true if the Timeline life-cycle is initialized, false otherwise.
@@ -39,22 +39,22 @@ public interface TimelineLifecycle {
 	public boolean isInitialized();
 	/**
 	 * if {@link #isInitialized()} is false, this method will always return false.<br>
-	 * if {@link #isInitialized()} is true, this method will test if current Timeline was started before.<br>
-	 * @return true test if current Timeline was started, false otherwise.
+	 * if {@link #isInitialized()} is true, this method will test if current MeasureSequence was started before.<br>
+	 * @return true test if current MeasureSequence was started, false otherwise.
 	 */
-	public boolean hasTimelineStarted();
+	public boolean isMonitorStarted();
 	/**
-	 * finish current Timeline lifecycle, clear state.  
+	 * finish current Measure Sequence life-cycle, clear state.  
 	 */
 	public void flush();
 	/**
-	 * put something into lifecycle.
+	 * put something into life-cycle.
 	 * @param key
 	 * @param value
 	 */
 	public void setAttribute(String key, Object value);
 	/**
-	 * get something from lifecycle.
+	 * get something from life-cycle.
 	 * @param <T>
 	 * @param key
 	 * @return

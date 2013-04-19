@@ -13,7 +13,7 @@ import org.junit.BeforeClass;
 import org.zmonitor.IgnitionFailureException;
 import org.zmonitor.Ignitor;
 import org.zmonitor.ZMonitorManager;
-import org.zmonitor.impl.ThreadLocalTimelineLifecycleManager;
+import org.zmonitor.impl.ThreadLocalMonitorSequenceLifecycleManager;
 import org.zmonitor.impl.XMLConfigurator;
 import org.zmonitor.impl.XmlConfiguratorLoader;
 import org.zmonitor.impl.ZMLog;
@@ -63,8 +63,8 @@ public class TestBase {
 			
 			ZMonitorManager manager = new ZMonitorManager();
 			manager.setUuid(this.getClass().getName());
-			ThreadLocalTimelineLifecycleManager lifecycleMgmt = 
-				new ThreadLocalTimelineLifecycleManager();
+			ThreadLocalMonitorSequenceLifecycleManager lifecycleMgmt = 
+				new ThreadLocalMonitorSequenceLifecycleManager();
 			
 			
 			if(!Ignitor.ignite(manager, lifecycleMgmt, xmlCofig)){

@@ -7,7 +7,7 @@ package org.zmonitor.util.vtree;
 import java.util.List;
 import java.util.Stack;
 
-import org.zmonitor.MeasurePoint;
+import org.zmonitor.MonitorPoint;
 
 
 /**
@@ -20,14 +20,14 @@ public class Ribosome {
 	 * @author Ian YT Tsai
 	 */
 	private class WriteNodeCtx{
-		final MeasurePoint record; 
+		final MonitorPoint record; 
 		final VersionNode vNode;
 		/**
 		 * 
 		 * @param rec
 		 * @param target
 		 */
-		public WriteNodeCtx(MeasurePoint rec, VersionNode target) {
+		public WriteNodeCtx(MonitorPoint rec, VersionNode target) {
 			if(rec==null || target==null)
 				throw new IllegalArgumentException("can't be null! rec:"+rec+",  target:"+target);
 			this.record = rec;
@@ -40,7 +40,7 @@ public class Ribosome {
 	 * @param rootRec
 	 * @param vTree
 	 */
-	/*PACKAGE*/void translate( MeasurePoint rootRec, VersionTree vTree){
+	/*PACKAGE*/void translate( MonitorPoint rootRec, VersionTree vTree){
 		Stack<WriteNodeCtx> vNodeStack = new Stack<WriteNodeCtx>();
 		VersionNode rootVNode = vTree.getRootVNode();
 		writeRec2Measurable(rootRec, rootVNode);
@@ -54,7 +54,7 @@ public class Ribosome {
 		}
 	}
 
-	private VersionNode initRequestVNode(MeasurePoint root, VersionNode rootVNode){
+	private VersionNode initRequestVNode(MonitorPoint root, VersionNode rootVNode){
 		VersionNode reqVNode = null;
 		for(VersionNodeChildren cildren : rootVNode.getChildrens()){
 			reqVNode = cildren.getAll().get(0);
@@ -71,7 +71,7 @@ public class Ribosome {
 	}
 	
 	
-	private void write( MeasurePoint record, VersionNode target, final Stack<WriteNodeCtx> vNodeStack){
+	private void write( MonitorPoint record, VersionNode target, final Stack<WriteNodeCtx> vNodeStack){
 		// rewrite this vnode it's self first
 		writeRec2Measurable(record, target);
 
@@ -91,7 +91,7 @@ public class Ribosome {
 				target.addChildren(vChildren = new VersionNodeChildren());	
 				writeRec2Measurable(record, vChildren);
 				VersionNode newVNode;
-				for(MeasurePoint rec : record.children){
+				for(MonitorPoint rec : record.children){
 					newVNode = new VersionNode(target.getStack()+1, idx++, rec.name);			
 					vChildren.add(newVNode);
 					vNodeStack.add(new WriteNodeCtx(rec, newVNode));
@@ -100,7 +100,7 @@ public class Ribosome {
 		}else{
 			writeRec2Measurable(record, vChildren);
 			zipping(record.children, vChildren.getAll(), new Operator(){
-				public boolean operate(MeasurePoint record, VersionNode vNode) {
+				public boolean operate(MonitorPoint record, VersionNode vNode) {
 					vNodeStack.add(new WriteNodeCtx(record, vNode));
 					return true;
 				}});
@@ -109,7 +109,7 @@ public class Ribosome {
 	
 	
 	// might has customization in the future.
-	private void writeRec2Measurable( MeasurePoint rec, AbstractNode aNode){
+	private void writeRec2Measurable( MonitorPoint rec, AbstractNode aNode){
 		RecordSummary<String> summary = aNode.getRecordSummary();
 		
 		if(summary==null){
@@ -119,13 +119,13 @@ public class Ribosome {
 		summary.accumulate(rec.tickPeriod, rec.getAfterPeriod());
 	}
 	
-	private static boolean match(List<MeasurePoint> records, List<VersionNode> children){
+	private static boolean match(List<MonitorPoint> records, List<VersionNode> children){
 		// identify if these two lists are similar
 		if(records.size() != children.size())return false;
 		
 		final boolean[] flag = new boolean[]{true};
 		zipping(records, children, new Operator(){
-			public boolean operate(MeasurePoint record, VersionNode vNode) {
+			public boolean operate(MonitorPoint record, VersionNode vNode) {
 				if(!record.name.equals(vNode.getName())){
 					flag[0] = false;	
 				}
@@ -134,10 +134,10 @@ public class Ribosome {
 		return flag[0];
 	}
 	
-	private static void zipping(List<MeasurePoint> records, List<VersionNode> children, Operator op){
+	private static void zipping(List<MonitorPoint> records, List<VersionNode> children, Operator op){
 		if(records.size() != children.size())
 			throw new IllegalArgumentException("the size of these two list must be the same!");
-		MeasurePoint[] recArr = new MeasurePoint[records.size()];
+		MonitorPoint[] recArr = new MonitorPoint[records.size()];
 		recArr = records.toArray(recArr);
 		
 		VersionNode[] vnArr = new VersionNode[recArr.length];
@@ -153,7 +153,7 @@ public class Ribosome {
 	 *
 	 */
 	private interface Operator{
-		boolean operate(MeasurePoint record, VersionNode vNode);
+		boolean operate(MonitorPoint record, VersionNode vNode);
 	}//end of class
 	
 

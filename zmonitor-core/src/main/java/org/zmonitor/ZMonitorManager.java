@@ -10,10 +10,10 @@ import java.util.Map;
 import org.zmonitor.impl.DefaultMeasurePointInfoFactory;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.spi.CustomConfiguration;
-import org.zmonitor.spi.MeasurePointInfoFactory;
-import org.zmonitor.spi.TimelineHandler;
-import org.zmonitor.spi.TimelineLifecycle;
-import org.zmonitor.spi.TimelineLifecycleManager;
+import org.zmonitor.spi.MonitorPointInfoFactory;
+import org.zmonitor.spi.MonitorSequenceHandler;
+import org.zmonitor.spi.MonitorSequenceLifecycle;
+import org.zmonitor.spi.MonitorSequenceLifecycleManager;
 
 
 /**
@@ -53,43 +53,43 @@ public class ZMonitorManager {
 		customConfigurations.put(config.getClass(), config);
 	}
 	
-	private  MeasurePointInfoFactory measurePointInfoFactory = new DefaultMeasurePointInfoFactory(); 
-	public  MeasurePointInfoFactory getMeasurePointInfoFactory() {
-		return measurePointInfoFactory;
+	private  MonitorPointInfoFactory monitorPointInfoFactory = new DefaultMeasurePointInfoFactory(); 
+	public  MonitorPointInfoFactory getMeasurePointInfoFactory() {
+		return monitorPointInfoFactory;
 	}
-	public  void setMeasurePointInfoFactory(MeasurePointInfoFactory mpInfoFac) {
-		ZMLog.debug("ZMonitorManager::measurePointInfoFactory = "+mpInfoFac);
-		measurePointInfoFactory = mpInfoFac;
+	public  void setMonitorPointInfoFactory(MonitorPointInfoFactory mpInfoFac) {
+		ZMLog.debug("ZMonitorManager::MPInfoFactory = "+mpInfoFac);
+		monitorPointInfoFactory = mpInfoFac;
 	}
 	
 
-	private final TimelineHandlerRepository timelineHandlerRepository = new TimelineHandlerRepository();
-	public TimelineHandlerRepository getTimelineHandlerRepository() {
-		return timelineHandlerRepository;
+	private final MonitorSequenceHandlerRepository monitorSequenceHandlerRepository = new MonitorSequenceHandlerRepository();
+	public MonitorSequenceHandlerRepository getMonitorSequenceHandlerRepository() {
+		return monitorSequenceHandlerRepository;
 	}
-	public void addTimelineHandler(String name, TimelineHandler handler) {
-		ZMLog.debug("ZMonitorManager::addTimelineHandler: " +
+	public void addMonitorSequenceHandler(String name, MonitorSequenceHandler handler) {
+		ZMLog.debug("ZMonitorManager::addMonitorSequenceHandler: " +
 				name+" = "+handler);
-		timelineHandlerRepository.add(name, handler);
+		monitorSequenceHandlerRepository.add(name, handler);
 	}
 	public void removeTimelineHandler(String name){
-		timelineHandlerRepository.remove(name);
+		monitorSequenceHandlerRepository.remove(name);
 	}
 	
 	
-	private TimelineLifecycleManager lifecycleManager;
+	private MonitorSequenceLifecycleManager lifecycleManager;
 	/**
 	 * this is a life-cycle method which will be called while ignition, should not be called in general customization.
 	 * @param lifecycleManager
 	 */
 	public void setLifecycleManager(
-			TimelineLifecycleManager lifecycleManager) {
+			MonitorSequenceLifecycleManager lifecycleManager) {
 		this.lifecycleManager = lifecycleManager;
 	}
-	public TimelineLifecycleManager getLifecycleManager() {
+	public MonitorSequenceLifecycleManager getLifecycleManager() {
 		return lifecycleManager;
 	}
-	public TimelineLifecycle getTimelineLifecycle() {
+	public MonitorSequenceLifecycle getMonitorSequenceLifecycle() {
 		return getLifecycleManager().getLifecycle();
 	}
 	
@@ -101,7 +101,7 @@ public class ZMonitorManager {
 		this.agent = agent;
 	}
 	public void destroy() {//TODO: make sure every Component of ZMonitor has been destroyed.
-		this.getTimelineHandlerRepository().destroy();		
+		this.getMonitorSequenceHandlerRepository().destroy();		
 	}
 	
 	

@@ -5,7 +5,7 @@
 package org.zmonitor.web;
 
 import org.zmonitor.ZMonitorManager;
-import org.zmonitor.impl.SimpleTimelineLifecycle;
+import org.zmonitor.impl.SimpleMonitorSequenceLifecycle;
 import org.zmonitor.spi.Name;
 
 /**
@@ -13,7 +13,7 @@ import org.zmonitor.spi.Name;
  *   
  * @author Ian YT Tsai(Zanyking)
  */
-public class HttpRequestTimelineLifcycle extends SimpleTimelineLifecycle {
+public class HttpRequestTimelineLifcycle extends SimpleMonitorSequenceLifecycle {
 	private final HttpRequestContext requestCtx;
 	private boolean urlAccepted = true;
 	/**
@@ -35,7 +35,8 @@ public class HttpRequestTimelineLifcycle extends SimpleTimelineLifecycle {
 	
 	public boolean shouldMeasure(Name name, String mesg, long createMillis) {
 		if(urlAccepted){
-			return true;//TODO: should also check other conditions to get fine grained control.
+			return true;
+			//TODO: should we check other conditions to get fine grained control?
 		}
 		return false;
 	}

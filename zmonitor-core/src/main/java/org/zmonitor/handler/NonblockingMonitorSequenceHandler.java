@@ -4,10 +4,10 @@
 package org.zmonitor.handler;
 
 import org.w3c.dom.Node;
-import org.zmonitor.Timeline;
+import org.zmonitor.MonitorSequence;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.spi.CustomConfiguration;
-import org.zmonitor.spi.TimelineHandler;
+import org.zmonitor.spi.MonitorSequenceHandler;
 import org.zmonitor.util.DOMRetriever;
 import org.zmonitor.util.concurrent.AsyncGroupingPipe;
 
@@ -15,9 +15,9 @@ import org.zmonitor.util.concurrent.AsyncGroupingPipe;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public abstract class NonblockingTimelineHandler implements TimelineHandler, CustomConfiguration{
+public abstract class NonblockingMonitorSequenceHandler implements MonitorSequenceHandler, CustomConfiguration{
 
-	protected AsyncGroupingPipe<Timeline> asyncGroupPipe;
+	protected AsyncGroupingPipe<MonitorSequence> asyncGroupPipe;
 	
 	protected long waitMillis = -1;
 	protected int threshold = 0;
@@ -55,7 +55,7 @@ public abstract class NonblockingTimelineHandler implements TimelineHandler, Cus
 	 * @param manager 
 	 * @return
 	 */
-	protected abstract AsyncGroupingPipe.Executor<Timeline> newExecutor(ZMonitorManager manager);
+	protected abstract AsyncGroupingPipe.Executor<MonitorSequence> newExecutor(ZMonitorManager manager);
 	
 	/*
 	 * (non-Javadoc)
@@ -63,14 +63,14 @@ public abstract class NonblockingTimelineHandler implements TimelineHandler, Cus
 	 */
 	public void apply(final ZMonitorManager manager, DOMRetriever xmlDoc,
 			Node configNode) {
-		asyncGroupPipe = new AsyncGroupingPipe<Timeline>(
+		asyncGroupPipe = new AsyncGroupingPipe<MonitorSequence>(
 				threshold, waitMillis, newExecutor(manager));
 	}
 	/*
 	 * (non-Javadoc)
-	 * @see org.zmonitor.TimelineHandler#handle(org.zmonitor.Timeline)
+	 * @see org.zmonitor.spi.MonitorSequenceHandler#handle(org.zmonitor.Timeline)
 	 */
-	public void handle(Timeline tLine)  {
+	public void handle(MonitorSequence tLine)  {
 		asyncGroupPipe.push(tLine);
 	}
 	/*

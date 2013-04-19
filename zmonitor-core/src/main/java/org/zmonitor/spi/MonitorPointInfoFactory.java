@@ -11,7 +11,7 @@ package org.zmonitor.spi;
  * 
  * @author Ian YT Tsai(Zanyking)
  */
-public interface MeasurePointInfoFactory {
+public interface MonitorPointInfoFactory {
 	
 	/**
 	 * 

@@ -21,7 +21,7 @@ public class DummyConfigurator implements Configurator{
 		/*
 		 * Initialize Timeline Handler
 		 */
-		manager.addTimelineHandler("DUMMY_TOSTRING_HANDLER", new ToStringTimelineHandler());
+		manager.addMonitorSequenceHandler("DUMMY_TOSTRING_HANDLER", new ToStringTimelineHandler());
 	}
 	
 	

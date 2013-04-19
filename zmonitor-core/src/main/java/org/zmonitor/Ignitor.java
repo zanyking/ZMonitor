@@ -4,10 +4,10 @@
  */
 package org.zmonitor;
 
-import org.zmonitor.impl.ThreadLocalTimelineLifecycleManager;
+import org.zmonitor.impl.ThreadLocalMonitorSequenceLifecycleManager;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.spi.Configurator;
-import org.zmonitor.spi.TimelineLifecycleManager;
+import org.zmonitor.spi.MonitorSequenceLifecycleManager;
 
 
 
@@ -32,12 +32,12 @@ public class Ignitor {
 		return ignited;
 	}
 	/**
-	 * Use {@link ThreadLocalTimelineLifecycleManager} as default @{link TimelineLifecycleManager}.
+	 * Use {@link ThreadLocalMonitorSequenceLifecycleManager} as default @{link TimelineLifecycleManager}.
 	 * @param configurator
 	 * @return
 	 */
 	public static boolean ignite( Configurator configurator){
-		return ignite(new ThreadLocalTimelineLifecycleManager(), configurator);
+		return ignite(new ThreadLocalMonitorSequenceLifecycleManager(), configurator);
 	}
 	/**
 	 * 
@@ -45,7 +45,7 @@ public class Ignitor {
 	 * @param configurator
 	 * @return has lifecycle control or not.
 	 */
-	public static synchronized boolean ignite(TimelineLifecycleManager lifecycleManager, Configurator configurator){
+	public static synchronized boolean ignite(MonitorSequenceLifecycleManager lifecycleManager, Configurator configurator){
 		return ignite(new ZMonitorManager(), lifecycleManager, configurator);
 	}
 	/**
@@ -55,7 +55,7 @@ public class Ignitor {
 	 * @param configurator
 	 * @return
 	 */
-	public static synchronized boolean ignite(ZMonitorManager manager, TimelineLifecycleManager lifecycleManager, Configurator configurator){
+	public static synchronized boolean ignite(ZMonitorManager manager, MonitorSequenceLifecycleManager lifecycleManager, Configurator configurator){
 		if(manager==null)
 			throw new IllegalArgumentException("ZMonitorManager cannot be null!");
 		ZMLog.info("ZMonitor Ignition START... ");// will print out in any case, since there's no customized ZKLog here yet!

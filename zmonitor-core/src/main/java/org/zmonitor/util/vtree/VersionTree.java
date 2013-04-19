@@ -4,8 +4,8 @@
  */
 package org.zmonitor.util.vtree;
 
-import org.zmonitor.MeasurePoint;
-import org.zmonitor.Timeline;
+import org.zmonitor.MonitorPoint;
+import org.zmonitor.MonitorSequence;
 import org.zmonitor.impl.StringName;
 import org.zmonitor.spi.Name;
 
@@ -42,8 +42,8 @@ public class VersionTree{
 	 * 
 	 * @param tl
 	 */
-	public void apply(Timeline tl) {
-		MeasurePoint root = tl.getRoot();
+	public void apply(MonitorSequence tl) {
+		MonitorPoint root = tl.getRoot();
 		Ribosome ribosome = new Ribosome();
 		ribosome.translate(root, this);
 		hasHandledBefore = true;

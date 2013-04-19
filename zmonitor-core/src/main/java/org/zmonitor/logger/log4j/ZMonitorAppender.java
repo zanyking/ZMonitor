@@ -12,18 +12,18 @@ import org.apache.log4j.spi.LocationInfo;
 import org.apache.log4j.spi.LoggingEvent;
 import org.zmonitor.IgnitionFailureException;
 import org.zmonitor.Ignitor;
-import org.zmonitor.Timeline;
+import org.zmonitor.MonitorSequence;
 import org.zmonitor.ZMonitor;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.impl.JavaName;
 import org.zmonitor.impl.StringName;
-import org.zmonitor.impl.ThreadLocalTimelineLifecycleManager;
+import org.zmonitor.impl.ThreadLocalMonitorSequenceLifecycleManager;
 import org.zmonitor.impl.XMLConfigurator;
 import org.zmonitor.impl.XmlConfiguratorLoader;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.logger.log4j.NdcContext.NdcObj;
 import org.zmonitor.spi.Name;
-import org.zmonitor.spi.TimelineLifecycle;
+import org.zmonitor.spi.MonitorSequenceLifecycle;
 import org.zmonitor.util.Strings;
 
 /**
@@ -107,7 +107,7 @@ public class ZMonitorAppender extends AppenderSkeleton {
 				throw new IgnitionFailureException("cannot find Configuration:["+
 						XmlConfiguratorLoader.ZMONITOR_XML+
 						"] from current application context: "+this.getClass());
-			isIgnitBySelf = Ignitor.ignite(new ThreadLocalTimelineLifecycleManager(), xmlCofig);
+			isIgnitBySelf = Ignitor.ignite(new ThreadLocalMonitorSequenceLifecycleManager(), xmlCofig);
 			ZMLog.info(">> Ignit ZMonitor in: ",ZMonitorAppender.class.getCanonicalName());
 		} catch (IOException e) {
 			throw new IgnitionFailureException(e);
@@ -167,11 +167,11 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	    	 *  depth>0, tl!=started, controlByOthers	 [do Start] 
 	    	 *  
 	    	 */
-	    	TimelineLifecycle lfc = ZMonitorManager.getInstance().getTimelineLifecycle();
+	    	MonitorSequenceLifecycle lfc = ZMonitorManager.getInstance().getMonitorSequenceLifecycle();
 	    	
 			String mesg = event.getRenderedMessage();
 	    	if(depth==0){
-	    		if(ZMonitor.isTimelineStarted()){
+	    		if(ZMonitor.isMonitorStarted()){
 	    			if(isControlledBySelf(lfc)){
 	    				complete(event, mesg, lfc);
 	    			}else{
@@ -181,7 +181,7 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	    		// do nothing...
 	    		//tl.start must satisfy (depth > 0), otherwise there's no way for appender to know when to complete timeline.
 	    	}else{
-	    		if(ZMonitor.isTimelineStarted()){
+	    		if(ZMonitor.isMonitorStarted()){
 	    			record(event, depth, lfc, ndcStr);
 	    		}else{
 	    			start(event, depth, lfc, ndcStr);
@@ -192,15 +192,15 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	}
 	
 	private static final String KEY_CONTROLLED_BY_SELF = "KEY_CONTROLLED_BY_SELF";
-	private static boolean isControlledBySelf(TimelineLifecycle lfc){
+	private static boolean isControlledBySelf(MonitorSequenceLifecycle lfc){
 		return lfc.getAttribute(KEY_CONTROLLED_BY_SELF)!=null;
 	}
-	private static void setControlledBySelf(TimelineLifecycle lfc){
+	private static void setControlledBySelf(MonitorSequenceLifecycle lfc){
 		lfc.setAttribute(KEY_CONTROLLED_BY_SELF, KEY_CONTROLLED_BY_SELF);
 	}
 	
 	private static final String KEY_NDC_CTXT = "KEY_"+NdcContext.class;
-	private static NdcContext getNdcContext(TimelineLifecycle lfc){
+	private static NdcContext getNdcContext(MonitorSequenceLifecycle lfc){
 		NdcContext stack = lfc.getAttribute(KEY_NDC_CTXT);
 		if(stack==null){
 			lfc.setAttribute(KEY_NDC_CTXT, 
@@ -216,7 +216,7 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	 * @param lfc
 	 * @param ndcStr
 	 */
-	private void start(LoggingEvent event, int depth, TimelineLifecycle lfc,
+	private void start(LoggingEvent event, int depth, MonitorSequenceLifecycle lfc,
 			String ndcStr) {
 		NdcContext ndcCtxt = getNdcContext(lfc);
 		if(ndcCtxt.getNdcObj()!=null)
@@ -262,7 +262,7 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	 * @param ndcDepth
 	 * @param ndcStr 
 	 */
-	private void record(LoggingEvent event, int ndcDepth, TimelineLifecycle lfc, String ndcStr){
+	private void record(LoggingEvent event, int ndcDepth, MonitorSequenceLifecycle lfc, String ndcStr){
 		
 		//TODO: how to figure out this part?
 		// condition 1. Timeline already started.
@@ -314,7 +314,7 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	 * @param finalName
 	 * @param finalMesg
 	 */
-	private void complete(LoggingEvent event, String finalMesg, TimelineLifecycle lfc){
+	private void complete(LoggingEvent event, String finalMesg, MonitorSequenceLifecycle lfc){
 		Name jName = createName(event, "END");
 		
 		NdcContext ndcCtxt = getNdcContext(lfc);
@@ -343,9 +343,9 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	 * 
 	 * @return -1 if timeline is not initialized,  
 	 */
-	protected static int getCurrentTlDepth(TimelineLifecycle lfc){
+	protected static int getCurrentTlDepth(MonitorSequenceLifecycle lfc){
 		
-		Timeline tl = lfc.getTimeline();
+		MonitorSequence tl = lfc.getMonitorSequence();
 		return (tl==null)? -1 : tl.getCurrentDepth();
 	}
 	

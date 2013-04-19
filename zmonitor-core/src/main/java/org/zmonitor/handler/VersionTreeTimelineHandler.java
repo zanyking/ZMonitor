@@ -4,22 +4,22 @@
  */
 package org.zmonitor.handler;
 
-import org.zmonitor.Timeline;
-import org.zmonitor.spi.TimelineHandler;
+import org.zmonitor.MonitorSequence;
+import org.zmonitor.spi.MonitorSequenceHandler;
 import org.zmonitor.util.vtree.VersionTree;
 
 /**
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class VersionTreeTimelineHandler implements TimelineHandler {
+public class VersionTreeTimelineHandler implements MonitorSequenceHandler {
 	
 	private VersionTree versionTree = new VersionTree();
 	
 	public VersionTree getVersiontree() {
 		return versionTree;
 	}
-	public synchronized void handle(Timeline execTLine) {
+	public synchronized void handle(MonitorSequence execTLine) {
 		versionTree.apply(execTLine);
 	}
 	public void destroy() {

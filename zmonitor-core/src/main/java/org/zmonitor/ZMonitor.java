@@ -8,17 +8,17 @@ import java.io.IOException;
 
 import org.zmonitor.impl.DummyConfigurator;
 import org.zmonitor.impl.StringName;
-import org.zmonitor.impl.ThreadLocalTimelineLifecycleManager;
+import org.zmonitor.impl.ThreadLocalMonitorSequenceLifecycleManager;
 import org.zmonitor.impl.XmlConfiguratorLoader;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.spi.Configurator;
 import org.zmonitor.spi.Name;
-import org.zmonitor.spi.TimelineLifecycle;
+import org.zmonitor.spi.MonitorSequenceLifecycle;
 
 
 /**
  * <p>
- * This class is designed to manually record a {@link MeasurePoint} to the current execution's {@link Timeline}.<br>
+ * This class is designed to manually record a {@link MonitorPoint} to the current execution's {@link MonitorSequence}.<br>
  * Imagine there are some executions of your java program, for example: 
  * <ul>
  *    <li>A user shoot a request to your Web Application.</li>
@@ -42,7 +42,6 @@ public final class ZMonitor {
 	
 	
 	
-	private final static ZMonitor sZMonitor;
 	private ZMonitor(){}
 	
 	/*
@@ -62,13 +61,12 @@ public final class ZMonitor {
 							"please give your own \""+XmlConfiguratorLoader.ZMONITOR_XML+"\" in classpath.");
 					conf = new DummyConfigurator();
 				}
-				isIgnitBySelf = Ignitor.ignite( new ThreadLocalTimelineLifecycleManager(), conf);
+				isIgnitBySelf = Ignitor.ignite( new ThreadLocalMonitorSequenceLifecycleManager(), conf);
 				ZMLog.info("Init ZMonitor in pure Java mode: " + ZMonitor.class);
 			} catch (IOException e) {
 				throw new IgnitionFailureException(e);
 			}
 		}
-		sZMonitor = isIgnitBySelf ? new ZMonitor(): null;
 	}
 	
 	@Override
@@ -82,12 +80,12 @@ public final class ZMonitor {
 	 * 
 	 * @return will create or return a timeline instance.
 	 */
-	private static Timeline getInstance(){
-		return ZMonitorManager.getInstance().getTimelineLifecycle().getInstance();
+	private static MonitorSequence getInstance(){
+		return ZMonitorManager.getInstance().getMonitorSequenceLifecycle().getInstance();
 	}
 	
-	private static TimelineLifecycle getLifecycle(){
-		return ZMonitorManager.getInstance().getTimelineLifecycle();
+	private static MonitorSequenceLifecycle getLifecycle(){
+		return ZMonitorManager.getInstance().getMonitorSequenceLifecycle();
 	}
 	
 	/* **********************************
@@ -95,37 +93,37 @@ public final class ZMonitor {
 	 * **********************************/
 	
 	/**
-	 * @return true if there's a timeline instance and started.
+	 * @return true if there's a timeline instance and it's started.
 	 */
-	public static boolean isTimelineStarted(){
-		return getLifecycle().hasTimelineStarted();
+	public static boolean isMonitorStarted(){
+		return getLifecycle().isMonitorStarted();
 	}
 	
 	/**
 	 * <ul>
-	 * 	 <li>If the current {@link Timeline} has never started before, this call will start it.</li>
-	 *   <li>If the current {@link Timeline} already started, this method will push a new {@link MeasurePoint} stack level,
-	 *    and any newly added {@link MeasurePoint} will use this as it's parent.</li>
-	 *   <li>To end up the current level(pop out the current {@link MeasurePoint}), you need to invoke {@link #pop()}.</li>
+	 * 	 <li>If the current {@link MonitorSequence} has never started before, this call will start it.</li>
+	 *   <li>If the current {@link MonitorSequence} already started, this method will push a new {@link MonitorPoint} stack level,
+	 *    and any newly added {@link MonitorPoint} will use this as it's parent.</li>
+	 *   <li>To end up the current level(pop out the current {@link MonitorPoint}), you need to invoke {@link #pop()}.</li>
 	 *   <li>You need to guarantee that one of the corresponding {@link #pop()} methods will be called if you call Start, 
-	 *   if you failed to do so, the measur result of this {@link Timeline} will be corrupted and might throw exception.</li>
+	 *   if you failed to do so, the measur result of this {@link MonitorSequence} will be corrupted and might throw exception.</li>
 	 * </ul>
 	 *   
-	 * @param name the identifier of this {@link MeasurePoint}.
-	 * @param mesg the message of this {@link MeasurePoint}.
+	 * @param name the identifier of this {@link MonitorPoint}.
+	 * @param mesg the message of this {@link MonitorPoint}.
 	 * @param traceCallerStack
 	 * @return
 	 * @see #push(String)
 	 */
-	public static MeasurePoint push(Name name, String mesg, boolean traceCallerStack) {
+	public static MonitorPoint push(Name name, String mesg, boolean traceCallerStack) {
 		long nanosec = System.nanoTime();
 		
 		long createMillis = System.currentTimeMillis();
 		if(!getLifecycle().shouldMeasure(name, mesg, createMillis))return null;
 		MPContext mpCtx = new MPContext(getOuterCallerInfo(traceCallerStack, 2), START, name, mesg, createMillis);
-		MeasurePoint mp = getInstance().start(mpCtx.getName(), mpCtx.getMesg(), createMillis);
+		MonitorPoint mp = getInstance().start(mpCtx.getName(), mpCtx.getMesg(), createMillis);
 		
-		mp.timeline.accumulateSelfSpendNanosec(System.nanoTime()- nanosec);
+		mp.mSequence.accumulateSelfSpendNanos(System.nanoTime()- nanosec);
 		return mp;
 	}
 	/**
@@ -134,21 +132,21 @@ public final class ZMonitor {
 	 * @param mesg
 	 * @return
 	 */
-	public static MeasurePoint push(Name name, String mesg){
+	public static MonitorPoint push(Name name, String mesg){
 		return start0(name, mesg, false);
 	}
 	/**
-	 * If you want to start a {@link MeasurePoint} in your Java code manually, use this method.<br>
+	 * If you want to start a {@link MonitorPoint} in your Java code manually, use this method.<br>
 	 * <p>
 	 * This method will collect the caller's {@link StackTraceElement} information by retrieving current thread's programming stack.<br>
 	 * So this method will be cause some performance overhead to your program, if you are able to compose a {@link Name} by yourself, please use {@link #push(Name, String)} instead.
 	 * </p>
-	 * @param mesg the message that you want to assign to {@link MeasurePoint}.
+	 * @param mesg the message that you want to assign to {@link MonitorPoint}.
 	 * @param traceCallerStack
-	 * @return A {@link MeasurePoint} that will contain caller's java source information.
+	 * @return A {@link MonitorPoint} that will contain caller's java source information.
 	 * @see #push(Name, String)
 	 */
-	public static MeasurePoint push(String mesg, boolean traceCallerStack) {
+	public static MonitorPoint push(String mesg, boolean traceCallerStack) {
 		return start0(null, mesg, traceCallerStack);
 	}
 	/**
@@ -156,10 +154,10 @@ public final class ZMonitor {
 	 * @param mesg
 	 * @return
 	 */
-	public static MeasurePoint push(String mesg){
+	public static MonitorPoint push(String mesg){
 		return start0(null, mesg, false);
 	}
-	private static MeasurePoint start0(Name name, String mesg, boolean traceCallerStack){
+	private static MonitorPoint start0(Name name, String mesg, boolean traceCallerStack){
 		long nanosec = System.nanoTime();
 		long createMillis = System.currentTimeMillis();
 		if(!getLifecycle().shouldMeasure(name, mesg, createMillis)) {
@@ -171,9 +169,9 @@ public final class ZMonitor {
 		name = (mpCtx.getName()==null) ? 
 				new StringName(START): mpCtx.getName();
 				
-		MeasurePoint mp = getInstance().start(name, mpCtx.getMesg(), createMillis);
+		MonitorPoint mp = getInstance().start(name, mpCtx.getMesg(), createMillis);
 		
-		mp.timeline.accumulateSelfSpendNanosec(System.nanoTime()- nanosec);
+		mp.mSequence.accumulateSelfSpendNanos(System.nanoTime()- nanosec);
 		return mp;
 	}
 	private static StackTraceElement getOuterCallerInfo(boolean shouldDo, int callerLevel){
@@ -193,10 +191,10 @@ public final class ZMonitor {
 	 * If you want to give a measure point in your Java code manually, use this method.<br>
 	 * It will collect the caller's {@link StackTraceElement} information by retrieving current thread's programming stack. 
 	 * 
-	 * @param mesg the message that you want to assign to {@link MeasurePoint}.
-	 * @return a {@link MeasurePoint} that will contain caller's java source information. 
+	 * @param mesg the message that you want to assign to {@link MonitorPoint}.
+	 * @return a {@link MonitorPoint} that will contain caller's java source information. 
 	 */
-	public static MeasurePoint record(String mesg, boolean traceCallerStack){
+	public static MonitorPoint record(String mesg, boolean traceCallerStack){
 		return record0(null, mesg, traceCallerStack);
 	}
 	/**
@@ -204,7 +202,7 @@ public final class ZMonitor {
 	 * @param mesg
 	 * @return
 	 */
-	public static MeasurePoint record(String mesg){
+	public static MonitorPoint record(String mesg){
 		return record0(null, mesg, false);
 	}
 	/**
@@ -216,7 +214,7 @@ public final class ZMonitor {
 	 * @param mesg the message that you want to record.
 	 * @return a measure Point with a custom name.
 	 */
-	public static MeasurePoint record(Name name, String mesg, boolean traceCallerStack){
+	public static MonitorPoint record(Name name, String mesg, boolean traceCallerStack){
 		return record0(name, mesg, traceCallerStack);
 	}
 	/**
@@ -226,69 +224,69 @@ public final class ZMonitor {
 	 * @param mesg
 	 * @return
 	 */
-	public static MeasurePoint record(Name name, String mesg){
+	public static MonitorPoint record(Name name, String mesg){
 		return record0(name, mesg, false);
 	}
-	private static MeasurePoint record0(Name name, String mesg, boolean traceCallerStack){
+	private static MonitorPoint record0(Name name, String mesg, boolean traceCallerStack){
 		long nanosec = System.nanoTime();
 		long createMillis = System.currentTimeMillis();
 		if(!getLifecycle().shouldMeasure(name, mesg, createMillis))return null;
-		boolean started = getLifecycle().hasTimelineStarted();
+		boolean started = getLifecycle().isMonitorStarted();
 		MPContext mpCtx = new MPContext(getOuterCallerInfo(traceCallerStack, 3), 
 				started?RECORDING:START, name, mesg, createMillis);
-		MeasurePoint mp = started ? getInstance().record(mpCtx.getName(), mpCtx.getMesg(), createMillis) 
+		MonitorPoint mp = started ? getInstance().record(mpCtx.getName(), mpCtx.getMesg(), createMillis) 
 				: getInstance().start(mpCtx.getName(), mpCtx.getMesg(), createMillis);
 		
-		mp.timeline.accumulateSelfSpendNanosec(System.nanoTime()- nanosec);
+		mp.mSequence.accumulateSelfSpendNanos(System.nanoTime()- nanosec);
 		return mp;
 	}
 	
 	/**
-	 * This method will end the current level of the {@link Timeline}, if the level is 0( it's the root level of {@link Timeline}), 
-	 * the {@link TimelineLifecycle#flush()} will be called to end this {@link Timeline}'s life-cycle.<br>
+	 * This method will end the current level of the {@link MonitorSequence}, if the level is 0( it's the root level of {@link MonitorSequence}), 
+	 * the {@link MonitorSequenceLifecycle#flush()} will be called to end this {@link MonitorSequence}'s life-cycle.<br>
 	 * The caller of this method need to guarantee the corresponding {@link #push(Name, String)} has been called before,
 	 * otherwise the profiling result will be corrupted.<br>
 	 * 
-	 * @throws IllegalStateException if {@link TimelineLifecycle#hasTimelineStarted()} is false, 
-	 * which means you didn't initialize or started a {@link Timeline} before. 
+	 * @throws IllegalStateException if {@link MonitorSequenceLifecycle#isMonitorStarted()} is false, 
+	 * which means you didn't initialize or started a {@link MonitorSequence} before. 
 	 * @return null if timeline already reach the root. 
 	 */
-	public static MeasurePoint pop(Name name, String message, boolean traceCallerStack){
+	public static MonitorPoint pop(Name name, String message, boolean traceCallerStack){
 		return end0(name, message, traceCallerStack);
 	}
 	/**
 	 * traceCallerStack is default false.
 	 */
-	public static MeasurePoint pop(Name name, String message ){
+	public static MonitorPoint pop(Name name, String message ){
 		return end0(name, message, false);
 	}
 	/**
 	 * traceCallerStack is default false.
 	 */
-	public static MeasurePoint pop( String message, boolean traceCallerStack){
+	public static MonitorPoint pop( String message, boolean traceCallerStack){
 		return end0(null, message, traceCallerStack);
 	}
 	/**
 	 * traceCallerStack is default false.
 	 */
-	public static MeasurePoint pop(boolean traceCallerStack){
+	public static MonitorPoint pop(boolean traceCallerStack){
 		return end0(null, null, traceCallerStack);
 	}
 	/**
 	 * traceCallerStack is default false.
 	 */
-	public static MeasurePoint pop(Name name){
+	public static MonitorPoint pop(Name name){
 		return end0(name, null, false);
 	}
 	/**
 	 * traceCallerStack is default false.
 	 */
-	public static MeasurePoint pop(){
+	public static MonitorPoint pop(){
 		return end0(null, null, true);
 	}
-	private static MeasurePoint end0(Name name, String message, boolean traceCallerStack){
+	private static MonitorPoint end0(Name name, String message, boolean traceCallerStack){
 		long nanosec = System.nanoTime();
-		if(!getLifecycle().hasTimelineStarted()){
+		if(!getLifecycle().isMonitorStarted()){
 			return null;
 //			throw new IllegalStateException("You need to start a {@link Timeline} before end any level of it!");
 		}
@@ -296,10 +294,10 @@ public final class ZMonitor {
 		if(!getLifecycle().shouldMeasure(name, message, createMillis))return null;
 		MPContext mpCtx = new MPContext(getOuterCallerInfo(traceCallerStack, 3), 
 				END, name, message, createMillis);
-		Timeline tl = getLifecycle().getTimeline();
-		MeasurePoint mp = tl.end(mpCtx.getName(), mpCtx.getMesg());
+		MonitorSequence tl = getLifecycle().getMonitorSequence();
+		MonitorPoint mp = tl.end(mpCtx.getName(), mpCtx.getMesg());
 		
-		tl.accumulateSelfSpendNanosec(System.nanoTime()- nanosec);
+		tl.accumulateSelfSpendNanos(System.nanoTime()- nanosec);
 		if(tl.isFinished()){
 			getLifecycle().flush();
 		}

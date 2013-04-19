@@ -7,9 +7,9 @@ package org.zmonitor.web;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.zmonitor.impl.ThreadLocalTimelineLifecycleManager;
-import org.zmonitor.spi.TimelineLifecycle;
-import org.zmonitor.spi.TimelineLifecycleManager;
+import org.zmonitor.impl.ThreadLocalMonitorSequenceLifecycleManager;
+import org.zmonitor.spi.MonitorSequenceLifecycle;
+import org.zmonitor.spi.MonitorSequenceLifecycleManager;
 
 /**
  * @author Ian YT Tsai(Zanyking)
@@ -46,11 +46,11 @@ public class HttpRequestContexts {
 	 * 
 	 * @return
 	 */
-	public static TimelineLifecycleManager getTimelineLifecycleManager(){
-		return new TimelineLifecycleManager() {
-			private final ThreadLocalTimelineLifecycleManager thlTManager = 
-				new ThreadLocalTimelineLifecycleManager();
-			public TimelineLifecycle getLifecycle() {
+	public static MonitorSequenceLifecycleManager getTimelineLifecycleManager(){
+		return new MonitorSequenceLifecycleManager() {
+			private final ThreadLocalMonitorSequenceLifecycleManager thlTManager = 
+				new ThreadLocalMonitorSequenceLifecycleManager();
+			public MonitorSequenceLifecycle getLifecycle() {
 				if(get()==null){//this is not a Servlet thread, but a thread created by some part of a Java Web application.
 					return thlTManager.getLifecycle();	
 				}else{

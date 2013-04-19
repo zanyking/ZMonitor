@@ -29,7 +29,7 @@ import org.zkoss.zk.ui.util.URIInterceptor;
 import org.zkoss.zk.ui.util.WebAppCleanup;
 import org.zkoss.zk.ui.util.WebAppInit;
 import org.zmonitor.Ignitor;
-import org.zmonitor.MeasurePoint;
+import org.zmonitor.MonitorPoint;
 import org.zmonitor.ZMonitor;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.impl.DummyConfigurator;
@@ -131,7 +131,7 @@ public class ZKInterceptor implements WebAppInit, WebAppCleanup,
 	private static final String KEY_REQUEST_ZUL_URI = "KEY_REQUEST_ZUL_URI";
 	
 	public void request(String uri) throws Exception {
-		if(getPfMgmt().getTimelineLifecycle().hasTimelineStarted()){
+		if(getPfMgmt().getMonitorSequenceLifecycle().isMonitorStarted()){
 			getContext().getRequest().setAttribute(KEY_REQUEST_ZUL_URI, uri);
 			RenderResult result = getRenderer().getURIInterceptorResult(uri);
 			if(getConfiguration().isRenderURIIntercepter())
@@ -224,10 +224,10 @@ public class ZKInterceptor implements WebAppInit, WebAppCleanup,
 	 */
 	private static class AuRecContext{
 		final List<AuRequest> requests;
-		final MeasurePoint auStartMpoint;
+		final MonitorPoint auStartMpoint;
 		final Desktop desktop;
 		@SuppressWarnings("unchecked")
-		public AuRecContext(@SuppressWarnings("rawtypes") List requests, MeasurePoint auStartRec, Desktop desktop) {
+		public AuRecContext(@SuppressWarnings("rawtypes") List requests, MonitorPoint auStartRec, Desktop desktop) {
 			super();
 			this.requests = requests;
 			this.auStartMpoint = auStartRec;
@@ -247,7 +247,7 @@ public class ZKInterceptor implements WebAppInit, WebAppCleanup,
 	@SuppressWarnings("rawtypes")
 	public void beforeUpdate(Desktop desktop, List requests) {
 		if(getConfiguration().isRenderMonitorAsyncUpdate()){
-			MeasurePoint rec = ZMonitor.push(null);
+			MonitorPoint rec = ZMonitor.push(null);
 			if(rec!=null){//measure it
 				getContext().getRequest().setAttribute(KEY_ASYNC_UPDATE_RECORD, 
 					new AuRecContext(requests, rec, desktop));

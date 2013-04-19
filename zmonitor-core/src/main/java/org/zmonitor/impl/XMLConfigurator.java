@@ -18,8 +18,8 @@ import org.zmonitor.ZMonitorManager;
 import org.zmonitor.spi.Configurator;
 import org.zmonitor.spi.CustomConfiguration;
 import org.zmonitor.spi.IdFetcher;
-import org.zmonitor.spi.MeasurePointInfoFactory;
-import org.zmonitor.spi.TimelineHandler;
+import org.zmonitor.spi.MonitorPointInfoFactory;
+import org.zmonitor.spi.MonitorSequenceHandler;
 import org.zmonitor.util.DOMRetriever;
 import org.zmonitor.util.NodeIterator;
 import org.zmonitor.util.PropertySetter;
@@ -70,8 +70,8 @@ public class XMLConfigurator implements Configurator {
 		prepareServletContainerConf(manager, xmlDoc, monitorMgmtNode);
 //		prepareZKInterceptorConf(manager, xmlDoc, monitorMgmtNode);
 		prepareCustomConfiguration(manager, xmlDoc, monitorMgmtNode);
-		prepareMeasurePointInfoFacotry(manager, xmlDoc, monitorMgmtNode);
-		prepareTimelineHandlers(manager, xmlDoc, monitorMgmtNode);
+		prepareMPointInfoFacotry(manager, xmlDoc, monitorMgmtNode);
+		prepareMSquenceHandlers(manager, xmlDoc, monitorMgmtNode);
 		
 	}
 	private static void prepareAgent( ZMonitorManager manager, 
@@ -161,32 +161,32 @@ public class XMLConfigurator implements Configurator {
 	}
 	
 	
-	private static void prepareMeasurePointInfoFacotry(ZMonitorManager manager, 
+	private static void prepareMPointInfoFacotry(ZMonitorManager manager, 
 			DOMRetriever xmlDoc, 
 			Node monitorMgmtNode){
 		
 		Node mpInfoFacNode = getSingleton(REL_MEASURE_POINT_INFO_FACTORY, xmlDoc, monitorMgmtNode);
 		if(mpInfoFacNode==null)return;//use default...
 		
-		MeasurePointInfoFactory mpInfoFactory = newInstanceByClassAttr(mpInfoFacNode, null, true);
+		MonitorPointInfoFactory mpInfoFactory = newInstanceByClassAttr(mpInfoFacNode, null, true);
 		applyPropertyTagsToBean(xmlDoc, mpInfoFacNode, new PropertySetter(mpInfoFactory));
-		manager.setMeasurePointInfoFactory(mpInfoFactory);
+		manager.setMonitorPointInfoFactory(mpInfoFactory);
 	}
 	
 	
-	private static void prepareTimelineHandlers(final ZMonitorManager manager, 
+	private static void prepareMSquenceHandlers(final ZMonitorManager manager, 
 			DOMRetriever xmlDoc, 
 			Node profilerMgmtNode){
 		
 		new NodeIterator<DOMRetriever>() {
 			protected void forEach(int index, Node node, DOMRetriever xmlDoc) {
-				TimelineHandler handler = newInstanceByClassAttr(node, null, true);
+				MonitorSequenceHandler handler = newInstanceByClassAttr(node, null, true);
 				String name = DOMRetriever.getAttributeValue(node, NAME);
 				applyPropertyTagsToBean(xmlDoc, node, new PropertySetter(handler));
 				if(name==null||name.length()<=0)
 					throw new WrongConfigurationException(
 							"You forgot to assign a \"name\" attribute to handler the declaration of: "+handler);
-				manager.addTimelineHandler(name, handler);
+				manager.addMonitorSequenceHandler(name, handler);
 				if(handler instanceof CustomConfiguration){
 					initCustomConfiguration(manager, xmlDoc, node, (CustomConfiguration) handler, false);
 				}
