@@ -1,19 +1,20 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.zmonitor</groupId>
-	<artifactId>zmonitor-core</artifactId>
+	<artifactId>zmonitor-slf4j</artifactId>
 	<version>0.6.0</version>
-	<packaging>jar</packaging>
-
+	<name>zmonitor slf4j adaptor</name>
+	<description>a slf4J adaptor implementation of zmonitor</description>
+	
 	<properties>
 		<slf4j.version>1.7.5</slf4j.version>
 		<servlet.version>2.4</servlet.version>
 		<packname>-${maven.build.timestamp}</packname>
-		<log4j.version>1.2.17</log4j.version>
 	</properties>
-
-
+	
+	
 	<licenses>
 		<license>
 			<name>GNU LESSER GENERAL PUBLIC LICENSE, Version 3</name>
@@ -21,7 +22,6 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
-
 	<repositories>
 		<repository>
 			<id>Java Net Repo</id>
@@ -32,8 +32,7 @@
 			<url>https://repository.jboss.org/nexus/content/groups/public</url>
 		</repository>
 	</repositories>
-
-		
+	
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -49,20 +48,29 @@
 		</dependency>
 		
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>${log4j.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>${slf4j.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>1.0.11</version>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-ext</artifactId>
+			<version>${slf4j.version}</version>
 		</dependency>
 		
+		<!-- 
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-nop</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		 -->
+	
 	</dependencies>	
+	
 </project>
