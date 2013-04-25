@@ -63,13 +63,11 @@
 			<version>${slf4j.version}</version>
 		</dependency>
 		
-		<!-- 
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-nop</artifactId>
-			<version>${slf4j.version}</version>
+			<groupId>org.zmonitor</groupId>
+			<artifactId>zmonitor-core</artifactId>
+			<version>${version}</version>
 		</dependency>
-		 -->
 	
 	</dependencies>	
 	

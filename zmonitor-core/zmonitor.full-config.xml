@@ -2,14 +2,27 @@
 <!-- do not use Id here, let TestBase generate the ID by class name -->
 <zmonitor>
 
-	<core-conf>
-		<timeline-handler name="console-LOG4J" class="org.zmonitor.handler.ToStringTimelineHandler"/>
-		
-	</core-conf>
+	<timeline-handler name="console-LOG4J" class="org.zmonitor.handler.ToStringTimelineHandler"/>
+	
+	<!-- web configuration -->
 	<web-conf>
 		
 		
 	</web-conf>
+	
+	
+	<!-- slf4j configuration -->
+	<slf4j-conf>
+		
+		
+	</slf4j-conf>
+	
+	<!-- slf4j configuration -->
+	<slf4j-conf>
+		
+		
+	</slf4j-conf>
+	
 
 
 </zmonitor>
