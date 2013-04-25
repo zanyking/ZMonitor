@@ -18,19 +18,18 @@ import org.zmonitor.spi.MonitorSequenceLifecycle;
 
 /**
  * <p>
- * This class is designed to manually record a {@link MonitorPoint} to the current execution's {@link MonitorSequence}.<br>
- * Imagine there are some executions of your java program, for example: 
+ * This is an utility class to record {@link MonitorPoint} of current (a.k.a {@link MonitorSequence}).<br>
+ * About {@link MonitorSequence}, any program has it, for example: 
  * <ul>
- *    <li>A user shoot a request to your Web Application.</li>
- *    <li>A user clicked a button on your App's UI, which will start a complicated business logic that require dozens of classes to involve in.</li>
+ *    <li>A user send a request to your Web Application, and the servlet's doPost() was called.</li>
+ *    <li>A user clicked a button on your App's UI, which triggered a business logic with multiple classes method call involved.</li>
  * </ul>  
- * Now, you want to know the detail information of these executions such as: 
+ *  The whole concept of this model is based on Log4J's Nested Diagnostic Context, you can use this NDC to verify:   
  * <ul>
  *   <li>How long will it take from measuring point A to measuring point B?</li>
  *   <li>Which step(MP i to MP i+1) takes the longest period in the execution?</li>
- *   <li>What's the current value of Var i, when it comes to this step?</li>
+ *   <li>What's the current context of class: A method: B ? how many distinct possible context will come to this point?</li>
  * </ul> 
- * The context that we used to store step's information and hierarchy is an <b>Execution Timeline</b>.
  * </p>
  * 
  *@author Ian YT Tsai(Zanyking)
@@ -96,6 +95,7 @@ public final class ZMonitor {
 	 * @return true if there's a timeline instance and it's started.
 	 */
 	public static boolean isMonitorStarted(){
+		//TODO There's an ambiguity here, this method implies an existence of a threadLocal object. 
 		return getLifecycle().isMonitorStarted();
 	}
 	

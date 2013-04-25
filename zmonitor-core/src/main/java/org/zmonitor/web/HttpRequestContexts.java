@@ -46,12 +46,14 @@ public class HttpRequestContexts {
 	 * 
 	 * @return
 	 */
-	public static MonitorSequenceLifecycleManager getTimelineLifecycleManager(){
+	public static MonitorSequenceLifecycleManager getMSLifecycleManager(){
 		return new MonitorSequenceLifecycleManager() {
 			private final ThreadLocalMonitorSequenceLifecycleManager thlTManager = 
 				new ThreadLocalMonitorSequenceLifecycleManager();
+			
 			public MonitorSequenceLifecycle getLifecycle() {
-				if(get()==null){//this is not a Servlet thread, but a thread created by some part of a Java Web application.
+				if(get()==null){
+					//this is not a Servlet thread, but a thread created by some part of a Java Web application.
 					return thlTManager.getLifecycle();	
 				}else{
 					return get().getTimelineLifecycle();

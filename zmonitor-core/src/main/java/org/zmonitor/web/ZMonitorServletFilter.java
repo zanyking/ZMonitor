@@ -50,7 +50,7 @@ public class ZMonitorServletFilter implements Filter {
 						"please give your own \"",XmlConfiguratorLoader.ZMONITOR_XML,"\" under /WEB-INF/");
 				conf = new DummyConfigurator();
 			}
-			isIgnitBySelf = Ignitor.ignite(HttpRequestContexts.getTimelineLifecycleManager(), conf);
+			isIgnitBySelf = Ignitor.ignite(HttpRequestContexts.getMSLifecycleManager(), conf);
 			ZMLog.info(">> Ignit ZMonitor in: ",ZMonitorServletFilter.class.getCanonicalName());
 		}
 		
