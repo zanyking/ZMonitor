@@ -1,12 +1,13 @@
 /**
  * 
  */
-package org.zmonitor.handler;
+package org.zkoss.monitor.agent;
 
 import java.util.List;
 
 import org.zmonitor.MonitorSequence;
 import org.zmonitor.ZMonitorManager;
+import org.zmonitor.handler.NonblockingMonitorSequenceHandler;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.message.NewTimelineMessage;
 import org.zmonitor.util.concurrent.AsyncGroupingPipe;
@@ -27,7 +28,8 @@ public class TransmissionTimelineHandler extends NonblockingMonitorSequenceHandl
 			public void doSend(List<MonitorSequence> tls) throws Exception{
 				NewTimelineMessage mesg = new NewTimelineMessage();
 				mesg.add(tls);
-				manager.getAgent().getTransmitter().send(mesg);	
+//				manager.getAgent().getTransmitter().send(mesg);
+				//TODO: find a way to instantiate an Agent instance and use it to send message.
 			}
 			
 			public boolean failover(Exception e, List<MonitorSequence> workingList) {

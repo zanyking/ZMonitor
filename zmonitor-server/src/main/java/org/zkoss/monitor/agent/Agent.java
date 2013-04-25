@@ -2,10 +2,11 @@
  * 2011/10/11
  * 
  */
-package org.zmonitor;
+package org.zkoss.monitor.agent;
 
 import org.w3c.dom.Node;
-import org.zmonitor.impl.JObjSStreamCommunicator;
+import org.zkoss.monitor.impl.JObjSStreamCommunicator;
+import org.zmonitor.ZMonitorManager;
 import org.zmonitor.message.Communicator;
 import org.zmonitor.message.Receiever;
 import org.zmonitor.message.Transmitter;

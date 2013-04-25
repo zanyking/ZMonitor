@@ -2,7 +2,7 @@
  * 2011/10/14
  * 
  */
-package org.zmonitor.impl;
+package org.zkoss.monitor.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -14,6 +14,7 @@ import java.net.Socket;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.zmonitor.impl.ZMLog;
 import org.zmonitor.message.Callback;
 import org.zmonitor.message.Communicator;
 import org.zmonitor.message.Message;

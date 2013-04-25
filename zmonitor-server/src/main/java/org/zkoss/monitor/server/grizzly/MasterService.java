@@ -15,7 +15,7 @@ import org.glassfish.grizzly.filterchain.NextAction;
 import org.glassfish.grizzly.filterchain.TransportFilter;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
-import org.zmonitor.impl.JObjSStreamCommunicator;
+import org.zkoss.monitor.impl.JObjSStreamCommunicator;
 import org.zmonitor.message.Message;
 import org.zmonitor.message.MessageHandler;
 import org.zmonitor.message.Parcel;

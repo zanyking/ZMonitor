@@ -2,7 +2,7 @@
  * 2011/10/15
  * 
  */
-package org.zmonitor.impl;
+package org.zkoss.monitor.impl;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.zmonitor.impl.ZMLog;
 import org.zmonitor.message.Callback;
 import org.zmonitor.message.Message;
 import org.zmonitor.message.MessageFailover;

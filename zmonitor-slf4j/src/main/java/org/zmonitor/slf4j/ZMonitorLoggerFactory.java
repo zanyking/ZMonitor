@@ -17,7 +17,7 @@ public class ZMonitorLoggerFactory implements ILoggerFactory {
 	 * @see org.slf4j.ILoggerFactory#getLogger(java.lang.String)
 	 */
 	public Logger getLogger(String name) {
-		// TODO Auto-generated method stub
+		// TODO give a proper impl of ILoggerFactory, please take a look at slf4j-impl. 
 		return null;
 	}
 

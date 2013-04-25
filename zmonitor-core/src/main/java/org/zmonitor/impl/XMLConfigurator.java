@@ -12,7 +12,6 @@ import static org.zmonitor.impl.XMLConfigs.newInstanceByClassAttr;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.zmonitor.Agent;
 import org.zmonitor.WrongConfigurationException;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.spi.Configurator;
@@ -36,7 +35,7 @@ public class XMLConfigurator implements Configurator {
 	
 	private static final String ABS_PROFILING_MANAGER = "/zmonitor";
 	
-	public static final String REL_AGENT_CONF = "agent-conf";
+	
 	
 	public static final String REL_MEASURE_POINT_INFO_FACTORY = "mp-info-factory";
 	public static final String REL_TIMELINE_HANDLER = "timeline-handler";
@@ -65,7 +64,7 @@ public class XMLConfigurator implements Configurator {
 	 */
 	public void configure(final ZMonitorManager manager) {
 		Node monitorMgmtNode = xmlDoc.getNodeList(ABS_PROFILING_MANAGER).item(0);
-		prepareAgent(manager, xmlDoc, monitorMgmtNode);
+//		prepareAgent(manager, xmlDoc, monitorMgmtNode);
 		prepareUuid(manager, xmlDoc, monitorMgmtNode);
 		prepareServletContainerConf(manager, xmlDoc, monitorMgmtNode);
 //		prepareZKInterceptorConf(manager, xmlDoc, monitorMgmtNode);
@@ -74,18 +73,7 @@ public class XMLConfigurator implements Configurator {
 		prepareMSquenceHandlers(manager, xmlDoc, monitorMgmtNode);
 		
 	}
-	private static void prepareAgent( ZMonitorManager manager, 
-			final DOMRetriever xmlDoc, 
-			Node monitorMgmtNode){
-		// init agent
-		Node node = getSingleton(REL_AGENT_CONF, xmlDoc, monitorMgmtNode);
-		if(node!=null){//init Master...
-			Agent agent = new Agent();
-			applyAttributesToBean( xmlDoc, node, new PropertySetter(agent), null);
-			initCustomConfiguration(manager, xmlDoc, node, agent, true);
-			manager.setAgent(agent);
-		}
-	}
+
 	private static void prepareUuid( ZMonitorManager manager, 
 			final DOMRetriever xmlDoc, 
 			Node monitorMgmtNode){

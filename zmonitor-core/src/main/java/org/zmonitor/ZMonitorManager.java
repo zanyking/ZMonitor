@@ -93,13 +93,6 @@ public class ZMonitorManager {
 		return getLifecycleManager().getLifecycle();
 	}
 	
-	private Agent agent;
-	public Agent getAgent() {
-		return agent;
-	}
-	public void setAgent(Agent agent) {
-		this.agent = agent;
-	}
 	public void destroy() {//TODO: make sure every Component of ZMonitor has been destroyed.
 		this.getMonitorSequenceHandlerRepository().destroy();		
 	}
