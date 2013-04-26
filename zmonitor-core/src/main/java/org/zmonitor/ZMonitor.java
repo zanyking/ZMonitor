@@ -48,7 +48,6 @@ public final class ZMonitor {
 	 * then the profiler will be in Pure Java Mode.
 	 */
 	static{ 
-		boolean isIgnitBySelf = false;
 		if(!Ignitor.isIgnited()){
 			try {
 				Configurator conf = XmlConfiguratorLoader.loadForPureJavaProgram();
@@ -60,7 +59,7 @@ public final class ZMonitor {
 							"please give your own \""+XmlConfiguratorLoader.ZMONITOR_XML+"\" in classpath.");
 					conf = new DummyConfigurator();
 				}
-				isIgnitBySelf = Ignitor.ignite( new ThreadLocalMonitorSequenceLifecycleManager(), conf);
+				Ignitor.ignite( new ThreadLocalMonitorSequenceLifecycleManager(), conf);
 				ZMLog.info("Init ZMonitor in pure Java mode: " + ZMonitor.class);
 			} catch (IOException e) {
 				throw new IgnitionFailureException(e);

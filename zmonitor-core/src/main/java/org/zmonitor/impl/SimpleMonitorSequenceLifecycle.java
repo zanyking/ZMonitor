@@ -14,7 +14,7 @@ import org.zmonitor.spi.MonitorSequenceLifecycle;
 
 /**
  * 
- * this implementation will manage the {@link MonitorSequence} instance from {@link ThreadLocal}.
+ * this implementation will manage the {@link MonitorSequence} instance 
  * {@inheritDoc}<br> 
  */
 public class SimpleMonitorSequenceLifecycle implements MonitorSequenceLifecycle {
@@ -24,11 +24,11 @@ public class SimpleMonitorSequenceLifecycle implements MonitorSequenceLifecycle 
 	
 	public MonitorSequence getInstance() {
 		if(getMonitorSequence() == null){
-			setTimeline(new MonitorSequence());
+			setMonitorSequence(new MonitorSequence());
 		}
 		return getMonitorSequence();
 	}
-	protected void setTimeline(MonitorSequence mSequence) {
+	protected void setMonitorSequence(MonitorSequence mSequence) {
 		this.mSquence = mSequence;
 	}
 	public MonitorSequence getMonitorSequence() {
