@@ -18,7 +18,7 @@ import org.zmonitor.ZMonitorManager;
 import org.zmonitor.impl.JavaName;
 import org.zmonitor.impl.StringName;
 import org.zmonitor.impl.ThreadLocalMonitorSequenceLifecycleManager;
-import org.zmonitor.impl.XMLConfigurator;
+import org.zmonitor.impl.CoreConfigurator;
 import org.zmonitor.impl.XmlConfiguratorLoader;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.logger.log4j.NdcContext.NdcObj;
@@ -102,7 +102,7 @@ public class ZMonitorAppender extends AppenderSkeleton {
 		super.activateOptions();
 		if(Ignitor.isIgnited())return;
 		try {
-			final XMLConfigurator xmlCofig = XmlConfiguratorLoader.loadForPureJavaProgram();
+			final CoreConfigurator xmlCofig = XmlConfiguratorLoader.loadForPureJavaProgram();
 			if(xmlCofig==null)
 				throw new IgnitionFailureException("cannot find Configuration:["+
 						XmlConfiguratorLoader.ZMONITOR_XML+

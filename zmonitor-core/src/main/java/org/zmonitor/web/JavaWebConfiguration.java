@@ -8,7 +8,7 @@ package org.zmonitor.web;
 import static org.zmonitor.impl.XMLConfigs.*;
 import org.w3c.dom.Node;
 import org.zmonitor.ZMonitorManager;
-import org.zmonitor.impl.XMLConfigurator;
+import org.zmonitor.impl.CoreConfigurator;
 import org.zmonitor.spi.CustomConfiguration;
 import org.zmonitor.util.DOMRetriever;
 import org.zmonitor.util.NodeIterator;
@@ -57,7 +57,7 @@ public class JavaWebConfiguration implements CustomConfiguration {
 				initUrlFilterByDefault(xmlDoc, urlFilterNode, (DefaultUrlFilter)filter);
 				
 			} else if(filter instanceof  CustomConfiguration){
-				XMLConfigurator.initCustomConfiguration(manager, 
+				CoreConfigurator.initCustomConfiguration(manager, 
 						xmlDoc, 
 						urlFilterNode, 
 						(CustomConfiguration) filter, 

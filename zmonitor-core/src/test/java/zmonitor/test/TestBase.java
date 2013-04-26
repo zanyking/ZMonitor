@@ -14,7 +14,7 @@ import org.zmonitor.IgnitionFailureException;
 import org.zmonitor.Ignitor;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.impl.ThreadLocalMonitorSequenceLifecycleManager;
-import org.zmonitor.impl.XMLConfigurator;
+import org.zmonitor.impl.CoreConfigurator;
 import org.zmonitor.impl.XmlConfiguratorLoader;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.util.Loader;
@@ -58,7 +58,7 @@ public class TestBase {
 			}
 			ZMLog.info(">>>>>>>>>>>>>>>load config from: [",url,"]");
 			
-			XMLConfigurator xmlCofig = 
+			CoreConfigurator xmlCofig = 
 					XmlConfiguratorLoader.loadFromClassPath(url);
 			
 			ZMonitorManager manager = new ZMonitorManager();

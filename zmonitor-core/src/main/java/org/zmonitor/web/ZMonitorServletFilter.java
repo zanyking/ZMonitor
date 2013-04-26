@@ -39,24 +39,24 @@ public class ZMonitorServletFilter implements Filter {
 	public void init(FilterConfig fConfig) throws ServletException {
 		// init ProfilingManager...
 		if(!Ignitor.isIgnited()){
-			Configurator conf = null;
+			Configurator configurator = null;
 			try {
-				conf = XmlConfiguratorLoader.loadForJavaEEWebApp(fConfig.getServletContext());
+				configurator = XmlConfiguratorLoader.loadForJavaEEWebApp(fConfig.getServletContext());
 			} catch (IOException e) {
 				ZMLog.warn(e, "Got some problem while reading: ",
 						XmlConfiguratorLoader.WEB_INF_ZMONITOR_XML, ", please make sure it is exist!");
 			}
-			if(conf==null){
+			if(configurator==null){
 				ZMLog.warn("cannot find Configuration:[",
 						XmlConfiguratorLoader.ZMONITOR_XML,
 						"] from current application context: ",ZMonitorServletFilter.class);
 				ZMLog.warn("System will get default configuration from: ",DummyConfigurator.class);
 				ZMLog.warn("If you want to give your custom settings, " ,
 						"please give your own \"",XmlConfiguratorLoader.ZMONITOR_XML,"\" under /WEB-INF/");
-				conf = new DummyConfigurator();
+				configurator = new DummyConfigurator();
 			}
 			hReqMSLfManager = new HttpRequestMonitorSequenceLifecycleManager();
-			isIgnitBySelf = Ignitor.ignite(hReqMSLfManager, conf);
+			isIgnitBySelf = Ignitor.ignite(hReqMSLfManager, configurator);
 			ZMLog.info(">> Ignit ZMonitor in: ",ZMonitorServletFilter.class.getCanonicalName());
 		}
 		

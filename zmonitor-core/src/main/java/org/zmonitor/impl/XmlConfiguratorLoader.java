@@ -16,8 +16,8 @@ import org.zmonitor.util.Loader;
 
 
 /**
- * The loader class for {@link XMLConfigurator}
- * @see org.zmonitor.impl.XMLConfigurator 
+ * The loader class for {@link CoreConfigurator}
+ * @see org.zmonitor.impl.CoreConfigurator 
  * @author Ian YT Tsai(Zanyking)
  */
 public class XmlConfiguratorLoader {
@@ -34,8 +34,8 @@ public class XmlConfiguratorLoader {
 	 * @return
 	 * @throws IOException
 	 */
-	public static XMLConfigurator loadForPureJavaProgram() throws IOException{
-		XMLConfigurator xConf = loadFromDefaultSystemProperty(); 
+	public static CoreConfigurator loadForPureJavaProgram() throws IOException{
+		CoreConfigurator xConf = loadFromDefaultSystemProperty(); 
 		if(xConf!=null)return xConf;
 		return loadFromClassPath();
 	}
@@ -52,9 +52,9 @@ public class XmlConfiguratorLoader {
 	 * @return an XmlConfigurator comes from a Java EE Web Application.
 	 * @throws IOException 
 	 */
-	public static XMLConfigurator loadForJavaEEWebApp(ServletContext servCtx) throws IOException{
+	public static CoreConfigurator loadForJavaEEWebApp(ServletContext servCtx) throws IOException{
 		
-		XMLConfigurator xConf = loadFromDefaultSystemProperty(); 
+		CoreConfigurator xConf = loadFromDefaultSystemProperty(); 
 		if(xConf!=null)return xConf;
 		
 		DOMRetriever xmlDoc = newInstance(servCtx.getResourceAsStream(WEB_INF_ZMONITOR_XML));
@@ -66,10 +66,10 @@ public class XmlConfiguratorLoader {
 	
 	/**
 	 * Construct configuration instance: {@link XmlConfigurator) using default propertyName: "zmonitor.config.url".
-	 * @return an instance of {@link XMLConfigurator}, null if no such system property found.
+	 * @return an instance of {@link CoreConfigurator}, null if no such system property found.
 	 * @throws IOException
 	 */
-	public static XMLConfigurator loadFromDefaultSystemProperty() throws IOException{
+	public static CoreConfigurator loadFromDefaultSystemProperty() throws IOException{
 		String urlStr = System.getProperty(DEFAULT_SYS_PROP_NAME);
 		if(urlStr==null || urlStr.length()==0){
 			return null;
@@ -90,10 +90,10 @@ public class XmlConfiguratorLoader {
 	/**
 	 * Construct configuration instance: {@link XmlConfigurator) using given propertyName.
 	 * @param propertyName the name used to retrieve the URL String value from system properties. 
-	 * @return a {@link XMLConfigurator} instance.
+	 * @return a {@link CoreConfigurator} instance.
 	 * @throws IOException
 	 */
-	public static XMLConfigurator loadFromSystemProperty(String propertyName) throws IOException{
+	public static CoreConfigurator loadFromSystemProperty(String propertyName) throws IOException{
 		String urlStr = System.getProperty(propertyName);
 		if(urlStr==null || urlStr.length()==0){
 			return null;
@@ -113,10 +113,10 @@ public class XmlConfiguratorLoader {
 	}
 	/**
 	 * using default Java Class Path "/zmonitor.xml" as the configuration location.
-	 * @return a {@link XMLConfigurator} instance.
+	 * @return a {@link CoreConfigurator} instance.
 	 * @throws IOException
 	 */
-	public static XMLConfigurator loadFromClassPath() throws IOException{
+	public static CoreConfigurator loadFromClassPath() throws IOException{
 		return loadFromClassPath(ZMONITOR_XML);
 	}
 	/**
@@ -127,7 +127,7 @@ public class XmlConfiguratorLoader {
 	 * @return
 	 * @throws IOException
 	 */
-	public static XMLConfigurator loadFromClassPath(String classPath) throws IOException{
+	public static CoreConfigurator loadFromClassPath(String classPath) throws IOException{
 		
 		DOMRetriever xmlDoc = newInstance(Loader.getResourceAsStreamIfAny(classPath));
 		return newInstance(xmlDoc);
@@ -138,14 +138,14 @@ public class XmlConfiguratorLoader {
 	 * @return
 	 * @throws IOException
 	 */
-	public static XMLConfigurator loadFromClassPath(URL url) throws IOException{
+	public static CoreConfigurator loadFromClassPath(URL url) throws IOException{
 		DOMRetriever xmlDoc = newInstance(url.openStream());
 		return newInstance(xmlDoc);
 	}
 	// 
-	private static XMLConfigurator newInstance(DOMRetriever xmlDoc){
+	private static CoreConfigurator newInstance(DOMRetriever xmlDoc){
 		if(xmlDoc==null)return null;
-		return new XMLConfigurator(xmlDoc);
+		return new CoreConfigurator(xmlDoc);
 	}
 	// 
 	private static DOMRetriever newInstance(InputStream in) throws IOException{

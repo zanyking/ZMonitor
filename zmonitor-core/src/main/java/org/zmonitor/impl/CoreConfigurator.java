@@ -1,4 +1,4 @@
-/**XmlProfilerConfigurator.java
+/**CoreConfigurator.java
  * 2011/4/3
  * 
  */
@@ -31,7 +31,7 @@ import org.zmonitor.web.JavaWebConfiguration;
  * 
  * @author Ian YT Tsai(Zanyking)
  */
-public class XMLConfigurator implements Configurator {
+public class CoreConfigurator implements Configurator {
 	
 	private static final String ABS_PROFILING_MANAGER = "/zmonitor";
 	
@@ -47,14 +47,14 @@ public class XMLConfigurator implements Configurator {
 	 * 
 	 * @param xmlDoc
 	 */
-	XMLConfigurator(DOMRetriever xmlDoc){
+	CoreConfigurator(DOMRetriever xmlDoc){
 		this.xmlDoc = xmlDoc;
 	}
 	/**
 	 * 
 	 * @param xmlTextContent
 	 */
-	public XMLConfigurator(String xmlTextContent){
+	public CoreConfigurator(String xmlTextContent){
 		this.xmlDoc = new DOMRetriever(xmlTextContent);
 	}
 	/**

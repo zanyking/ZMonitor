@@ -14,7 +14,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.zmonitor.IgnitionFailureException;
 import org.zmonitor.Ignitor;
-import org.zmonitor.impl.XMLConfigurator;
+import org.zmonitor.impl.CoreConfigurator;
 import org.zmonitor.impl.XmlConfiguratorLoader;
 
 
@@ -63,7 +63,7 @@ public class ZMonitorConfig_TEST {
 		
 		String path = packagePath+"/"+XmlConfiguratorLoader.ZMONITOR_XML;
 		
-		final XMLConfigurator xmlCofig = 
+		final CoreConfigurator xmlCofig = 
 				XmlConfiguratorLoader.loadFromClassPath(path);
 			
 			if(xmlCofig==null){
