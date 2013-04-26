@@ -95,7 +95,7 @@ public final class ZMonitor {
 	 */
 	public static boolean isMonitorStarted(){
 		//TODO There's an ambiguity here, this method implies an existence of a threadLocal object. 
-		return getLifecycle().isMonitorStarted();
+		return getLifecycle().isZMonitorStarted();
 	}
 	
 	/**
@@ -230,7 +230,7 @@ public final class ZMonitor {
 		long nanosec = System.nanoTime();
 		long createMillis = System.currentTimeMillis();
 		if(!getLifecycle().shouldMeasure(name, mesg, createMillis))return null;
-		boolean started = getLifecycle().isMonitorStarted();
+		boolean started = getLifecycle().isZMonitorStarted();
 		MPContext mpCtx = new MPContext(getOuterCallerInfo(traceCallerStack, 3), 
 				started?RECORDING:START, name, mesg, createMillis);
 		MonitorPoint mp = started ? getInstance().record(mpCtx.getName(), mpCtx.getMesg(), createMillis) 
@@ -246,7 +246,7 @@ public final class ZMonitor {
 	 * The caller of this method need to guarantee the corresponding {@link #push(Name, String)} has been called before,
 	 * otherwise the profiling result will be corrupted.<br>
 	 * 
-	 * @throws IllegalStateException if {@link MonitorSequenceLifecycle#isMonitorStarted()} is false, 
+	 * @throws IllegalStateException if {@link MonitorSequenceLifecycle#isZMonitorStarted()} is false, 
 	 * which means you didn't initialize or started a {@link MonitorSequence} before. 
 	 * @return null if timeline already reach the root. 
 	 */
@@ -285,7 +285,7 @@ public final class ZMonitor {
 	}
 	private static MonitorPoint end0(Name name, String message, boolean traceCallerStack){
 		long nanosec = System.nanoTime();
-		if(!getLifecycle().isMonitorStarted()){
+		if(!getLifecycle().isZMonitorStarted()){
 			return null;
 //			throw new IllegalStateException("You need to start a {@link Timeline} before end any level of it!");
 		}

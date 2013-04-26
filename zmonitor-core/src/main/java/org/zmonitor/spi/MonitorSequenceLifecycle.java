@@ -21,9 +21,9 @@ import org.zmonitor.MonitorSequence;
  */
 public interface MonitorSequenceLifecycle {
 	/**
-	 * Initialize a Timeline instance if not exist, or just return the exists one.<br>
-	 * The first time to call this method will initialize a new Timeline lifecycle. 
-	 * @return a Timeline instance, shouldn't return null.
+	 * Initialize a MonitorSequence instance if not exist, or just return the existing one.<br>
+	 * The first time to call this method will initialize a new MonitorSequence lifecycle. 
+	 * @return a MonitorSequence instance, shouldn't return null.
 	 */
 	public MonitorSequence getInstance();
 	/**
@@ -42,7 +42,7 @@ public interface MonitorSequenceLifecycle {
 	 * if {@link #isInitialized()} is true, this method will test if current MeasureSequence was started before.<br>
 	 * @return true test if current MeasureSequence was started, false otherwise.
 	 */
-	public boolean isMonitorStarted();
+	public boolean isZMonitorStarted();
 	/**
 	 * finish current Measure Sequence life-cycle, clear state.  
 	 */

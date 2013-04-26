@@ -37,7 +37,7 @@ public class SimpleMonitorSequenceLifecycle implements MonitorSequenceLifecycle 
 	public boolean isInitialized() {
 		return mSquence!=null;
 	}
-	public boolean isMonitorStarted() {
+	public boolean isZMonitorStarted() {
 		if(!isInitialized())return false;
 		return mSquence.isStarted();
 	}

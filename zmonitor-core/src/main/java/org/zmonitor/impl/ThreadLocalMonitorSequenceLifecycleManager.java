@@ -1,13 +1,12 @@
-/**ThreadLocalTimelineLifecycleManager.java
- * 2011/4/6
- * 
- */
+
 package org.zmonitor.impl;
 
 import org.zmonitor.spi.MonitorSequenceLifecycle;
 import org.zmonitor.spi.MonitorSequenceLifecycleManager;
 
 /**
+ * 
+ * 
  * @author Ian YT Tsai(Zanyking)
  *
  */

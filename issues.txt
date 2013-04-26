@@ -1,10 +1,10 @@
 
 
 Thread Monitoring:
-	[ISSUES]:
-	+. managed environment: an environment which has task execution defined by the app's infra that provides filter interface to mimic the execution.
-	+. Only a managed environment can guarentee definite termination of a monitored sequence.
-		
+	[ISSUES]: How to guarantee the termination of a task monitoring when task is done?
+	DEFNIE: managed environment
+	An environment which manages task execution and provides filter interface to mimic the execution.
+	+. Only a managed environment can guarentee the termination of a monitored sequence.
 	+. The relationship between a monitored task and a thread is not always 1 on 1, be cause the app might do thread pooling and invoke various tasks in one thread.
 	+. Unmanaged environment can only depends on strict paired operations of push & pop to terminate a monitored sequence.
 
@@ -18,7 +18,15 @@ Thread Monitoring:
 			ZMonitor.finish();	
 		}
 
-	+. ZMonitor can provides a mechanism based on Java Instrumentation technology to terminate a zmonitor.
+	+. ZMonitor can leverage Java Instrumentation technology to provide a mechanism which will add additional code and terminate a zmonitor at the end of a task.
+		pseudo code:
+		ZMonitor.start();
+		try{
+			//Original method body
+		}finally{
+			ZMonitor.finish();
+		}
+
 
 	+. When used behind a logger, ZMonitor can provides a configurable key pattern and let user be able to terminate current monitor through logging method call.
 		pseudo code:
@@ -30,3 +38,7 @@ Thread Monitoring:
 			logger.info("@zmonitor.stop");// or simply: "|<<"
 		}
 		
+	ISSUE: Where we store the zmonitor instance?
+	+. ThreadLocal is the most intuitive place, in Servlet or web app, 
+	+. even we don't store the 
+

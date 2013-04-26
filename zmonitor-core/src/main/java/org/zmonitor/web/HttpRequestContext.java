@@ -51,9 +51,9 @@ public interface HttpRequestContext {
 	 * @return the original Request URL 
 	 */
 	public String getOriginalRequestURL();
-	/**
-	 * 
-	 * @return
-	 */
-	public MonitorSequenceLifecycle getTimelineLifecycle();
+//	/**
+//	 * TODO: I don't think mix this interface with MonitorSequenceLifecycle is a good idea... 
+//	 * @return
+//	 */
+//	public MonitorSequenceLifecycle getTimelineLifecycle();
 }

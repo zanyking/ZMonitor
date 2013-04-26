@@ -18,9 +18,12 @@ import org.zmonitor.Ignitor;
 import org.zmonitor.ZMonitor;
 import org.zmonitor.impl.DummyConfigurator;
 import org.zmonitor.impl.StringName;
+import org.zmonitor.impl.ThreadLocalMonitorSequenceLifecycleManager;
 import org.zmonitor.impl.XmlConfiguratorLoader;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.spi.Configurator;
+import org.zmonitor.spi.MonitorSequenceLifecycle;
+import org.zmonitor.spi.MonitorSequenceLifecycleManager;
 
 /**
  * 
@@ -30,6 +33,8 @@ import org.zmonitor.spi.Configurator;
 public class ZMonitorServletFilter implements Filter {
 	
 	private boolean isIgnitBySelf;
+	
+	private HttpRequestMonitorSequenceLifecycleManager hReqMSLfManager;
 	
 	public void init(FilterConfig fConfig) throws ServletException {
 		// init ProfilingManager...
@@ -50,7 +55,8 @@ public class ZMonitorServletFilter implements Filter {
 						"please give your own \"",XmlConfiguratorLoader.ZMONITOR_XML,"\" under /WEB-INF/");
 				conf = new DummyConfigurator();
 			}
-			isIgnitBySelf = Ignitor.ignite(HttpRequestContexts.getMSLifecycleManager(), conf);
+			hReqMSLfManager = new HttpRequestMonitorSequenceLifecycleManager();
+			isIgnitBySelf = Ignitor.ignite(hReqMSLfManager, conf);
 			ZMLog.info(">> Ignit ZMonitor in: ",ZMonitorServletFilter.class.getCanonicalName());
 		}
 		
@@ -67,6 +73,7 @@ public class ZMonitorServletFilter implements Filter {
 		
 		HttpRequestContexts.init(new StantardHttpRequestContext(), 
 				(HttpServletRequest)req, (HttpServletResponse)res);
+		hReqMSLfManager.initLifeCycle((HttpServletRequest) req);
 		try{
 			ZMonitor.push(new StringName("REQUEST", 
 					((HttpServletRequest)req).getRequestURI()), 
@@ -78,6 +85,7 @@ public class ZMonitorServletFilter implements Filter {
 			try{
 				ZMonitor.pop("end of request", false);	
 			}finally{
+				hReqMSLfManager.disposeLifeCycle((HttpServletRequest) req);
 				HttpRequestContexts.dispose();	
 			}
 		}
@@ -92,5 +100,45 @@ public class ZMonitorServletFilter implements Filter {
 	    return reqUri;
 	}
 
-	
+
+	/**
+	 * 
+	 *manage the construction and destruction of MonitorSequenceLifecycle in 
+	 * Java Servlet environment.
+	 * 
+	 * @author Ian YT Tsai(Zanyking)
+	 *
+	 */
+	static class HttpRequestMonitorSequenceLifecycleManager implements MonitorSequenceLifecycleManager{
+
+		private static final String KEY_REQ_MSL = "KEY_REQ_MSL";
+		private final ThreadLocalMonitorSequenceLifecycleManager thlTManager = 
+				new ThreadLocalMonitorSequenceLifecycleManager();
+			
+		
+		public MonitorSequenceLifecycle getLifecycle() {
+			HttpRequestContext ctx = HttpRequestContexts.get();
+			
+			MonitorSequenceLifecycle lfcycle = null;
+			if(ctx==null){
+				//this is not a Servlet thread, but a thread created by some part of a Java Web application.
+				lfcycle = thlTManager.getLifecycle();
+			}else{
+				lfcycle = (HttpRequestTimelineLifcycle) ctx.getRequest().getAttribute(KEY_REQ_MSL);	
+			}
+			
+			return lfcycle;
+		}
+		
+		public void initLifeCycle(HttpServletRequest req){
+			req.setAttribute(KEY_REQ_MSL, 
+				new HttpRequestTimelineLifcycle(
+						req.getRequestURL().toString()));
+		}
+		
+		public void disposeLifeCycle(HttpServletRequest req){
+			req.removeAttribute(KEY_REQ_MSL);
+		}
+		
+	}//end of class...
 }

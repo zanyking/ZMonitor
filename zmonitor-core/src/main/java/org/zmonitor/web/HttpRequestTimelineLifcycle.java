@@ -14,22 +14,19 @@ import org.zmonitor.spi.Name;
  * @author Ian YT Tsai(Zanyking)
  */
 public class HttpRequestTimelineLifcycle extends SimpleMonitorSequenceLifecycle {
-	private final HttpRequestContext requestCtx;
 	private boolean urlAccepted = true;
 	/**
 	 * The lifetime of this TimelineLifecycle is as long as a request.
 	 * @param requestCtx
 	 */
-	public HttpRequestTimelineLifcycle(HttpRequestContext requestCtx) {
+	public HttpRequestTimelineLifcycle(String oriReqUrl) {
 		super();
-		this.requestCtx = requestCtx;
 		JavaWebConfiguration webProfilingConf = 
 			ZMonitorManager.getInstance().getCustomConfiguration(
 					JavaWebConfiguration.class);
 		
 		if(webProfilingConf != null)
-			urlAccepted = webProfilingConf.shouldAccept(
-					requestCtx.getOriginalRequestURL());
+			urlAccepted = webProfilingConf.shouldAccept(oriReqUrl);
 	}
 	
 	

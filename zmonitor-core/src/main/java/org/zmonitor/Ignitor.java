@@ -1,4 +1,4 @@
-/**Configurator.java
+/**Ignitor.java
  * 2011/4/2
  * 
  */
@@ -72,7 +72,7 @@ public class Ignitor {
 		configurator.configure(manager);
 		sZMonitorManager = manager;
 		
-		try {
+		try {//TODO log4j shouldn't pollute this part of code...
 			Class.forName("org.zmonitor.logger.log4j.Driver");
 		} catch (Throwable e) {
 			ZMLog.info("log4j is not applicable in this environment: " +

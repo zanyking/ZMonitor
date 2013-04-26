@@ -18,7 +18,7 @@ public class StantardHttpRequestContext implements HttpRequestContext {
 	private HttpServletRequest request;
 	private HttpServletResponse response;
 	private String requestURL;
-	private HttpRequestTimelineLifcycle lifecycle;
+//	private HttpRequestTimelineLifcycle lifecycle;
 	
 	/**
 	 * 
@@ -40,7 +40,6 @@ public class StantardHttpRequestContext implements HttpRequestContext {
 		this.requestURL = requestURL;
 		this.request = req;
 		this.response = res;
-		lifecycle = new HttpRequestTimelineLifcycle(this);
 	}
 	/**
 	 * clear the context from Servlet Thread.
@@ -78,8 +77,5 @@ public class StantardHttpRequestContext implements HttpRequestContext {
 		return  requestURL;
 	}
 	
-	public MonitorSequenceLifecycle getTimelineLifecycle() {
-		return lifecycle;
-	}
 
 }
