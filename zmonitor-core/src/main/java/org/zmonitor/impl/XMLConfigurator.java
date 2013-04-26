@@ -35,8 +35,6 @@ public class XMLConfigurator implements Configurator {
 	
 	private static final String ABS_PROFILING_MANAGER = "/zmonitor";
 	
-	
-	
 	public static final String REL_MEASURE_POINT_INFO_FACTORY = "mp-info-factory";
 	public static final String REL_TIMELINE_HANDLER = "timeline-handler";
 	public static final String REL_CUSTOM_CONFIGURATION = "configuration";
@@ -64,58 +62,12 @@ public class XMLConfigurator implements Configurator {
 	 */
 	public void configure(final ZMonitorManager manager) {
 		Node monitorMgmtNode = xmlDoc.getNodeList(ABS_PROFILING_MANAGER).item(0);
-//		prepareAgent(manager, xmlDoc, monitorMgmtNode);
-		prepareUuid(manager, xmlDoc, monitorMgmtNode);
 		prepareServletContainerConf(manager, xmlDoc, monitorMgmtNode);
-//		prepareZKInterceptorConf(manager, xmlDoc, monitorMgmtNode);
 		prepareCustomConfiguration(manager, xmlDoc, monitorMgmtNode);
 		prepareMPointInfoFacotry(manager, xmlDoc, monitorMgmtNode);
 		prepareMSquenceHandlers(manager, xmlDoc, monitorMgmtNode);
-		
 	}
 
-	private static void prepareUuid( ZMonitorManager manager, 
-			final DOMRetriever xmlDoc, 
-			Node monitorMgmtNode){
-		String uuid = manager.getUuid();
-		if(uuid!=null){
-			ZMLog.debug("ZMonitor manual uuid is:"+uuid);
-			return;
-		}
-		ZMonitorSelf self = new ZMonitorSelf();
-		applyAttributesToBean( xmlDoc, monitorMgmtNode, new PropertySetter(self), null);
-		if(self.getUuid()!=null){
-			uuid = self.getUuid();
-		}else if(self.getIdFetcherClass()!=null){
-			IdFetcher aIdFetcher = newInstance(self.getIdFetcherClass(), null);
-			uuid = aIdFetcher.fetch(manager);
-		}
-		ZMLog.debug("current ZMonitor instance uuid is:"+uuid);
-		manager.setUuid(uuid);
-	}
-	
-	/**
-	 * @author Ian YT Tsai(Zanyking)
-	 */
-	public static class ZMonitorSelf{
-		private String uuid;
-		private String idFetcherClass;
-		public String getUuid() {
-			return uuid;
-		}
-		public void setUuid(String id) {
-			this.uuid = id;
-		}
-		public String getIdFetcherClass() {
-			return idFetcherClass;
-		}
-		public void setIdFetcherClass(String idFetcherClass) {
-			this.idFetcherClass = idFetcherClass;
-		}
-	}//end of class...
-	
-	
-	
 	private static void prepareServletContainerConf( ZMonitorManager manager, 
 			final DOMRetriever xmlDoc, 
 			Node monitorMgmtNode){
@@ -125,16 +77,6 @@ public class XMLConfigurator implements Configurator {
 		//TODO: Be careful of introducing sub packages stuff inside, it might not work.  
 		initCustomConfiguration(manager, xmlDoc, node, new JavaWebConfiguration(), true);
 	}
-//	private static void prepareZKInterceptorConf( ZMonitorManager manager, 
-//			final DOMRetriever xmlDoc, 
-//			Node monitorMgmtNode){
-//		
-//		Node node = getSingleton(REL_SERVLET_CONTAINER_CONF, xmlDoc, monitorMgmtNode);
-//		if(node==null)return;//use default...
-//		
-//		initCustomConfiguration(manager, xmlDoc, node, new ZKInterceptorConfiguration(), true);
-//	}
-	
 	
 	private static void prepareCustomConfiguration( ZMonitorManager manager, 
 			final DOMRetriever xmlDoc, 

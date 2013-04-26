@@ -13,6 +13,10 @@ import org.zmonitor.spi.MonitorSequenceLifecycleManager;
 
 
 /**
+ * 
+ * TODO this class should be merged into ZMonitorManager, 
+ * Ignitor is a helper that shouldn't be exposed to user.
+ * 
  * @author Ian YT Tsai(Zanyking)
  *
  */

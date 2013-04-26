@@ -19,7 +19,7 @@ public class ThreadLocalMonitorSequenceLifecycleManager implements
 		if(lifecycle==null){
 			LIFECYCLE_REF.set(lifecycle = new SimpleMonitorSequenceLifecycle());
 		}
-		//TODO: add shutdown hook here to resolve the termination problem.
+		
 		return lifecycle;
 	}
 

@@ -25,13 +25,7 @@ public class ZMonitorManager {
 	
 	public ZMonitorManager(){}
 	
-	private String uuid;
-	public void setUuid(String id){
-		this.uuid = id;
-	}
-	public String getUuid(){
-		return uuid;
-	}
+
 	
 	/**
 	 * 
@@ -63,7 +57,8 @@ public class ZMonitorManager {
 	}
 	
 
-	private final MonitorSequenceHandlerRepository monitorSequenceHandlerRepository = new MonitorSequenceHandlerRepository();
+	private final MonitorSequenceHandlerRepository monitorSequenceHandlerRepository = 
+			new MonitorSequenceHandlerRepository();
 	public MonitorSequenceHandlerRepository getMonitorSequenceHandlerRepository() {
 		return monitorSequenceHandlerRepository;
 	}

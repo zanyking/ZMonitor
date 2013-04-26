@@ -62,7 +62,6 @@ public class TestBase {
 					XmlConfiguratorLoader.loadFromClassPath(url);
 			
 			ZMonitorManager manager = new ZMonitorManager();
-			manager.setUuid(this.getClass().getName());
 			ThreadLocalMonitorSequenceLifecycleManager lifecycleMgmt = 
 				new ThreadLocalMonitorSequenceLifecycleManager();
 			

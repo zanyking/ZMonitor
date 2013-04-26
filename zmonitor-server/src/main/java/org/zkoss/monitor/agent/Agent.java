@@ -22,7 +22,14 @@ public class Agent implements Communicator, CustomConfiguration{
 	private int port= -1;// >=0, <= 65535	
 	
 	private Communicator fCommunicator; 
+	private String uuid;
 	
+	public void setUuid(String id){
+		this.uuid = id;
+	}
+	public String getUuid(){
+		return uuid;
+	}
 	/**
 	 * 
 	 * @param zMgmt
