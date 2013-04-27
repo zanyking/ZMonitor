@@ -18,7 +18,7 @@ Thread Monitoring:
 			ZMonitor.finish();	
 		}
 
-	+. ZMonitor can leverage Java Instrumentation technology to provide a mechanism which will add additional code and terminate a zmonitor at the end of a task.
+	+. ZMonitor can leverage Java Instrumentation technology to provide a mechanism which depends on adding additional code to the task run method and terminate a zmonitor at the end of a task.
 		pseudo code:
 		ZMonitor.start();
 		try{

@@ -131,7 +131,7 @@ public class ZKInterceptor implements WebAppInit, WebAppCleanup,
 	private static final String KEY_REQUEST_ZUL_URI = "KEY_REQUEST_ZUL_URI";
 	
 	public void request(String uri) throws Exception {
-		if(getPfMgmt().getMonitorSequenceLifecycle().isMonitorStarted()){
+		if(getPfMgmt().getMonitorSequenceLifecycle().isZMonitorStarted()){
 			getContext().getRequest().setAttribute(KEY_REQUEST_ZUL_URI, uri);
 			RenderResult result = getRenderer().getURIInterceptorResult(uri);
 			if(getConfiguration().isRenderURIIntercepter())

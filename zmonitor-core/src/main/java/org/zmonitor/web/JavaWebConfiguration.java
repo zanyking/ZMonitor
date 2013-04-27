@@ -48,21 +48,21 @@ public class JavaWebConfiguration implements CustomConfiguration {
 		if(urlFilterNode==null)return;
 		
 		filter = newInstanceByClassAttr(urlFilterNode, DefaultUrlFilter.class, false);
-		if(filter!=null){
-			applyAttributesToBean(xmlDoc, 
+		
+		applyAttributesToBean(xmlDoc, 
+				urlFilterNode, 
+				new PropertySetter(filter), 
+				ignores("class"));
+		
+		if(filter instanceof DefaultUrlFilter){
+			initUrlFilterByDefault(xmlDoc, urlFilterNode, (DefaultUrlFilter)filter);
+			
+		} else if(filter instanceof  CustomConfiguration){
+			CoreConfigurator.initCustomConfiguration(manager, 
+					xmlDoc, 
 					urlFilterNode, 
-					new PropertySetter(filter), 
-					getIgnores("class"));
-			if(filter instanceof DefaultUrlFilter){
-				initUrlFilterByDefault(xmlDoc, urlFilterNode, (DefaultUrlFilter)filter);
-				
-			} else if(filter instanceof  CustomConfiguration){
-				CoreConfigurator.initCustomConfiguration(manager, 
-						xmlDoc, 
-						urlFilterNode, 
-						(CustomConfiguration) filter, 
-						true);
-			}
+					(CustomConfiguration) filter, 
+					true);
 		}
 		
 	}

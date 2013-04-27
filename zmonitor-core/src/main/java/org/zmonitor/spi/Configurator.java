@@ -4,6 +4,8 @@
  */
 package org.zmonitor.spi;
 
+import org.zmonitor.ZMonitorManager;
+
 
 /**
  * @author Ian YT Tsai(Zanyking)
@@ -13,6 +15,7 @@ public interface Configurator {
 	/**
 	 * 
 	 * @param manager
+	 * @param ctxt
 	 */
-	public void configure(org.zmonitor.ZMonitorManager manager);
+	public void configure(ZMonitorManager manager, ConfigContext ctxt);
 }

@@ -55,8 +55,5 @@ public class ZkHttpRequestContext implements HttpRequestContext{
 	public String getOriginalRequestURL() {
 		return inner.getOriginalRequestURL();
 	}
-	public MonitorSequenceLifecycle getTimelineLifecycle() {
-		return inner.getTimelineLifecycle();
-	}
 
 }

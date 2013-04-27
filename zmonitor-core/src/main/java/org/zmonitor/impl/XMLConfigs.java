@@ -34,7 +34,7 @@ public class XMLConfigs {
 	 * @param strs
 	 * @return
 	 */
-	public static Set<String> getIgnores(String... strs){
+	public static Set<String> ignores(String... strs){
 		if(strs.length==1 && "class".equals(strs[0])){
 			return ignoreClass;// using this very often
 		}

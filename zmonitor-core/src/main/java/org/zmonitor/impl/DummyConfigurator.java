@@ -6,6 +6,7 @@ package org.zmonitor.impl;
 
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.handler.ToStringTimelineHandler;
+import org.zmonitor.spi.ConfigContext;
 import org.zmonitor.spi.Configurator;
 
 /**
@@ -17,11 +18,12 @@ public class DummyConfigurator implements Configurator{
 
 	public DummyConfigurator(){}
 
-	public void configure(ZMonitorManager manager) {
+
+	public void configure(ZMonitorManager manager, ConfigContext ctxt) {
 		/*
 		 * Initialize Timeline Handler
 		 */
-		manager.addMonitorSequenceHandler("DUMMY_TOSTRING_HANDLER", new ToStringTimelineHandler());
+		manager.addMonitorSequenceHandler("DUMMY_TOSTRING_HANDLER", new ToStringTimelineHandler());		
 	}
 	
 	

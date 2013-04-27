@@ -11,6 +11,6 @@ import org.zmonitor.spi.Configurator;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class ModuleLoader {
+public class ConfiguratorLoader {
 
 }

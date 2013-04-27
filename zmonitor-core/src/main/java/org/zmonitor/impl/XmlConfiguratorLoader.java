@@ -16,6 +16,7 @@ import org.zmonitor.util.Loader;
 
 
 /**
+ * TODO must be teared down
  * The loader class for {@link CoreConfigurator}
  * @see org.zmonitor.impl.CoreConfigurator 
  * @author Ian YT Tsai(Zanyking)
@@ -144,8 +145,7 @@ public class XmlConfiguratorLoader {
 	}
 	// 
 	private static CoreConfigurator newInstance(DOMRetriever xmlDoc){
-		if(xmlDoc==null)return null;
-		return new CoreConfigurator(xmlDoc);
+		return new CoreConfigurator();
 	}
 	// 
 	private static DOMRetriever newInstance(InputStream in) throws IOException{
