@@ -108,48 +108,6 @@ public class DOMRetriever {
 	
 	/**
 	 * 
-	 * @param n
-	 * @return
-	 */
-	public static String getTextValue(Node n) {
-		if (n == null)
-			return ""; //$NON-NLS-1$
-		return n.getTextContent();
-	}
-	
-	/**
-	 * 
-	 * @param node
-	 * @param name
-	 * @return
-	 */
-	public static String getAttributeValue(Node node, String name) {
-		NamedNodeMap nnm = node.getAttributes();
-		if (nnm == null)
-			return null;
-		Node n = nnm.getNamedItem(name);
-		if (n != null)
-			return n.getNodeValue();
-		return ""; //$NON-NLS-1$
-	}
-	/**
-	 * 
-	 * @param node
-	 * @return
-	 */
-	public static Properties getAttributes(Node node) {
-		Properties props = new Properties();
-		NamedNodeMap nnm = node.getAttributes();
-		if (nnm == null)return props;
-		
-		for(int i=0, index = nnm.getLength(); i<index ;i++){
-			Node temp = nnm.item(i);
-			props.setProperty(temp.getNodeName(), temp.getNodeValue());
-		}
-		return props;
-	}
-	/**
-	 * 
 	 * @param parent
 	 * @param queryStr
 	 * @return
@@ -158,7 +116,7 @@ public class DOMRetriever {
 		try {
 			Node node = (Node)createXPath(queryStr).evaluate(parent, XPathConstants.NODE);
 			if(node!=null)
-				return getTextValue(node);
+				return DOMs.getTextValue(node);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -188,7 +146,7 @@ public class DOMRetriever {
 		try {
 			Node node = (Node)createXPath(queryStr).evaluate(getSource(),XPathConstants.NODE);
 			if(node!=null)
-				return getTextValue(node);
+				return DOMs.getTextValue(node);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

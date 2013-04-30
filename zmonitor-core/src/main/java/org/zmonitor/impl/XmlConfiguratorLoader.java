@@ -71,22 +71,7 @@ public class XmlConfiguratorLoader {
 	 * @throws IOException
 	 */
 	public static CoreConfigurator loadFromDefaultSystemProperty() throws IOException{
-		String urlStr = System.getProperty(DEFAULT_SYS_PROP_NAME);
-		if(urlStr==null || urlStr.length()==0){
-			return null;
-		}
-		InputStream in = null;
-		DOMRetriever xmlDoc = null;
-		try {
-			URL url = new URL(urlStr);
-			xmlDoc = new DOMRetriever(in = url.openStream());
-			
-		} catch (MalformedURLException e) {
-			throw new RuntimeException(e);
-		} finally{
-			if(in!=null)in.close();	
-		}
-		return newInstance(xmlDoc);
+		return loadFromSystemProperty(DEFAULT_SYS_PROP_NAME);
 	}
 	/**
 	 * Construct configuration instance: {@link XmlConfigurator) using given propertyName.
@@ -139,7 +124,8 @@ public class XmlConfiguratorLoader {
 	 * @return
 	 * @throws IOException
 	 */
-	public static CoreConfigurator loadFromClassPath(URL url) throws IOException{
+	public static CoreConfigurator loadFromURL(URL url) throws IOException{
+		
 		DOMRetriever xmlDoc = newInstance(url.openStream());
 		return newInstance(xmlDoc);
 	}

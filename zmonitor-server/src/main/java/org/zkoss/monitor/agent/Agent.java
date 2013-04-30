@@ -11,6 +11,7 @@ import org.zmonitor.message.Communicator;
 import org.zmonitor.message.Receiever;
 import org.zmonitor.message.Transmitter;
 import org.zmonitor.spi.CustomConfiguration;
+import org.zmonitor.spi.XMLConfiguration;
 import org.zmonitor.util.DOMRetriever;
 
 /**
@@ -57,7 +58,7 @@ public class Agent implements Communicator, CustomConfiguration{
 		this.port = port;
 	}
 	
-	public void apply(ZMonitorManager manager, DOMRetriever xmlDoc,
+	public void apply(ZMonitorManager manager, XMLConfiguration xmlDoc,
 			Node configNode) {
 		fCommunicator = new JObjSStreamCommunicator(host, port);
 	}

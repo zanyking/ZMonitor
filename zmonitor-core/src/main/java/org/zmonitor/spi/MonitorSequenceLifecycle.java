@@ -1,4 +1,4 @@
-/**TimelineLifcycle.java
+/**
  * 2011/3/29
  * 
  */
@@ -28,13 +28,13 @@ public interface MonitorSequenceLifecycle {
 	public MonitorSequence getInstance();
 	/**
 	 * 
-	 * @return the current Timeline, could be null if {@link #getInstance()} 
+	 * @return the current MonitorSequence, could be null if {@link #getInstance()} 
 	 * hasn't been called before.  
 	 */
 	public MonitorSequence getMonitorSequence();
 	/**
 	 * 
-	 * @return true if the Timeline life-cycle is initialized, false otherwise.
+	 * @return true if the MonitorSequence life-cycle is initialized, false otherwise.
 	 */
 	public boolean isInitialized();
 	/**
@@ -42,11 +42,21 @@ public interface MonitorSequenceLifecycle {
 	 * if {@link #isInitialized()} is true, this method will test if current MeasureSequence was started before.<br>
 	 * @return true test if current MeasureSequence was started, false otherwise.
 	 */
-	public boolean isZMonitorStarted();
+	public boolean isMonitorStarted();
 	/**
-	 * finish current Measure Sequence life-cycle, clear state.  
+	 * this method will trigger a process of:
+	 * <ul>
+	 * 	<li>Mark this instance as finished. 
+	 * 	<li>put an end to current {@link MonitorSequence}.
+	 * 	<li>flush the ended {@link MonitorSequence} to {@link MonitorSequenceHandler}s.
+	 * </ul>
 	 */
-	public void flush();
+	public void finish();
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean isFinished();
 	/**
 	 * put something into life-cycle.
 	 * @param key

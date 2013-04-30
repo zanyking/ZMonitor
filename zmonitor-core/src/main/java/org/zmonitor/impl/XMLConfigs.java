@@ -4,15 +4,14 @@
  */
 package org.zmonitor.impl;
 
-import java.util.Map.Entry;
 import java.util.HashSet;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 
 import org.w3c.dom.Node;
 import org.zmonitor.WrongConfigurationException;
-import org.zmonitor.util.DOMRetriever;
-import org.zmonitor.util.NodeIterator;
+import org.zmonitor.util.DOMs;
 import org.zmonitor.util.PropertySetter;
 import org.zmonitor.util.Strings;
 
@@ -46,31 +45,14 @@ public class XMLConfigs {
 	}
 	
 	/**
-	 * 
-	 * @param xmlDoc
-	 * @param node
-	 * @param setter
-	 */
-	public static void applyPropertyTagsToBean(DOMRetriever xmlDoc, 
-			Node node, PropertySetter setter){
-		new NodeIterator<PropertySetter>() {
-			protected void forEach(int index, Node propNode, PropertySetter setter) {
-				String name = DOMRetriever.getAttributeValue(propNode, NAME);
-				String value = getTextFromAttrOrContent(propNode, VALUE);
-				setter.setProperty(name, value);
-			}
-		}.iterate(xmlDoc.getNodeList(node, PROPERTY), setter);
-	}
-	/**
-	 * 
-	 * @param xmlDoc
 	 * @param node
 	 * @param setter
 	 * @param ignore
 	 */
-	public static void applyAttributesToBean(DOMRetriever xmlDoc, 
-			Node node, PropertySetter setter, Set<String> ignore){
-		Properties attrs = DOMRetriever.getAttributes(node);
+	public static void applyAttributesToBean(
+			Node node, PropertySetter setter, 
+			Set<String> ignore){
+		Properties attrs = DOMs.getAttributes(node);
 		for(Entry<Object, Object> attr : attrs.entrySet()){
 			String name = (String)attr.getKey();
 			if(ignore!=null && ignore.contains(name)){
@@ -80,9 +62,9 @@ public class XMLConfigs {
 		}
 	}
 	public static String getTextFromAttrOrContent(Node node, String attribute){
-		String value = DOMRetriever.getAttributeValue(node, attribute);
+		String value = DOMs.getAttributeValue(node, attribute);
 		if(Strings.isEmpty(value)){
-			value = DOMRetriever.getTextValue(node);
+			value = DOMs.getTextValue(node);
 		}
 		return value;
 	}
@@ -96,7 +78,7 @@ public class XMLConfigs {
 	 * @return
 	 */
 	public static <T> T newInstanceByClassAttr(Node node, Class<T> defaultClass, boolean mustHave){
-		String clazzStr = DOMRetriever.getAttributeValue(node, "class");
+		String clazzStr = DOMs.getAttributeValue(node, "class");
 
 		if(Strings.isEmpty(clazzStr) && defaultClass==null && mustHave)
 			throw new WrongConfigurationException(Strings.append(

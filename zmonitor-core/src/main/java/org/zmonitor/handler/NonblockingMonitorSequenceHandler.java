@@ -8,6 +8,7 @@ import org.zmonitor.MonitorSequence;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.spi.CustomConfiguration;
 import org.zmonitor.spi.MonitorSequenceHandler;
+import org.zmonitor.spi.XMLConfiguration;
 import org.zmonitor.util.DOMRetriever;
 import org.zmonitor.util.concurrent.AsyncGroupingPipe;
 
@@ -61,7 +62,7 @@ public abstract class NonblockingMonitorSequenceHandler implements MonitorSequen
 	 * (non-Javadoc)
 	 * @see org.zmonitor.CustomConfiguration#apply(org.zmonitor.ZMonitorManager, org.zmonitor.util.DOMRetriever, org.w3c.dom.Node)
 	 */
-	public void apply(final ZMonitorManager manager, DOMRetriever xmlDoc,
+	public void apply(final ZMonitorManager manager, XMLConfiguration config,
 			Node configNode) {
 		asyncGroupPipe = new AsyncGroupingPipe<MonitorSequence>(
 				threshold, waitMillis, newExecutor(manager));

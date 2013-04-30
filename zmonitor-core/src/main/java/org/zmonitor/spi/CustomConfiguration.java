@@ -20,13 +20,14 @@ import org.zmonitor.util.DOMRetriever;
  * @author Ian YT Tsai(Zanyking)
  */
 public interface CustomConfiguration {
+	
 	/**
 	 * 
 	 * @param manager
-	 * @param xmlDoc
+	 * @param config
 	 * @param configNode
 	 */
-	public void apply(ZMonitorManager manager, DOMRetriever xmlDoc, Node configNode);
+	public void apply(ZMonitorManager manager, XMLConfiguration config, Node configNode);
 	
 	
 }

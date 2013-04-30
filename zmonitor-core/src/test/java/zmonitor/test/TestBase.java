@@ -17,6 +17,7 @@ import org.zmonitor.impl.ThreadLocalMonitorSequenceLifecycleManager;
 import org.zmonitor.impl.CoreConfigurator;
 import org.zmonitor.impl.XmlConfiguratorLoader;
 import org.zmonitor.impl.ZMLog;
+import org.zmonitor.impl.config.URLConfigSource;
 import org.zmonitor.util.Loader;
 
 
@@ -45,11 +46,10 @@ public class TestBase {
 	@Before
 	public void setUp() throws Exception {
 		synchronized(Ignitor.class){
-			if(Ignitor.isIgnited())return;
+			if(ZMonitorManager.isInitialized())return;
+			
 			String packagePath = this.getClass().getPackage().getName().replace('.', '/');
-			
 			URL url =  findSettingFromPackagePath(packagePath);
-			
 			if(url==null){
 				throw new IgnitionFailureException("cannot find Configuration:["+
 						XmlConfiguratorLoader.ZMONITOR_XML+
@@ -57,18 +57,15 @@ public class TestBase {
 						"]. Current application context is: "+this.getClass());
 			}
 			ZMLog.info(">>>>>>>>>>>>>>>load config from: [",url,"]");
+			ZMonitorManager aZMonitorManager = new ZMonitorManager();
+			aZMonitorManager.setConfigSource(new URLConfigSource(url));
 			
-			CoreConfigurator xmlCofig = 
-					XmlConfiguratorLoader.loadFromClassPath(url);
-			
-			ZMonitorManager manager = new ZMonitorManager();
 			ThreadLocalMonitorSequenceLifecycleManager lifecycleMgmt = 
 				new ThreadLocalMonitorSequenceLifecycleManager();
 			
+			aZMonitorManager.setLifecycleManager(lifecycleMgmt);
 			
-			if(!Ignitor.ignite(manager, lifecycleMgmt, xmlCofig)){
-				throw new RuntimeException("ZMonitor ignition failed!");
-			}
+			ZMonitorManager.init(aZMonitorManager);
 			ZMLog.info(">> Ignit ZMonitor in: ",this.getClass().getCanonicalName());	
 		}
 	}

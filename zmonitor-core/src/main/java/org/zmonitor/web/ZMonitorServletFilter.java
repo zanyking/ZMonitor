@@ -14,9 +14,12 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.zmonitor.AlreadyStartedException;
+import org.zmonitor.ConfigSource;
 import org.zmonitor.Ignitor;
 import org.zmonitor.ZMonitor;
-import org.zmonitor.impl.DummyConfigurator;
+import org.zmonitor.ZMonitorManager;
+import org.zmonitor.impl.NullConfigurator;
 import org.zmonitor.impl.StringName;
 import org.zmonitor.impl.ThreadLocalMonitorSequenceLifecycleManager;
 import org.zmonitor.impl.XmlConfiguratorLoader;
@@ -38,7 +41,11 @@ public class ZMonitorServletFilter implements Filter {
 	
 	public void init(FilterConfig fConfig) throws ServletException {
 		// init ProfilingManager...
-		if(!Ignitor.isIgnited()){
+		if(!ZMonitorManager.isInitialized()){
+			//TODO: get Configuration Source...
+			ConfigSource configSource = null;
+			
+			ZMonitorManager aZMonitorManager = new ZMonitorManager();
 			Configurator configurator = null;
 			try {
 				configurator = XmlConfiguratorLoader.loadForJavaEEWebApp(fConfig.getServletContext());
@@ -50,13 +57,24 @@ public class ZMonitorServletFilter implements Filter {
 				ZMLog.warn("cannot find Configuration:[",
 						XmlConfiguratorLoader.ZMONITOR_XML,
 						"] from current application context: ",ZMonitorServletFilter.class);
-				ZMLog.warn("System will get default configuration from: ",DummyConfigurator.class);
+				ZMLog.warn("System will get default configuration from: ",NullConfigurator.class);
 				ZMLog.warn("If you want to give your custom settings, " ,
 						"please give your own \"",XmlConfiguratorLoader.ZMONITOR_XML,"\" under /WEB-INF/");
-				configurator = new DummyConfigurator();
+				configurator = new NullConfigurator();
 			}
+			
+			
+			aZMonitorManager.setConfigSource(configSource);
+			
+			
 			hReqMSLfManager = new HttpRequestMonitorSequenceLifecycleManager();
-			isIgnitBySelf = Ignitor.ignite(hReqMSLfManager, configurator);
+			aZMonitorManager.setLifecycleManager(hReqMSLfManager);
+			try {
+				ZMonitorManager.init(aZMonitorManager);
+				isIgnitBySelf = true;
+			} catch (AlreadyStartedException e) {
+				ZMLog.info("already initialized by other place");
+			}
 			ZMLog.info(">> Ignit ZMonitor in: ",ZMonitorServletFilter.class.getCanonicalName());
 		}
 		
@@ -64,16 +82,19 @@ public class ZMonitorServletFilter implements Filter {
 	
 	public void destroy() {
 		if(isIgnitBySelf){
-			Ignitor.destroy();
+			ZMonitorManager.dispose();
 		}
 	}
 	
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain filterChain) 
 	throws IOException, ServletException {
 		
-		HttpRequestContexts.init(new StantardHttpRequestContext(), 
-				(HttpServletRequest)req, (HttpServletResponse)res);
-		hReqMSLfManager.initLifeCycle((HttpServletRequest) req);
+		if(isIgnitBySelf){
+			HttpRequestContexts.init(new StantardHttpRequestContext(), 
+					(HttpServletRequest)req, (HttpServletResponse)res);
+			hReqMSLfManager.initLifeCycle((HttpServletRequest) req);	
+		}
+		
 		try{
 			ZMonitor.push(new StringName("REQUEST", 
 					((HttpServletRequest)req).getRequestURI()), 
@@ -85,8 +106,10 @@ public class ZMonitorServletFilter implements Filter {
 			try{
 				ZMonitor.pop("end of request", false);	
 			}finally{
-				hReqMSLfManager.disposeLifeCycle((HttpServletRequest) req);
-				HttpRequestContexts.dispose();	
+				if(isIgnitBySelf){
+					hReqMSLfManager.disposeLifeCycle((HttpServletRequest) req);
+					HttpRequestContexts.dispose();	
+				}
 			}
 		}
 	}

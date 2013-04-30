@@ -3,10 +3,7 @@
  */
 package org.zmonitor.bean;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * A repository designed to manage {@link ZMBean} lifecycle<br> 
@@ -15,63 +12,58 @@ import java.util.List;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public abstract class ZMBeanRepository {
-	
-	protected final List<ZMBean> beans = 
-		Collections.synchronizedList(new ArrayList<ZMBean>());
+public interface ZMBeanRepository {
 	
 	/**
 	 * every bean that either is or instanceof the given class will be in the result.
 	 * @param clz
 	 * @return
 	 */
-	public <T> Collection<T> get(Class<T> clz){
-		ArrayList<T> arr = new ArrayList<T>();
-		for(ZMBean b : new ArrayList<ZMBean>(beans)){
-			if(clz.isInstance(b)){
-				arr.add((T) b);
-			}
-		}
-		return arr;
-	}
+	public <T> Collection<T> get(Class<T> clz);
 	
 	/**
 	 * 
 	 * @param id
 	 * @return
 	 */
-	public <T> T get(String id){
-		for(ZMBean b : new ArrayList<ZMBean>(beans)){
-			if(id.equals(b.getId()))return (T) b;
-		}
-		return null;
-	}
+	public <T> T get(String id);
 	
 	
 	/**
 	 * add a new bean
 	 * @param zmBean
 	 */
-	public void add(ZMBean zmBean){
-		beans.add(zmBean);
-	}
-
+	public void add(ZMBean zmBean);
 	/**
 	 * 
-	 * @return true if this repository is started.
+	 * @param id
 	 */
-	public abstract boolean isStarted();
+	public void remove(String id);
+	/**
+	 * 
+	 * @param zmBean
+	 */
+	public void remove( ZMBean zmBean);
+	/**
+	 * 
+	 * @return true if this repository is already started.
+	 */
+	public boolean isStarted();
+	/**
+	 * 
+	 * @return true if this repository is already stopped.
+	 */
+	public boolean isStopped();
+	
 	/**
 	 * start every bean in this repository 
 	 */
-	public abstract void start();
+	public void start();
 
 	/**
 	 * stop every bean in this repository
 	 */
-	public abstract void stop();
-	
-	
+	public void stop();
 	
 
 }

@@ -17,5 +17,5 @@ public interface Configurator {
 	 * @param manager
 	 * @param ctxt
 	 */
-	public void configure(ZMonitorManager manager, ConfigContext ctxt);
+	public void configure(ZMonitorManager manager, XMLConfiguration ctxt);
 }

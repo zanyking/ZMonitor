@@ -6,7 +6,7 @@ package org.zmonitor;
 
 import java.io.IOException;
 
-import org.zmonitor.impl.DummyConfigurator;
+import org.zmonitor.impl.NullConfigurator;
 import org.zmonitor.impl.StringName;
 import org.zmonitor.impl.ThreadLocalMonitorSequenceLifecycleManager;
 import org.zmonitor.impl.XmlConfiguratorLoader;
@@ -44,32 +44,45 @@ public final class ZMonitor {
 	private ZMonitor(){}
 	
 	/*
-	 * if there's no one(ZK Interceptor, Servlet Filter, Log4j Appender) do the initialization before 
-	 * then the profiler will be in Pure Java Mode.
+	 * if there's no one(ZK Interceptor, Servlet Filter, Log4j Appender)
+	 * do the initialization before some part of the code load this class,
+	 * the zmonitor will be in Pure Java Mode.
 	 */
 	static{ 
-		if(!Ignitor.isIgnited()){
+		if(!ZMonitorManager.isInitialized()){
 			try {
+				
+				//TODO: get Configuration Source...
 				Configurator conf = XmlConfiguratorLoader.loadForPureJavaProgram();
 				if(conf==null){
 					ZMLog.warn("cannot find Configuration:["+
 							XmlConfiguratorLoader.ZMONITOR_XML+"] from classpath.");
-					ZMLog.warn("System will get default configuration from: "+DummyConfigurator.class);
+					ZMLog.warn("System will get default configuration from: "+NullConfigurator.class);
 					ZMLog.warn("If you want to give your custom settings, " +
 							"please give your own \""+XmlConfiguratorLoader.ZMONITOR_XML+"\" in classpath.");
-					conf = new DummyConfigurator();
+					conf = new NullConfigurator();
 				}
-				Ignitor.ignite( new ThreadLocalMonitorSequenceLifecycleManager(), conf);
+				
+				
+				ZMonitorManager aZMonitorManager = new ZMonitorManager();
+				aZMonitorManager.setLifecycleManager(
+					new ThreadLocalMonitorSequenceLifecycleManager());
+				
+				ZMonitorManager.init(aZMonitorManager);
+				
 				ZMLog.info("Init ZMonitor in pure Java mode: " + ZMonitor.class);
 			} catch (IOException e) {
 				throw new IgnitionFailureException(e);
+			} catch (AlreadyStartedException e) {
+				// Do nothing or simply log...
+				ZMLog.info("already initialized by other place");
 			}
 		}
 	}
 	
 	@Override
 	protected void finalize() throws Throwable {
-		Ignitor.destroy();
+		ZMonitorManager.dispose();
 	}
 	
 
@@ -91,11 +104,11 @@ public final class ZMonitor {
 	 * **********************************/
 	
 	/**
-	 * @return true if there's a timeline instance and it's started.
+	 * @return true if there's a monitor sequence instance and which is started.
 	 */
-	public static boolean isMonitorStarted(){
+	public static boolean isMonitoring(){
 		//TODO There's an ambiguity here, this method implies an existence of a threadLocal object. 
-		return getLifecycle().isZMonitorStarted();
+		return getLifecycle().isMonitorStarted();
 	}
 	
 	/**
@@ -115,15 +128,7 @@ public final class ZMonitor {
 	 * @see #push(String)
 	 */
 	public static MonitorPoint push(Name name, String mesg, boolean traceCallerStack) {
-		long nanosec = System.nanoTime();
-		
-		long createMillis = System.currentTimeMillis();
-		if(!getLifecycle().shouldMeasure(name, mesg, createMillis))return null;
-		MPContext mpCtx = new MPContext(getOuterCallerInfo(traceCallerStack, 2), START, name, mesg, createMillis);
-		MonitorPoint mp = getInstance().start(mpCtx.getName(), mpCtx.getMesg(), createMillis);
-		
-		mp.mSequence.accumulateSelfSpendNanos(System.nanoTime()- nanosec);
-		return mp;
+		return start0(name, mesg, traceCallerStack);
 	}
 	/**
 	 * traceCallerStack is default false.
@@ -156,14 +161,15 @@ public final class ZMonitor {
 	public static MonitorPoint push(String mesg){
 		return start0(null, mesg, false);
 	}
+	
 	private static MonitorPoint start0(Name name, String mesg, boolean traceCallerStack){
 		long nanosec = System.nanoTime();
 		long createMillis = System.currentTimeMillis();
 		if(!getLifecycle().shouldMeasure(name, mesg, createMillis)) {
 			return null;
 		}
-		MPContext mpCtx = new MPContext(getOuterCallerInfo(traceCallerStack, 3), 
-				START, name, mesg, createMillis);
+		MPContext mpCtx = new MPContext(
+				getOuterCallerInfo(traceCallerStack, 3), START, name, mesg, createMillis);
 		
 		name = (mpCtx.getName()==null) ? 
 				new StringName(START): mpCtx.getName();
@@ -230,7 +236,7 @@ public final class ZMonitor {
 		long nanosec = System.nanoTime();
 		long createMillis = System.currentTimeMillis();
 		if(!getLifecycle().shouldMeasure(name, mesg, createMillis))return null;
-		boolean started = getLifecycle().isZMonitorStarted();
+		boolean started = getLifecycle().isMonitorStarted();
 		MPContext mpCtx = new MPContext(getOuterCallerInfo(traceCallerStack, 3), 
 				started?RECORDING:START, name, mesg, createMillis);
 		MonitorPoint mp = started ? getInstance().record(mpCtx.getName(), mpCtx.getMesg(), createMillis) 
@@ -242,11 +248,11 @@ public final class ZMonitor {
 	
 	/**
 	 * This method will end the current level of the {@link MonitorSequence}, if the level is 0( it's the root level of {@link MonitorSequence}), 
-	 * the {@link MonitorSequenceLifecycle#flush()} will be called to end this {@link MonitorSequence}'s life-cycle.<br>
+	 * the {@link MonitorSequenceLifecycle#finish()} will be called to end this {@link MonitorSequence}'s life-cycle.<br>
 	 * The caller of this method need to guarantee the corresponding {@link #push(Name, String)} has been called before,
 	 * otherwise the profiling result will be corrupted.<br>
 	 * 
-	 * @throws IllegalStateException if {@link MonitorSequenceLifecycle#isZMonitorStarted()} is false, 
+	 * @throws IllegalStateException if {@link MonitorSequenceLifecycle#isMonitorStarted()} is false, 
 	 * which means you didn't initialize or started a {@link MonitorSequence} before. 
 	 * @return null if timeline already reach the root. 
 	 */
@@ -285,7 +291,7 @@ public final class ZMonitor {
 	}
 	private static MonitorPoint end0(Name name, String message, boolean traceCallerStack){
 		long nanosec = System.nanoTime();
-		if(!getLifecycle().isZMonitorStarted()){
+		if(!getLifecycle().isMonitorStarted()){
 			return null;
 //			throw new IllegalStateException("You need to start a {@link Timeline} before end any level of it!");
 		}
@@ -298,7 +304,7 @@ public final class ZMonitor {
 		
 		tl.accumulateSelfSpendNanos(System.nanoTime()- nanosec);
 		if(tl.isFinished()){
-			getLifecycle().flush();
+			getLifecycle().finish();
 		}
 		
 		return mp;

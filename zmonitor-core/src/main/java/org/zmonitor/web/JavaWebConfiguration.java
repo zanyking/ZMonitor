@@ -5,13 +5,17 @@
 package org.zmonitor.web;
 
 
-import static org.zmonitor.impl.XMLConfigs.*;
+import static org.zmonitor.impl.XMLConfigs.applyAttributesToBean;
+import static org.zmonitor.impl.XMLConfigs.getTextFromAttrOrContent;
+import static org.zmonitor.impl.XMLConfigs.ignores;
+import static org.zmonitor.impl.XMLConfigs.newInstanceByClassAttr;
+
 import org.w3c.dom.Node;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.impl.CoreConfigurator;
 import org.zmonitor.spi.CustomConfiguration;
-import org.zmonitor.util.DOMRetriever;
-import org.zmonitor.util.NodeIterator;
+import org.zmonitor.spi.XMLConfiguration;
+import org.zmonitor.spi.XMLConfiguration.Visitor;
 import org.zmonitor.util.PropertySetter;
 import org.zmonitor.web.filter.Condition;
 import org.zmonitor.web.filter.DefaultUrlFilter;
@@ -42,24 +46,24 @@ public class JavaWebConfiguration implements CustomConfiguration {
 	 * @see org.zmonitor.CustomConfiguration#apply(org.zmonitor.ZMonitorManager, org.zmonitor.util.DOMRetriever, org.w3c.dom.Node)
 	 */
 	public void apply(ZMonitorManager manager, 
-			final DOMRetriever xmlDoc, 
+			final XMLConfiguration config, 
 			Node configNode) {
-		Node urlFilterNode = xmlDoc.getNodeList(configNode, REL_URL_FILTER).item(0);
+		Node urlFilterNode = config.getNode(REL_URL_FILTER, configNode);
 		if(urlFilterNode==null)return;
 		
 		filter = newInstanceByClassAttr(urlFilterNode, DefaultUrlFilter.class, false);
 		
-		applyAttributesToBean(xmlDoc, 
+		applyAttributesToBean( 
 				urlFilterNode, 
 				new PropertySetter(filter), 
 				ignores("class"));
 		
 		if(filter instanceof DefaultUrlFilter){
-			initUrlFilterByDefault(xmlDoc, urlFilterNode, (DefaultUrlFilter)filter);
+			initUrlFilterByDefault(config, urlFilterNode, (DefaultUrlFilter)filter);
 			
 		} else if(filter instanceof  CustomConfiguration){
 			CoreConfigurator.initCustomConfiguration(manager, 
-					xmlDoc, 
+					config, 
 					urlFilterNode, 
 					(CustomConfiguration) filter, 
 					true);
@@ -67,22 +71,24 @@ public class JavaWebConfiguration implements CustomConfiguration {
 		
 	}
 	
-	private static UrlFilter initUrlFilterByDefault(final DOMRetriever xmlDoc, 
+	private static UrlFilter initUrlFilterByDefault(
+			final XMLConfiguration config, 
 			Node urlFilterNode, 
-			DefaultUrlFilter filter){
-		applyAttributesToBean(xmlDoc, urlFilterNode, new PropertySetter(filter), null);
+			final DefaultUrlFilter filter){
+		applyAttributesToBean( urlFilterNode, new PropertySetter(filter), null);
 
-		new NodeIterator<DefaultUrlFilter>() {// foreach all conditions
-			protected void forEach(int index, final Node node, DefaultUrlFilter filter) {
+		config.forEach(urlFilterNode, REL_CONDITION, new Visitor(){
+			public boolean visit(int idx, Node node) {
 				Condition cond = new Condition();
-				applyPropertyTagsToBean(xmlDoc, node, new PropertySetter(cond));
-				applyAttributesToBean(xmlDoc, node, new PropertySetter(cond), null);
+				config.applyPropertyTagsToBean( node, new PropertySetter(cond));
+				applyAttributesToBean( node, new PropertySetter(cond), null);
 				if(cond.getPattern()==null){
 					cond.setPattern(getTextFromAttrOrContent(node, "pattern"));
 				}
 				filter.add(cond);
-			}
-		}.iterate(xmlDoc.getNodeList(urlFilterNode, REL_CONDITION), (DefaultUrlFilter) filter);
+				return true;
+			}});
+		
 		return filter;
 	}
 

@@ -8,7 +8,7 @@ import org.w3c.dom.Node;
 import org.zmonitor.WrongConfigurationException;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.spi.CustomConfiguration;
-import org.zmonitor.util.DOMRetriever;
+import org.zmonitor.spi.XMLConfiguration;
 
 /**
  * @author Ian YT Tsai(Zanyking)
@@ -16,7 +16,7 @@ import org.zmonitor.util.DOMRetriever;
  */
 public class ZKInterceptorConfiguration implements CustomConfiguration {
 
-	public void apply(ZMonitorManager manager, DOMRetriever xmlDoc, Node configNode) {
+	public void apply(ZMonitorManager manager,  XMLConfiguration config, Node configNode) {
 		//DO nothing now.
 	}
 	private ZKInterceptorMPRenderer mpRenderer = new ZKInterceptorMPRenderer();

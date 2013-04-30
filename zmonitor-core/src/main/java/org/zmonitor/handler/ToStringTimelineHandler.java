@@ -13,7 +13,7 @@ import org.zmonitor.MonitorSequence;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.spi.CustomConfiguration;
 import org.zmonitor.spi.MonitorSequenceHandler;
-import org.zmonitor.util.DOMRetriever;
+import org.zmonitor.spi.XMLConfiguration;
 import org.zmonitor.util.Strings;
 
 /**
@@ -69,7 +69,8 @@ public class ToStringTimelineHandler implements MonitorSequenceHandler, CustomCo
 	}
 
 	
-	public void apply(ZMonitorManager manager, DOMRetriever xmlDoc,
+
+	public void apply(ZMonitorManager manager, XMLConfiguration config,
 			Node configNode) {
 		// TODO Auto-generated method stub
 		

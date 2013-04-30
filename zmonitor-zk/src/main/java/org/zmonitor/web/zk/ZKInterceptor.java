@@ -32,7 +32,7 @@ import org.zmonitor.Ignitor;
 import org.zmonitor.MonitorPoint;
 import org.zmonitor.ZMonitor;
 import org.zmonitor.ZMonitorManager;
-import org.zmonitor.impl.DummyConfigurator;
+import org.zmonitor.impl.NullConfigurator;
 import org.zmonitor.impl.StringName;
 import org.zmonitor.impl.XmlConfiguratorLoader;
 import org.zmonitor.impl.ZMLog;
@@ -72,7 +72,7 @@ public class ZKInterceptor implements WebAppInit, WebAppCleanup,
 	private static boolean hasLifecycleControl = false;
 	
 	public void init(WebApp wapp) throws Exception {
-		if(!Ignitor.isIgnited()){
+		if(!Ignitor.isInitialized()){
 			Configurator conf = null;
 			try {
 				conf = XmlConfiguratorLoader.loadForJavaEEWebApp((ServletContext) wapp.getNativeContext());
@@ -86,10 +86,10 @@ public class ZKInterceptor implements WebAppInit, WebAppCleanup,
 						"] from current application context: ",
 						ZKInterceptor.class);
 				
-				ZMLog.warn("System will get default configuration from: ",DummyConfigurator.class);
+				ZMLog.warn("System will get default configuration from: ",NullConfigurator.class);
 				ZMLog.warn("If you want to give your custom settings, " ,
 						"please give your own \"",XmlConfiguratorLoader.ZMONITOR_XML,"\" under /WEB-INF/");
-				conf = new DummyConfigurator();
+				conf = new NullConfigurator();
 			}
 				
 			hasLifecycleControl = 
@@ -101,7 +101,7 @@ public class ZKInterceptor implements WebAppInit, WebAppCleanup,
 	
 	public void cleanup(WebApp wapp) throws Exception {
 		if(hasLifecycleControl){
-			Ignitor.destroy();
+			Ignitor.dispose();
 		}
 			
 	}
@@ -131,7 +131,7 @@ public class ZKInterceptor implements WebAppInit, WebAppCleanup,
 	private static final String KEY_REQUEST_ZUL_URI = "KEY_REQUEST_ZUL_URI";
 	
 	public void request(String uri) throws Exception {
-		if(getPfMgmt().getMonitorSequenceLifecycle().isZMonitorStarted()){
+		if(getPfMgmt().getMonitorSequenceLifecycle().isMonitorStarted()){
 			getContext().getRequest().setAttribute(KEY_REQUEST_ZUL_URI, uri);
 			RenderResult result = getRenderer().getURIInterceptorResult(uri);
 			if(getConfiguration().isRenderURIIntercepter())

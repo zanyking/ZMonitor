@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.apache.log4j.spi.LocationInfo;
 import org.apache.log4j.spi.LoggingEvent;
+import org.zmonitor.AlreadyStartedException;
 import org.zmonitor.IgnitionFailureException;
 import org.zmonitor.Ignitor;
 import org.zmonitor.MonitorSequence;
@@ -100,22 +101,28 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	@Override
 	public void activateOptions() {
 		super.activateOptions();
-		if(Ignitor.isIgnited())return;
+		if(ZMonitorManager.isInitialized())return;
 		try {
+			//TODO create configuration Source...
 			final CoreConfigurator xmlCofig = XmlConfiguratorLoader.loadForPureJavaProgram();
 			if(xmlCofig==null)
 				throw new IgnitionFailureException("cannot find Configuration:["+
 						XmlConfiguratorLoader.ZMONITOR_XML+
 						"] from current application context: "+this.getClass());
-			isIgnitBySelf = Ignitor.ignite(new ThreadLocalMonitorSequenceLifecycleManager(), xmlCofig);
+			ZMonitorManager aZMonitorManager = new ZMonitorManager();
+			aZMonitorManager.setLifecycleManager(new ThreadLocalMonitorSequenceLifecycleManager());
+			ZMonitorManager.init(aZMonitorManager);
+			isIgnitBySelf = true;
 			ZMLog.info(">> Ignit ZMonitor in: ",ZMonitorAppender.class.getCanonicalName());
 		} catch (IOException e) {
 			throw new IgnitionFailureException(e);
+		} catch (AlreadyStartedException e) {
+			ZMLog.info("ZMonitorManager is already initialized");
 		}
 	}
 	public void close() {
 		if(isIgnitBySelf){
-			Ignitor.destroy();
+			ZMonitorManager.dispose();
 		}
 	}
 
@@ -171,7 +178,7 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	    	
 			String mesg = event.getRenderedMessage();
 	    	if(depth==0){
-	    		if(ZMonitor.isMonitorStarted()){
+	    		if(ZMonitor.isMonitoring()){
 	    			if(isControlledBySelf(lfc)){
 	    				complete(event, mesg, lfc);
 	    			}else{
@@ -181,7 +188,7 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	    		// do nothing...
 	    		//tl.start must satisfy (depth > 0), otherwise there's no way for appender to know when to complete timeline.
 	    	}else{
-	    		if(ZMonitor.isMonitorStarted()){
+	    		if(ZMonitor.isMonitoring()){
 	    			record(event, depth, lfc, ndcStr);
 	    		}else{
 	    			start(event, depth, lfc, ndcStr);
