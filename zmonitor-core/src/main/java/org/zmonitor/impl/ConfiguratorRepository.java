@@ -10,12 +10,13 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.zmonitor.IgnitionFailureException;
+import org.zmonitor.ZMonitorManager;
+import org.zmonitor.spi.ConfigurationError;
 import org.zmonitor.spi.Configurator;
+import org.zmonitor.spi.XMLConfiguration;
 /**
  * to make ZMonitor be adaptable to various container & logger, modulization is required.<br> 
  * this class is a helper class to collect {@link Configurator} implementation from META-INF/zmonitor/configurator  
@@ -25,42 +26,80 @@ import org.zmonitor.spi.Configurator;
  */
 public class ConfiguratorRepository {
 	private static final String CONFIG_PROPS = "META-INF/services/config.properties";
+	private static final String CONFIGURATORS = "configurators";
+	private static final String KEY_CONFIG_URL = "__configURL";
 	
+	private List<ConfiguratorContextImpl> confCtxs = 
+			new ArrayList<ConfiguratorContextImpl>(10);
 	
 	/**
 	 * 1. Scan all META-INF/zmonitor/config.properties
-	 * 2. Instantiate Configurator instance
+	 * 2. Instantiate ConfigContext instances
 	 * 3. 
 	 */
 	public void scan(){
 		ClassLoader loader = getClass().getClassLoader();
-		Enumeration<URL> configs;
+		Enumeration<URL> confUrls;
 		try {
-			configs = loader.getResources(CONFIG_PROPS);
+			confUrls = loader.getResources(CONFIG_PROPS);
 		} catch (IOException e) {
-			ZMLog.warn(e, "error happened while loading resources from: ", CONFIG_PROPS);
+			ZMLog.warn(e, 
+				"error happened while loading resources from: ", CONFIG_PROPS);
+			
 			throw new IgnitionFailureException(e);
 		}
 		
-		while(configs.hasMoreElements()){
+		while(confUrls.hasMoreElements()){
 			// each zmonitor-xxx.jar might has one config.props
-			URL url = configs.nextElement();
-			ConfiguratorContext cCtxt = new ConfiguratorContext();
-			load(cCtxt, url);
+			URL url = confUrls.nextElement();
+			ConfiguratorContextImpl cCtxt = new ConfiguratorContextImpl();
+			cCtxt.set(KEY_CONFIG_URL, url.toString());
+			initConfigCtxt(cCtxt, url);
+			confCtxs.add(cCtxt);
+		}
+	}
+	
+	/**
+	 * 
+	 * @param manager
+	 * @param configuration
+	 */
+	public void performConfiguration(ZMonitorManager manager, XMLConfiguration configuration){
+		for (ConfiguratorContextImpl confCtx : confCtxs) {
+			confCtx.setConfiguration(configuration);
+			confCtx.setManager(manager);
+			try {
+				String val = confCtx.get(CONFIGURATORS);
+				if(val==null){
+					throw new ConfigurationError(
+							"must declare ["+CONFIGURATORS+ "] in: "+confCtx.get(KEY_CONFIG_URL));
+				}
+				
+				String[] clzArr = val.split("[,]");
+				for(String clzStr : clzArr){
+					Configurator configurator = 
+						(Configurator) Class.forName(clzStr).newInstance();
+					configurator.configure(confCtx);
+				}
+			} catch (Exception e) {
+				throw new ConfigurationError(e);
+			}
 		}
 	}
 	
 	
-	private void load(ConfiguratorContext cCtxt, URL url){
-		Def def =  new Def();
-		initDef(def, url);
-		
-		//TODO: according to def, instantiate ConfigContext & Configurators
-		
-		
-	}
-	
-	private static void initDef(Def def, URL url){
+	/**
+	 * the format of config.properties
+	 * <ul>
+	 * 	<li> utf8 encoded
+	 * 	<li> [key]=[value]
+	 * 	<li> the first equal sign( = ) will be treated as the separator.
+	 * 	<li>key should not contain any spaces or tabs.
+	 * </ul>
+	 * @param def
+	 * @param url
+	 */
+	private static void initConfigCtxt(ConfiguratorContextImpl def, URL url){
 		InputStream in = null;
 		BufferedReader r = null;
 		try {
@@ -82,6 +121,7 @@ public class ConfiguratorRepository {
 	}
 	/**
 	 * # is for comment 
+	 * UTF-8 encoded
 	 * 
 	 * @param def
 	 * @param url
@@ -90,7 +130,7 @@ public class ConfiguratorRepository {
 	 * @return
 	 * @throws IOException
 	 */
-	private static int parseLine(Def def, URL url,
+	private static int parseLine(ConfiguratorContextImpl def, URL url,
 			BufferedReader r, int lc) throws IOException {
 		// TODO Auto-generated method stub
 		String ln = r.readLine();
@@ -115,15 +155,5 @@ public class ConfiguratorRepository {
 		return lc+1;
 	}
 	
-	/**
-	 * @author Ian YT Tsai(Zanyking)
-	 */
-	private class Def{
-		Map<String, String> attrs = new LinkedHashMap<String, String>();
-
-		public void set(String key, String value){
-			attrs.put(key, value);
-		}
-		
-	}//end of class...
 }
+

@@ -49,7 +49,7 @@ public class SimpleMonitorSequenceLifecycle implements MonitorSequenceLifecycle 
 	public void finish() {
 		if(finished)
 			throw new IllegalStateException("this life-cycle was already finished, should never be reused.");
-		ZMonitorManager.getInstance().getMSequenceHandlerRepository().handle(mSquence);
+		ZMonitorManager.getInstance().handle(mSquence);
 		mSquence = null;
 	}
 	public boolean isFinished() {

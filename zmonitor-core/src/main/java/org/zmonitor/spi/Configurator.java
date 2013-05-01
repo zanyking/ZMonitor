@@ -4,7 +4,6 @@
  */
 package org.zmonitor.spi;
 
-import org.zmonitor.ZMonitorManager;
 
 
 /**
@@ -15,7 +14,7 @@ public interface Configurator {
 	/**
 	 * 
 	 * @param manager
-	 * @param ctxt
+	 * @param configuration
 	 */
-	public void configure(ZMonitorManager manager, XMLConfiguration ctxt);
+	public void configure(ConfigContext configCtx);
 }

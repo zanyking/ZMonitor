@@ -12,7 +12,7 @@ import java.util.Collection;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public interface ZMBeanRepository {
+public interface ZMBeanRepository extends LifeCycle{
 	
 	/**
 	 * every bean that either is or instanceof the given class will be in the result.
@@ -30,40 +30,29 @@ public interface ZMBeanRepository {
 	
 	
 	/**
-	 * add a new bean
+	 * add a bean into repo.<br>
+	 * 
+	 * if the repo is started, this method will try to start the bean before 
+	 * adding.<br>
+	 * a stopped 
 	 * @param zmBean
+	 * @throws IllegalArgumentException if bean is stopped
+	 * @throws IllegalStateException if this repo is stopped
 	 */
 	public void add(ZMBean zmBean);
 	/**
+	 * same as {@link #remove(ZMBean)}, 
+	 * but if the given id has no value, this method takes no effect. 
 	 * 
-	 * @param id
+	 * @param id 
 	 */
 	public void remove(String id);
 	/**
-	 * 
+	 *
 	 * @param zmBean
+	 * @throws IllegalStateException if this repo is stopped
+	 * @throws IllegalArgumentException if the given bean is not belongs to this repo
 	 */
 	public void remove( ZMBean zmBean);
-	/**
-	 * 
-	 * @return true if this repository is already started.
-	 */
-	public boolean isStarted();
-	/**
-	 * 
-	 * @return true if this repository is already stopped.
-	 */
-	public boolean isStopped();
-	
-	/**
-	 * start every bean in this repository 
-	 */
-	public void start();
-
-	/**
-	 * stop every bean in this repository
-	 */
-	public void stop();
-	
 
 }

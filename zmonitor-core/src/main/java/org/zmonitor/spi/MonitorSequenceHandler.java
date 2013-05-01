@@ -5,6 +5,7 @@
 package org.zmonitor.spi;
 
 import org.zmonitor.MonitorSequence;
+import org.zmonitor.bean.ZMBean;
 
 
 /**
@@ -23,17 +24,12 @@ import org.zmonitor.MonitorSequence;
  * </ol>
  * @author Ian YT Tsai(Zanyking)
  */
-public interface MonitorSequenceHandler {
+public interface MonitorSequenceHandler extends ZMBean{
 
 	/**
 	 * 
 	 * @param mSequence
 	 */
 	public void handle(MonitorSequence mSequence);
-	//TODO: component life cycle method should be centralized. 
-	/**
-	 * This method will be called when MonitorSequenceHandler need to be destroyed.
-	 */
-	public void destroy();
 	
 }

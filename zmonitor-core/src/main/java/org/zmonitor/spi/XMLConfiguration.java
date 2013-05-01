@@ -4,7 +4,6 @@
 package org.zmonitor.spi;
 
 import org.w3c.dom.Node;
-import org.zmonitor.util.DOMRetriever;
 import org.zmonitor.util.PropertySetter;
 
 /**

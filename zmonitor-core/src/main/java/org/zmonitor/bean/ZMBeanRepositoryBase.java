@@ -13,14 +13,13 @@ import java.util.List;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public abstract class ZMBeanRepositoryAbstract implements ZMBeanRepository{
+public abstract class ZMBeanRepositoryBase extends LifeCycleBase implements ZMBeanRepository{
 
 
 	protected final List<ZMBean> beans = 
 		Collections.synchronizedList(new ArrayList<ZMBean>());
 	
 	
-	private volatile int status;// 0 constructed, 1 started, -1 stopped 
 	/**
 	 * every bean that either is or instanceof the given class will be in the result.
 	 * @param clz
@@ -55,9 +54,15 @@ public abstract class ZMBeanRepositoryAbstract implements ZMBeanRepository{
 	 * @param zmBean
 	 */
 	public void add(ZMBean zmBean){
-		if(isStopped())
-			throw new IllegalStateException("already stopped");
-		if(isStarted()){
+		if(isStopped()){
+			throw new IllegalStateException(
+					"operate a stopped repo is pointless");
+		}
+		if(zmBean.isStopped()){
+			throw new IllegalArgumentException(
+					"cannot accept a stopped bean: "+zmBean);
+		}
+		if(isStarted() && !zmBean.isStarted()){
 			zmBean.start();
 		}
 		beans.add(zmBean);
@@ -68,7 +73,10 @@ public abstract class ZMBeanRepositoryAbstract implements ZMBeanRepository{
 	 */
 	public void remove(String id){
 		ZMBean zmBean = get(id);
-		if(zmBean!=null) remove(zmBean);
+		if(zmBean!=null){
+			remove(zmBean);	
+		}
+		
 		//TODO handle null case
 	}
 	/**
@@ -76,58 +84,47 @@ public abstract class ZMBeanRepositoryAbstract implements ZMBeanRepository{
 	 * @param zmBean
 	 */
 	public void remove( ZMBean zmBean){
+		if(isStopped()){
+			throw new IllegalStateException(
+					"operate a stopped repo is pointless");
+		}
 		boolean b = beans.remove(zmBean);
-		if(b)zmBean.stop();
-	}
-	/**
-	 * 
-	 * @return true if this repository is already started.
-	 */
-	public boolean isStarted(){
-		return status==1;
-	}
-	/**
-	 * 
-	 * @return true if this repository is already stopped.
-	 */
-	public boolean isStopped(){
-		return status<0;
+		if(b){
+			if(zmBean.isStarted() && !zmBean.isStopped()){
+				//only a started bean can be stopped.
+				zmBean.stop();
+			}
+		}else{
+			throw new IllegalArgumentException(
+					"the given bean is not belongs to this repo.");
+		}
 	}
 	
 	/**
-	 * start every bean in this repository 
+	 * 
 	 */
-	public synchronized void start(){
-		if(status!=0)
-			throw new IllegalStateException(status>0?
-					"already started": "already stopped");
-		doStart();//prepare context...
+	protected void doStart(){
+		ArrayList<Throwable> errs = new ArrayList<Throwable>();
 		for(ZMBean zmBean : beans){
-			zmBean.start();
+			try{
+				zmBean.start();	
+			}catch(Throwable e){
+				errs.add(e);
+				e.printStackTrace();
+			}
 		}
-		status = 1;
+		if(!errs.isEmpty()){
+			throw new LifeCycleException(errs);
+		}
 	}
+
 	/**
 	 * 
 	 */
-	protected abstract void doStart();
-
-	/**
-	 * stop every bean in this repository
-	 */
-	public synchronized void stop(){
-		if(status<0)
-			throw new IllegalStateException("already stopped");
-		
+	protected void doStop(){
 		for(ZMBean zmBean : new ArrayList<ZMBean>(beans)){
 			zmBean.stop();
 		}
-		doStop();// release resources...
-		status = -1;
 	}
-	/**
-	 * 
-	 */
-	protected abstract void doStop();
 	
 }

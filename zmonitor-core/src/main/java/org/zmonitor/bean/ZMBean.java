@@ -9,7 +9,7 @@ package org.zmonitor.bean;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public interface ZMBean {
+public interface ZMBean extends LifeCycle{
 	
 	/**
 	 * 
@@ -17,23 +17,9 @@ public interface ZMBean {
 	 */
 	public String getId();
 	/**
-	 * to start a bean, should be called by repository.  
-	 */
-	public void start();
-	/**
-	 * to stop a bean, should be called by repository.  
-	 */
-	public void stop();
-	/**
 	 * 
-	 * @return test if this bean is started, an none-started bean's operation is limited.
+	 * @return
 	 */
-	public boolean isStarted();
-	/**
-	 * 
-	 * @return test if this bean is stopped, a stopped bean's operation is limited.
-	 */
-	public boolean isStopped();
-	
+	public void setId(String id);
 	
 }

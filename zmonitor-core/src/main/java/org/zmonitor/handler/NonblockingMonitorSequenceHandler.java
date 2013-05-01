@@ -16,7 +16,7 @@ import org.zmonitor.util.concurrent.AsyncGroupingPipe;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public abstract class NonblockingMonitorSequenceHandler implements MonitorSequenceHandler, CustomConfiguration{
+public abstract class NonblockingMonitorSequenceHandler implements MonitorSequenceHandler{
 
 	protected AsyncGroupingPipe<MonitorSequence> asyncGroupPipe;
 	

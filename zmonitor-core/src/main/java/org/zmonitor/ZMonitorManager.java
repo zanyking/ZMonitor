@@ -4,17 +4,17 @@
  */
 package org.zmonitor;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import org.zmonitor.bean.ZMBean;
 import org.zmonitor.bean.ZMBeanRepository;
-import org.zmonitor.bean.ZMBeanRepositoryAbstract;
+import org.zmonitor.bean.ZMBeanRepositoryBase;
+import org.zmonitor.impl.ConfiguratorRepository;
 import org.zmonitor.impl.DefaultMeasurePointInfoFactory;
+import org.zmonitor.impl.XMLConfigurationImpl;
 import org.zmonitor.impl.ZMLog;
-import org.zmonitor.spi.CustomConfiguration;
 import org.zmonitor.spi.MonitorPointInfoFactory;
 import org.zmonitor.spi.MonitorSequenceHandler;
 import org.zmonitor.spi.MonitorSequenceLifecycle;
@@ -87,7 +87,8 @@ public final class ZMonitorManager {
 	/**
 	 * ignite a ZmonitorManager, 
 	 * @param manager will be used by 
-	 * @return true, if successfully initialized, false, there's already a started ZMonitorManager.  
+	 * @return true, if successfully initialized, false, there's already a started ZMonitorManager.
+	 * @throws IllegalArgumentException if the given manager is stopped.
 	 * @throws AlreadyStartedException 
 	 */
 	public static synchronized void init(ZMonitorManager manager) throws AlreadyStartedException{
@@ -111,18 +112,19 @@ public final class ZMonitorManager {
 		if(sZMM==NOOP)return;
 		ZMonitorManager m = sZMM;
 		sZMM = NOOP;
+		// prevent any new Monitor Sequence Operation while stopping...
 		m.stop();
 	}
 	
-	private final ZMBeanRepository aZMBeanRepository;
+	private final ZMBeanRepository fZMBeanRepository;
 	
 	public ZMonitorManager(){
-		aZMBeanRepository = new ZMBeanRepositoryAbstract(){
+		fZMBeanRepository = new ZMBeanRepositoryBase(){
 			protected void doStart() {
+				super.doStart();
 				ZMLog.info("ZMonitor Ignition START... ");// will print out in any case, since there's no customized ZKLog here yet!
 					
 				if(configSource != null){
-					//TODO: call Configurator at this part...
 					doXMLConfiguration(configSource);
 				}
 				
@@ -133,37 +135,40 @@ public final class ZMonitorManager {
 							e.getClass()+" : "+e.getMessage());
 				}
 			}
-			protected void doStop() {//TODO: make sure every zmbean of ZMonitor has been destroyed.
-				getMSequenceHandlerRepository().destroy();	
-			}
 			
 		};
 	}
 
 	private void doXMLConfiguration(ConfigSource configSource){
-		XMLConfiguration ctxt = null;
-		//TODO: construct a proper ConfigContext
-		//1. Retrieve configurators from each zmonitor-xxx.jar .
-		//2. Initialize configurator properly.
-		//3. Call configure() of each configurator.
+		XMLConfiguration conf;
+		try {
+			 conf = new XMLConfigurationImpl( 
+					configSource.getDOMRetriever());
+		} catch (IOException e) {
+			throw new IgnitionFailureException(e);
+		}
 		
+		ConfiguratorRepository cRepo = new ConfiguratorRepository();
+		cRepo.scan();
+		cRepo.performConfiguration(this, conf);
 	}
 	
 	private ZMonitorManager(ZMBeanRepository a){
-		aZMBeanRepository = a;
+		fZMBeanRepository = a;
 	}
 	
-	@SuppressWarnings("rawtypes")
-	private final Map<Class, CustomConfiguration> customConfigurations = 
-		new LinkedHashMap<Class, CustomConfiguration>();
-	
-	@SuppressWarnings("unchecked")
-	public <T extends CustomConfiguration> T getCustomConfiguration(Class<T> clazz){
-		return (T) customConfigurations.get(clazz);
-	}
-	public void addCustomConfiguration(CustomConfiguration config){
-		customConfigurations.put(config.getClass(), config);
-	}
+	//TODO got a feeling that this might cause a lot of trouble...
+//	@SuppressWarnings("rawtypes")
+//	private final Map<Class, CustomConfiguration> customConfigurations = 
+//		new LinkedHashMap<Class, CustomConfiguration>();
+//	
+//	@SuppressWarnings("unchecked")
+//	public <T extends CustomConfiguration> T getCustomConfiguration(Class<T> clazz){
+//		return (T) customConfigurations.get(clazz);
+//	}
+//	public void addCustomConfiguration(CustomConfiguration config){
+//		customConfigurations.put(config.getClass(), config);
+//	}
 	
 	
 	private  MonitorPointInfoFactory monitorPointInfoFactory = new DefaultMeasurePointInfoFactory(); 
@@ -176,18 +181,19 @@ public final class ZMonitorManager {
 	}
 	
 
-	private final MonitorSequenceHandlerRepository msHandlerRepo = 
-			new MonitorSequenceHandlerRepository();
-	public MonitorSequenceHandlerRepository getMSequenceHandlerRepository() {
-		return msHandlerRepo;
-	}
-	public void addMonitorSequenceHandler(String name, MonitorSequenceHandler handler) {
+	public void addMonitorSequenceHandler( MonitorSequenceHandler handler) {
 		ZMLog.debug("ZMonitorManager::addMonitorSequenceHandler: " +
-				name+" = "+handler);
-		msHandlerRepo.add(name, handler);
+				handler.getId()+" = "+handler);
+		fZMBeanRepository.add(handler);
 	}
 	public void removeMonitorSequenceHandler(String name){
-		msHandlerRepo.remove(name);
+		fZMBeanRepository.remove(name);
+	}
+	public void handle(MonitorSequence mSquence) {
+		Collection<MonitorSequenceHandler> handlers = 
+			fZMBeanRepository.get(MonitorSequenceHandler.class);
+		
+		//TODO: sync or Async? that's the problem.
 	}
 	
 	
@@ -218,17 +224,18 @@ public final class ZMonitorManager {
 
 
 	public boolean isStarted() {
-		return aZMBeanRepository.isStarted();
+		return fZMBeanRepository.isStarted();
 	}
 	public boolean isStopped() {
-		return aZMBeanRepository.isStopped();
+		return fZMBeanRepository.isStopped();
 	}
 	public void start() {
-		aZMBeanRepository.start();
+		fZMBeanRepository.start();
 	}
 	public void stop() {
-		aZMBeanRepository.stop();
+		fZMBeanRepository.stop();
 	}
+
 }//end of class
 /**
  * an noop implementation

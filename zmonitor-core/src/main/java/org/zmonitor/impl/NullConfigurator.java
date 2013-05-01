@@ -4,9 +4,8 @@
  */
 package org.zmonitor.impl;
 
-import org.zmonitor.ZMonitorManager;
+import org.zmonitor.spi.ConfigContext;
 import org.zmonitor.spi.Configurator;
-import org.zmonitor.spi.XMLConfiguration;
 
 /**
  * this is just for test only, do not really use it. 
@@ -17,12 +16,13 @@ public class NullConfigurator implements Configurator{
 
 	public NullConfigurator(){}
 
-	public void configure(ZMonitorManager manager, XMLConfiguration ctxt) {
+
+	public void configure(ConfigContext configCtx) {
 		//DO NOTHING...
 		/*
 		 * Initialize Timeline Handler
 		 */
-//		manager.addMonitorSequenceHandler("DUMMY_TOSTRING_HANDLER", new ToStringTimelineHandler());		
+//		manager.addMonitorSequenceHandler("DUMMY_TOSTRING_HANDLER", new ToStringTimelineHandler());
 	}
 	
 	
