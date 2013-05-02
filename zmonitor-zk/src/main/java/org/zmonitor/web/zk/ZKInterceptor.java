@@ -28,17 +28,17 @@ import org.zkoss.zk.ui.util.RequestInterceptor;
 import org.zkoss.zk.ui.util.URIInterceptor;
 import org.zkoss.zk.ui.util.WebAppCleanup;
 import org.zkoss.zk.ui.util.WebAppInit;
-import org.zmonitor.Ignitor;
+import org.zmonitor.AlreadyStartedException;
 import org.zmonitor.MonitorPoint;
 import org.zmonitor.ZMonitor;
 import org.zmonitor.ZMonitorManager;
-import org.zmonitor.impl.NullConfigurator;
+import org.zmonitor.config.ConfigSource;
+import org.zmonitor.config.ConfigSources;
 import org.zmonitor.impl.StringName;
-import org.zmonitor.impl.XmlConfiguratorLoader;
 import org.zmonitor.impl.ZMLog;
-import org.zmonitor.spi.Configurator;
 import org.zmonitor.web.HttpRequestContext;
 import org.zmonitor.web.HttpRequestContexts;
+import org.zmonitor.web.HttpRequestMonitorSequenceLifecycleManager;
 import org.zmonitor.web.StantardHttpRequestContext;
 
 /**
@@ -59,11 +59,22 @@ public class ZKInterceptor implements WebAppInit, WebAppCleanup,
 	}
 	
 	private static final ZKInterceptorConfiguration DEFAULT_CONFIG = new ZKInterceptorConfiguration();
+	private static final String KEY_LIFECYCLE_MANAGER = "KEY_LIFECYCLE_MANAGER";
 	private static ZKInterceptorConfiguration getConfiguration(){
 		ZKInterceptorConfiguration conf = getPfMgmt().getCustomConfiguration(ZKInterceptorConfiguration.class);
 		if(conf==null)
 			conf = DEFAULT_CONFIG;
 		return conf;
+	}
+	
+	private static HttpRequestMonitorSequenceLifecycleManager getLifeCycleManager(WebApp wapp){
+		HttpRequestMonitorSequenceLifecycleManager mg = 
+			(HttpRequestMonitorSequenceLifecycleManager) wapp.getAttribute(KEY_LIFECYCLE_MANAGER);
+		if(mg==null){
+			wapp.setAttribute(KEY_LIFECYCLE_MANAGER, 
+					mg = new HttpRequestMonitorSequenceLifecycleManager()); 
+		}
+		return mg;
 	}
 	private static ZKInterceptorMPRenderer getRenderer(){
 		return getConfiguration().getMpRenderer();
@@ -71,39 +82,42 @@ public class ZKInterceptor implements WebAppInit, WebAppCleanup,
 	
 	private static boolean hasLifecycleControl = false;
 	
-	public void init(WebApp wapp) throws Exception {
-		if(!Ignitor.isInitialized()){
-			Configurator conf = null;
-			try {
-				conf = XmlConfiguratorLoader.loadForJavaEEWebApp((ServletContext) wapp.getNativeContext());
-			} catch (IOException e) {
-				ZMLog.warn(e, ZKInterceptor.class.getSimpleName()," is not able to ignit ZMonitor by reading config from: "+
-						XmlConfiguratorLoader.WEB_INF_ZMONITOR_XML, ", please make sure it is exist!");
-			}
-			if(conf==null){
-				ZMLog.warn("cannot find Configuration:[",
-						XmlConfiguratorLoader.ZMONITOR_XML,
-						"] from current application context: ",
-						ZKInterceptor.class);
-				
-				ZMLog.warn("System will get default configuration from: ",NullConfigurator.class);
-				ZMLog.warn("If you want to give your custom settings, " ,
-						"please give your own \"",XmlConfiguratorLoader.ZMONITOR_XML,"\" under /WEB-INF/");
-				conf = new NullConfigurator();
-			}
-				
-			hasLifecycleControl = 
-				Ignitor.ignite(HttpRequestContexts.getTimelineLifecycleManager(), conf);
-			ZMLog.info("Ignit ZMonitor in: ",ZKInterceptor.class.getName());
-
+	public void init(WebApp wapp) {
+		if(ZMonitorManager.isInitialized())return;
+		ZMonitorManager manager = new ZMonitorManager();
+		ConfigSource confSrc = null;
+		try {
+			confSrc = ConfigSources.loadForJavaEEWebApp((ServletContext) wapp.getNativeContext());
+		} catch (IOException e) {
+			ZMLog.warn(e, ZKInterceptor.class.getSimpleName()," is not able to ignit ZMonitor by reading config from: "+
+					ConfigSource.WEB_INF_ZMONITOR_XML, ", please make sure it is exist!");
 		}
+		if(confSrc==null){
+			ZMLog.warn("cannot find Configuration:[",
+					ConfigSource.ZMONITOR_XML,
+					"] from current application context: ",
+					ZKInterceptor.class);
+			ZMLog.warn("If you want to give your custom settings, " ,
+					"please give your own \"",ConfigSource.ZMONITOR_XML,"\" under /WEB-INF/");
+		}else{
+			manager.setConfigSource(confSrc);
+		}
+		
+		manager.setLifecycleManager(getLifeCycleManager(wapp));
+		try {
+			ZMonitorManager.init(manager);
+			hasLifecycleControl = true;
+		} catch (AlreadyStartedException e) {
+			hasLifecycleControl = false;// ZMonitor is initialized by others, not controlled by ZK...
+		}
+		
+		ZMLog.info("Ignit ZMonitor in: ",ZKInterceptor.class.getName());
 	}
 	
 	public void cleanup(WebApp wapp) throws Exception {
 		if(hasLifecycleControl){
-			Ignitor.dispose();
+			ZMonitorManager.dispose();
 		}
-			
 	}
 	
 	
@@ -122,6 +136,7 @@ public class ZKInterceptor implements WebAppInit, WebAppCleanup,
 				HttpRequestContexts.init(new ZkHttpRequestContext(httpReqCtx), 
 						(HttpServletRequest)req, (HttpServletResponse)res);
 			}
+			getLifeCycleManager(sess.getWebApp()).initLifeCycle((HttpServletRequest)req);
 		}
 	}
 	private static HttpRequestContext getContext(){

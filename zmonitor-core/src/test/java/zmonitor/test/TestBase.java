@@ -11,13 +11,11 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.zmonitor.IgnitionFailureException;
-import org.zmonitor.Ignitor;
 import org.zmonitor.ZMonitorManager;
+import org.zmonitor.config.ConfigSource;
+import org.zmonitor.config.URLConfigSource;
 import org.zmonitor.impl.ThreadLocalMonitorSequenceLifecycleManager;
-import org.zmonitor.impl.CoreConfigurator;
-import org.zmonitor.impl.XmlConfiguratorLoader;
 import org.zmonitor.impl.ZMLog;
-import org.zmonitor.impl.config.URLConfigSource;
 import org.zmonitor.util.Loader;
 
 
@@ -45,29 +43,28 @@ public class TestBase {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		synchronized(Ignitor.class){
-			if(ZMonitorManager.isInitialized())return;
-			
-			String packagePath = this.getClass().getPackage().getName().replace('.', '/');
-			URL url =  findSettingFromPackagePath(packagePath);
-			if(url==null){
-				throw new IgnitionFailureException("cannot find Configuration:["+
-						XmlConfiguratorLoader.ZMONITOR_XML+
-						"] from every level of package: [" +packagePath+
-						"]. Current application context is: "+this.getClass());
-			}
-			ZMLog.info(">>>>>>>>>>>>>>>load config from: [",url,"]");
-			ZMonitorManager aZMonitorManager = new ZMonitorManager();
-			aZMonitorManager.setConfigSource(new URLConfigSource(url));
-			
-			ThreadLocalMonitorSequenceLifecycleManager lifecycleMgmt = 
-				new ThreadLocalMonitorSequenceLifecycleManager();
-			
-			aZMonitorManager.setLifecycleManager(lifecycleMgmt);
-			
-			ZMonitorManager.init(aZMonitorManager);
-			ZMLog.info(">> Ignit ZMonitor in: ",this.getClass().getCanonicalName());	
+		if(ZMonitorManager.isInitialized())return;
+		ZMonitorManager aZMonitorManager = new ZMonitorManager();
+		
+		String packagePath = this.getClass().getPackage().getName().replace('.', '/');
+		URL url =  findSettingFromPackagePath(packagePath);
+		if(url==null){
+			throw new IgnitionFailureException("cannot find Configuration:["+
+					ConfigSource.ZMONITOR_XML+
+					"] from every level of package: [" +packagePath+
+					"]. Current application context is: "+this.getClass());
 		}
+		ZMLog.info(">>>>>>>>>>>>>>>load config from: [",url,"]");
+		
+		aZMonitorManager.setConfigSource(new URLConfigSource(url));
+		
+		ThreadLocalMonitorSequenceLifecycleManager lifecycleMgmt = 
+			new ThreadLocalMonitorSequenceLifecycleManager();
+		
+		aZMonitorManager.setLifecycleManager(lifecycleMgmt);
+		
+		ZMonitorManager.init(aZMonitorManager);
+		ZMLog.info(">> Ignit ZMonitor in: ",this.getClass().getCanonicalName());	
 	}
 
 	/**
@@ -79,12 +76,12 @@ public class TestBase {
 	 */
 	private static URL findSettingFromPackagePath(String packagePath){
 
-		URL url = Loader.getResource(packagePath+"/"+XmlConfiguratorLoader.ZMONITOR_XML);
+		URL url = Loader.getResource(packagePath+"/"+ConfigSource.ZMONITOR_XML);
 		if(url!=null)return url;
 		
 		int lastIdx = packagePath.lastIndexOf(".");
 		if(lastIdx<=0)
-			return Loader.getResource(XmlConfiguratorLoader.ZMONITOR_XML);
+			return Loader.getResource(ConfigSource.ZMONITOR_XML);
 		
 		String parent = packagePath.substring(0, lastIdx);
 		

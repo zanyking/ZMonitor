@@ -8,6 +8,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.zmonitor.impl.ZMLog;
+
 /**
  * a thread safe implementation of bean repository
  * @author Ian YT Tsai(Zanyking)
@@ -15,7 +17,7 @@ import java.util.List;
  */
 public abstract class ZMBeanRepositoryBase extends LifeCycleBase implements ZMBeanRepository{
 
-
+	
 	protected final List<ZMBean> beans = 
 		Collections.synchronizedList(new ArrayList<ZMBean>());
 	
@@ -25,7 +27,7 @@ public abstract class ZMBeanRepositoryBase extends LifeCycleBase implements ZMBe
 	 * @param clz
 	 * @return
 	 */
-	public <T> Collection<T> get(Class<T> clz){
+	public <T> List<T> get(Class<T> clz){
 		
 		ArrayList<T> arr = new ArrayList<T>();
 		for(ZMBean b : new ArrayList<ZMBean>(beans)){
@@ -58,10 +60,16 @@ public abstract class ZMBeanRepositoryBase extends LifeCycleBase implements ZMBe
 			throw new IllegalStateException(
 					"operate a stopped repo is pointless");
 		}
+		if(beans.contains(zmBean)){
+			ZMLog.warn("cannot add zmBean multipletimes, operation ignored. zmbean: "+zmBean);
+			return;
+		}
+		
 		if(zmBean.isStopped()){
 			throw new IllegalArgumentException(
 					"cannot accept a stopped bean: "+zmBean);
 		}
+		
 		if(isStarted() && !zmBean.isStarted()){
 			zmBean.start();
 		}
@@ -110,7 +118,6 @@ public abstract class ZMBeanRepositoryBase extends LifeCycleBase implements ZMBe
 				zmBean.start();	
 			}catch(Throwable e){
 				errs.add(e);
-				e.printStackTrace();
 			}
 		}
 		if(!errs.isEmpty()){
@@ -122,8 +129,16 @@ public abstract class ZMBeanRepositoryBase extends LifeCycleBase implements ZMBe
 	 * 
 	 */
 	protected void doStop(){
+		ArrayList<Throwable> errs = new ArrayList<Throwable>();
 		for(ZMBean zmBean : new ArrayList<ZMBean>(beans)){
-			zmBean.stop();
+			try{
+				zmBean.stop();
+			}catch(Throwable e){
+				errs.add(e);
+			}
+		}
+		if(!errs.isEmpty()){
+			throw new LifeCycleException(errs);
 		}
 	}
 	

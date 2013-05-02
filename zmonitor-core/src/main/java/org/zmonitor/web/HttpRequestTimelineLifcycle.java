@@ -21,9 +21,11 @@ public class HttpRequestTimelineLifcycle extends SimpleMonitorSequenceLifecycle 
 	 */
 	public HttpRequestTimelineLifcycle(String oriReqUrl) {
 		super();
+		
 		JavaWebConfiguration webProfilingConf = 
-			ZMonitorManager.getInstance().getCustomConfiguration(
+			ZMonitorManager.getInstance().getBeanIfAny(
 					JavaWebConfiguration.class);
+		
 		
 		if(webProfilingConf != null)
 			urlAccepted = webProfilingConf.shouldAccept(oriReqUrl);

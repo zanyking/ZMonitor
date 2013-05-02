@@ -12,10 +12,11 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.zmonitor.AlreadyStartedException;
 import org.zmonitor.IgnitionFailureException;
-import org.zmonitor.Ignitor;
-import org.zmonitor.impl.CoreConfigurator;
-import org.zmonitor.impl.XmlConfiguratorLoader;
+import org.zmonitor.ZMonitorManager;
+import org.zmonitor.config.ConfigSource;
+import org.zmonitor.config.ConfigSources;
 
 
 /**
@@ -61,17 +62,23 @@ public class ZMonitorConfig_TEST {
 	public void initZMonitorByGivenClassPath() throws InterruptedException, IOException{
 		String packagePath = this.getClass().getPackage().getName().replace('.', '/');
 		
-		String path = packagePath+"/"+XmlConfiguratorLoader.ZMONITOR_XML;
+		String path = packagePath+"/"+ConfigSource.ZMONITOR_XML;
 		
-		final CoreConfigurator xmlCofig = 
-				XmlConfiguratorLoader.loadFromClassPath(path);
+		final ConfigSource configSrc = 
+				ConfigSources.loadFromClassPath(path);
 			
-			if(xmlCofig==null){
+			if(configSrc==null){
 				throw new IgnitionFailureException("cannot find Configuration:["+
-						XmlConfiguratorLoader.ZMONITOR_XML+
+						ConfigSource.ZMONITOR_XML+
 						"] from current application context: "+ZMonitorConfig_TEST.class);
 			}
-			Ignitor.ignite( xmlCofig);
+			ZMonitorManager aZMonitorManager = new ZMonitorManager();
+			try {
+				ZMonitorManager.init(aZMonitorManager);
+			} catch (AlreadyStartedException e) {
+				throw new RuntimeException(e);
+			}
+			ZMonitorManager.dispose();
 	}
 	
 	

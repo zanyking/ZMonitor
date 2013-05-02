@@ -1,14 +1,13 @@
 /*
  * 2013/04/30
  */
-package org.zmonitor.impl.config;
+package org.zmonitor.config;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.zmonitor.ConfigSource;
 import org.zmonitor.util.DOMRetriever;
 
 /**

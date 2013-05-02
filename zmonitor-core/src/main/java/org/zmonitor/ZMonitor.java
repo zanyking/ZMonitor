@@ -6,14 +6,13 @@ package org.zmonitor;
 
 import java.io.IOException;
 
-import org.zmonitor.impl.NullConfigurator;
+import org.zmonitor.config.ConfigSource;
+import org.zmonitor.config.ConfigSources;
 import org.zmonitor.impl.StringName;
 import org.zmonitor.impl.ThreadLocalMonitorSequenceLifecycleManager;
-import org.zmonitor.impl.XmlConfiguratorLoader;
 import org.zmonitor.impl.ZMLog;
-import org.zmonitor.spi.Configurator;
-import org.zmonitor.spi.Name;
 import org.zmonitor.spi.MonitorSequenceLifecycle;
+import org.zmonitor.spi.Name;
 
 
 /**
@@ -51,24 +50,24 @@ public final class ZMonitor {
 	static{ 
 		if(!ZMonitorManager.isInitialized()){
 			try {
+
+				ZMonitorManager aZMonitorManager = new ZMonitorManager();
 				
 				//TODO: get Configuration Source...
-				Configurator conf = XmlConfiguratorLoader.loadForPureJavaProgram();
-				if(conf==null){
+				ConfigSource confSrc = ConfigSources.loadForSimpleJavaProgram();
+				if(confSrc==null){
 					ZMLog.warn("cannot find Configuration:["+
-							XmlConfiguratorLoader.ZMONITOR_XML+"] from classpath.");
-					ZMLog.warn("System will get default configuration from: "+NullConfigurator.class);
+							ConfigSource.ZMONITOR_XML+"] from classpath.");
+					ZMLog.warn("There's no configuration file loaded, the ZMonitorManager will be configured manually by developer himself.");
 					ZMLog.warn("If you want to give your custom settings, " +
-							"please give your own \""+XmlConfiguratorLoader.ZMONITOR_XML+"\" in classpath.");
-					conf = new NullConfigurator();
+							"please provide a \""+ConfigSource.ZMONITOR_XML+"\" file under classpath.");
+				}else{
+					aZMonitorManager.setConfigSource(confSrc);	
 				}
-				
-				
-				ZMonitorManager aZMonitorManager = new ZMonitorManager();
 				aZMonitorManager.setLifecycleManager(
 					new ThreadLocalMonitorSequenceLifecycleManager());
 				
-				ZMonitorManager.init(aZMonitorManager);
+				ZMonitorManager.init(aZMonitorManager);// might through AlreadyStartedExec...
 				
 				ZMLog.info("Init ZMonitor in pure Java mode: " + ZMonitor.class);
 			} catch (IOException e) {

@@ -3,8 +3,7 @@
  */
 package org.zmonitor.slf4j;
 
-import org.zmonitor.ZMonitorManager;
-import org.zmonitor.spi.XMLConfiguration;
+import org.zmonitor.spi.ConfigContext;
 import org.zmonitor.spi.Configurator;
 
 /**
@@ -13,11 +12,9 @@ import org.zmonitor.spi.Configurator;
  */
 public class Slf4jConfigurator implements Configurator{
 
-	/**
-	 * 
-	 */
-	public void configure(ZMonitorManager manager, XMLConfiguration ctxt) {
-		
+	public void configure(ConfigContext configCtx) {
+		//TODO not implemented yet!
 	}
+
 
 }

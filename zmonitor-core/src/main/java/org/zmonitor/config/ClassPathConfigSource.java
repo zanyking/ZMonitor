@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.zmonitor.impl.config;
+package org.zmonitor.config;
 
 import org.zmonitor.util.Loader;
 

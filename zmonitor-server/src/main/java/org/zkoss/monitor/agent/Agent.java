@@ -4,21 +4,19 @@
  */
 package org.zkoss.monitor.agent;
 
-import org.w3c.dom.Node;
 import org.zkoss.monitor.impl.JObjSStreamCommunicator;
-import org.zmonitor.ZMonitorManager;
+import org.zmonitor.CustomConfigurable;
+import org.zmonitor.bean.ZMBeanBase;
 import org.zmonitor.message.Communicator;
 import org.zmonitor.message.Receiever;
 import org.zmonitor.message.Transmitter;
-import org.zmonitor.spi.CustomConfiguration;
-import org.zmonitor.spi.XMLConfiguration;
-import org.zmonitor.util.DOMRetriever;
+import org.zmonitor.spi.ConfigContext;
 
 /**
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class Agent implements Communicator, CustomConfiguration{
+public class Agent extends ZMBeanBase implements Communicator, CustomConfigurable{
 	private String host;// domain name,
 	private int port= -1;// >=0, <= 65535	
 	
@@ -58,8 +56,7 @@ public class Agent implements Communicator, CustomConfiguration{
 		this.port = port;
 	}
 	
-	public void apply(ZMonitorManager manager, XMLConfiguration xmlDoc,
-			Node configNode) {
+	public void configure(ConfigContext webConf) {
 		fCommunicator = new JObjSStreamCommunicator(host, port);
 	}
 	
@@ -71,6 +68,7 @@ public class Agent implements Communicator, CustomConfiguration{
 	public Receiever getReceiever() {
 		return fCommunicator.getReceiever();
 	}
+	
 
 	
 

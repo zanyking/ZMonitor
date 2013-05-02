@@ -5,6 +5,7 @@
 package org.zmonitor.handler;
 
 import org.zmonitor.MonitorSequence;
+import org.zmonitor.bean.ZMBeanBase;
 import org.zmonitor.spi.MonitorSequenceHandler;
 import org.zmonitor.util.vtree.VersionTree;
 
@@ -12,7 +13,7 @@ import org.zmonitor.util.vtree.VersionTree;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class VersionTreeTimelineHandler implements MonitorSequenceHandler {
+public class VersionTreeTimelineHandler extends ZMBeanBase implements MonitorSequenceHandler {
 	
 	private VersionTree versionTree = new VersionTree();
 	
@@ -21,8 +22,5 @@ public class VersionTreeTimelineHandler implements MonitorSequenceHandler {
 	}
 	public synchronized void handle(MonitorSequence execTLine) {
 		versionTree.apply(execTLine);
-	}
-	public void destroy() {
-		
 	}
 }

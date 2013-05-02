@@ -15,16 +15,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.zmonitor.AlreadyStartedException;
-import org.zmonitor.ConfigSource;
-import org.zmonitor.Ignitor;
 import org.zmonitor.ZMonitor;
 import org.zmonitor.ZMonitorManager;
-import org.zmonitor.impl.NullConfigurator;
+import org.zmonitor.config.ConfigSource;
+import org.zmonitor.config.ConfigSources;
 import org.zmonitor.impl.StringName;
 import org.zmonitor.impl.ThreadLocalMonitorSequenceLifecycleManager;
-import org.zmonitor.impl.XmlConfiguratorLoader;
 import org.zmonitor.impl.ZMLog;
-import org.zmonitor.spi.Configurator;
 import org.zmonitor.spi.MonitorSequenceLifecycle;
 import org.zmonitor.spi.MonitorSequenceLifecycleManager;
 
@@ -41,43 +38,39 @@ public class ZMonitorServletFilter implements Filter {
 	
 	public void init(FilterConfig fConfig) throws ServletException {
 		// init ProfilingManager...
-		if(!ZMonitorManager.isInitialized()){
-			//TODO: get Configuration Source...
-			ConfigSource configSource = null;
-			
-			ZMonitorManager aZMonitorManager = new ZMonitorManager();
-			Configurator configurator = null;
-			try {
-				configurator = XmlConfiguratorLoader.loadForJavaEEWebApp(fConfig.getServletContext());
-			} catch (IOException e) {
-				ZMLog.warn(e, "Got some problem while reading: ",
-						XmlConfiguratorLoader.WEB_INF_ZMONITOR_XML, ", please make sure it is exist!");
-			}
-			if(configurator==null){
-				ZMLog.warn("cannot find Configuration:[",
-						XmlConfiguratorLoader.ZMONITOR_XML,
-						"] from current application context: ",ZMonitorServletFilter.class);
-				ZMLog.warn("System will get default configuration from: ",NullConfigurator.class);
-				ZMLog.warn("If you want to give your custom settings, " ,
-						"please give your own \"",XmlConfiguratorLoader.ZMONITOR_XML,"\" under /WEB-INF/");
-				configurator = new NullConfigurator();
-			}
-			
-			
-			aZMonitorManager.setConfigSource(configSource);
-			
-			
-			hReqMSLfManager = new HttpRequestMonitorSequenceLifecycleManager();
-			aZMonitorManager.setLifecycleManager(hReqMSLfManager);
-			try {
-				ZMonitorManager.init(aZMonitorManager);
-				isIgnitBySelf = true;
-			} catch (AlreadyStartedException e) {
-				ZMLog.info("already initialized by other place");
-			}
-			ZMLog.info(">> Ignit ZMonitor in: ",ZMonitorServletFilter.class.getCanonicalName());
+		if(ZMonitorManager.isInitialized())return;
+		
+		ZMonitorManager aZMonitorManager = new ZMonitorManager();
+		
+		//TODO: get Configuration Source...
+		ConfigSource configSource = null;
+		try {
+			configSource = ConfigSources.loadForJavaEEWebApp(fConfig.getServletContext());
+		} catch (IOException e) {
+			ZMLog.warn(e, "Got some problem while reading: ",
+					ConfigSource.WEB_INF_ZMONITOR_XML, ", please make sure it is exist!");
+		}
+		if(configSource==null){
+			ZMLog.warn("cannot find Configuration:[",
+					ConfigSource.ZMONITOR_XML,
+					"] from current application context: ",ZMonitorServletFilter.class);
+			ZMLog.warn("There's no configuration file loaded, the ZMonitorManager will be configured manually by developer himself.");
+			ZMLog.warn("If you want to do configuration by config file, " ,
+					"please give your own \"",ConfigSource.ZMONITOR_XML,"\" under /WEB-INF/");
 		}
 		
+		
+		aZMonitorManager.setConfigSource(configSource);
+		
+		hReqMSLfManager = new HttpRequestMonitorSequenceLifecycleManager();
+		aZMonitorManager.setLifecycleManager(hReqMSLfManager);
+		try {
+			ZMonitorManager.init(aZMonitorManager);
+			isIgnitBySelf = true;
+		} catch (AlreadyStartedException e) {
+			ZMLog.info("already initialized by other place");
+		}
+		ZMLog.info(">> Ignit ZMonitor in: ",ZMonitorServletFilter.class.getCanonicalName());
 	}
 	
 	public void destroy() {
@@ -123,45 +116,4 @@ public class ZMonitorServletFilter implements Filter {
 	    return reqUri;
 	}
 
-
-	/**
-	 * 
-	 *manage the construction and destruction of MonitorSequenceLifecycle in 
-	 * Java Servlet environment.
-	 * 
-	 * @author Ian YT Tsai(Zanyking)
-	 *
-	 */
-	static class HttpRequestMonitorSequenceLifecycleManager implements MonitorSequenceLifecycleManager{
-
-		private static final String KEY_REQ_MSL = "KEY_REQ_MSL";
-		private final ThreadLocalMonitorSequenceLifecycleManager thlTManager = 
-				new ThreadLocalMonitorSequenceLifecycleManager();
-			
-		
-		public MonitorSequenceLifecycle getLifecycle() {
-			HttpRequestContext ctx = HttpRequestContexts.get();
-			
-			MonitorSequenceLifecycle lfcycle = null;
-			if(ctx==null){
-				//this is not a Servlet thread, but a thread created by some part of a Java Web application.
-				lfcycle = thlTManager.getLifecycle();
-			}else{
-				lfcycle = (HttpRequestTimelineLifcycle) ctx.getRequest().getAttribute(KEY_REQ_MSL);	
-			}
-			
-			return lfcycle;
-		}
-		
-		public void initLifeCycle(HttpServletRequest req){
-			req.setAttribute(KEY_REQ_MSL, 
-				new HttpRequestTimelineLifcycle(
-						req.getRequestURL().toString()));
-		}
-		
-		public void disposeLifeCycle(HttpServletRequest req){
-			req.removeAttribute(KEY_REQ_MSL);
-		}
-		
-	}//end of class...
 }

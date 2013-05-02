@@ -4,23 +4,24 @@
  */
 package org.zmonitor;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.zmonitor.bean.ZMBean;
 import org.zmonitor.bean.ZMBeanRepository;
 import org.zmonitor.bean.ZMBeanRepositoryBase;
+import org.zmonitor.config.ConfigSource;
 import org.zmonitor.impl.ConfiguratorRepository;
 import org.zmonitor.impl.DefaultMeasurePointInfoFactory;
-import org.zmonitor.impl.XMLConfigurationImpl;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.spi.MonitorPointInfoFactory;
 import org.zmonitor.spi.MonitorSequenceHandler;
 import org.zmonitor.spi.MonitorSequenceLifecycle;
 import org.zmonitor.spi.MonitorSequenceLifecycleManager;
 import org.zmonitor.spi.Name;
-import org.zmonitor.spi.XMLConfiguration;
 
 
 /**
@@ -121,54 +122,35 @@ public final class ZMonitorManager {
 	public ZMonitorManager(){
 		fZMBeanRepository = new ZMBeanRepositoryBase(){
 			protected void doStart() {
-				super.doStart();
 				ZMLog.info("ZMonitor Ignition START... ");// will print out in any case, since there's no customized ZKLog here yet!
-					
-				if(configSource != null){
-					doXMLConfiguration(configSource);
-				}
 				
-				try {//TODO log4j shouldn't pollute this part of code...
-					Class.forName("org.zmonitor.logger.log4j.Driver");
-				} catch (Throwable e) {
-					ZMLog.info("log4j is not applicable in this environment: " +
-							e.getClass()+" : "+e.getMessage());
+				if(configSource != null){
+					ConfiguratorRepository cRepo = new ConfiguratorRepository();
+					cRepo.scan();
+					cRepo.performConfiguration(ZMonitorManager.this, configSource);
 				}
+				super.doStart();
 			}
 			
 		};
 	}
 
-	private void doXMLConfiguration(ConfigSource configSource){
-		XMLConfiguration conf;
-		try {
-			 conf = new XMLConfigurationImpl( 
-					configSource.getDOMRetriever());
-		} catch (IOException e) {
-			throw new IgnitionFailureException(e);
-		}
-		
-		ConfiguratorRepository cRepo = new ConfiguratorRepository();
-		cRepo.scan();
-		cRepo.performConfiguration(this, conf);
-	}
 	
 	private ZMonitorManager(ZMBeanRepository a){
 		fZMBeanRepository = a;
 	}
 	
-	//TODO got a feeling that this might cause a lot of trouble...
-//	@SuppressWarnings("rawtypes")
-//	private final Map<Class, CustomConfiguration> customConfigurations = 
-//		new LinkedHashMap<Class, CustomConfiguration>();
-//	
-//	@SuppressWarnings("unchecked")
-//	public <T extends CustomConfiguration> T getCustomConfiguration(Class<T> clazz){
-//		return (T) customConfigurations.get(clazz);
-//	}
-//	public void addCustomConfiguration(CustomConfiguration config){
-//		customConfigurations.put(config.getClass(), config);
-//	}
+	@SuppressWarnings("rawtypes")
+	private final Map<Class, CustomConfigurable> customConfigurations = 
+		new LinkedHashMap<Class, CustomConfigurable>();
+	
+	@SuppressWarnings("unchecked")
+	public <T extends CustomConfigurable> T getCustomConfiguration(Class<T> clazz){
+		return (T) customConfigurations.get(clazz);
+	}
+	public void addCustomConfiguration(CustomConfigurable config){
+		customConfigurations.put(config.getClass(), config);
+	}
 	
 	
 	private  MonitorPointInfoFactory monitorPointInfoFactory = new DefaultMeasurePointInfoFactory(); 
@@ -235,6 +217,32 @@ public final class ZMonitorManager {
 	public void stop() {
 		fZMBeanRepository.stop();
 	}
+	/**
+	 * @param tClz bean type.
+	 * @return every bean that matches the given type, size could be 0~n.
+	 */
+	public <T> List<T> getBeans(Class<T> tClz) {
+		return fZMBeanRepository.get(tClz);
+	}
+	/**
+	 * get bean by type.
+	 * @param tClz
+	 * @return the bean if single, the first element if multiple, null if empty. 
+	 */
+	public <T> T getBeanIfAny(Class<T> tClz){
+		List<T> li = getBeans(tClz);
+		if(li.isEmpty())return  null;
+		return li.get(0);
+	}
+	/**
+	 * register a bean if it is a ZMBean, otherwise do nothing. 
+	 * @param bean
+	 */
+	public void register(Object bean){
+		if(bean instanceof ZMBean){
+			fZMBeanRepository.add((ZMBean) bean);	
+		}
+	}
 
 }//end of class
 /**
@@ -244,7 +252,7 @@ public final class ZMonitorManager {
  */
 class NoOpZMBeanRepository implements ZMBeanRepository{
 
-	public <T> Collection<T> get(Class<T> clz) {return Collections.EMPTY_LIST;}
+	public <T> List<T> get(Class<T> clz) {return Collections.emptyList();}
 	public <T> T get(String id) {return null;}
 	public void add(ZMBean zmBean) {}
 	public void remove(String id) {}

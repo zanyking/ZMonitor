@@ -75,9 +75,9 @@
 	</agent-conf>
 	
 	<!-- 
-	configuration is a way to configure and customize ZMonitor Components  
-		+. the Identity of a configuration is it's qualified class name.
-		+. org.zkoss.monitor.web.JavaWebConfiguration and org.zkoss.monitor.web.zk.ZKInterceptorConfiguration are the two already existed.
+	configuration is a way to configure, customize and provide context environment to ZMonitor  
+		+. the Identity of a configuration is it's full qualified class name.
+		+. org.zmonitor.web.JavaWebConfiguration and org.zkoss.monitor.web.zk.ZKInterceptorConfiguration are the two already existed.
 		+. configuration is a ZMonitor Component with lifecycle, it can be initialized and destroyed at Runtime.
 		+. url-filter is used to determine an incoming request "should accept" by ZMonitor.
 			for example, if url-filer has rule=["not"|null] and mode=["or"|"and"], that means:
@@ -134,42 +134,45 @@
 	 -->
 	
 	
+	<!-- <monitor-sequence-pipe>
+		Is designed for (sync|async) MS processing, spooling,  
 	
+	 -->
 	
-	<!--
-	 <timeline-handler> is designed to handle incoming timeline instance.
-	 	+. the handle(Timeline) method must be implemented in a thread safe manor.
-	 	+. For Customization, Timeline handler can implement Configuration interface to make it's self configurable.   
-	 	+. Timeline Handler is a ZMonitor Component with lifecycle, it can be initialized and destroyed at Runtime. 
+	<!-- <monitor-sequence-handler>
+	  is designed to handle incoming monitor sequence instance.
+	 	+. the handle(monitor sequence) method must be implemented in a thread safe manor.
+	 	+. For Customization, monitor sequence handler can implement Configuration interface to make it's self configurable.   
+	 	+. MonitorSequenceHandler is a ZMBean, which can be initialized and destroyed at runtime. 
 	 -->
 	 <!-- 	
-	<timeline-handler name="console" 
+	<monitor-sequence-handler name="console" 
 		class="org.zkoss.monitor.handler.ToStringTimelineHandler"/>
  		-->
  		
 	 
 	<!-- *********** Java Object Socket streaming *********** -->
 	<!----> 	 
-	<timeline-handler name="transmission" 
+	<monitor-sequence-handler name="transmission" 
 		class="org.zkoss.monitor.handler.TransmissionTimelineHandler"/>
 	 	
 
 	<!-- 
-	<timeline-handler name="vtree-WEB" class="org.zkoss.monitor.handler.VersionTreeTimelineHandler"/>
+	<monitor-sequence-handler name="vtree-WEB" class="org.zkoss.monitor.handler.VersionTreeTimelineHandler"/>
 	 -->
 	 
 	 <!-- 
-	<timeline-handler name="zul-WEB" class="org.zkoss.monitor.handler.ZulLog4jTimelineHandler"/>
+	<monitor-sequence-handler name="zul-WEB" class="org.zkoss.monitor.handler.ZulLog4jTimelineHandler"/>
 	 -->
 	 
 	 <!-- *********** A RESTful service *********** -->
 	 <!-- 
-	<timeline-handler name="http-post-WEB" class="org.zkoss.monitor.handler.HttpPostTimelineHandler">
+	<monitor-sequence-handler name="http-post-WEB" class="org.zkoss.monitor.handler.HttpPostTimelineHandler">
 		<property name="protocol" value="http"/>
 		<property name="host" value="localhost"/>
 		<property name="port" value="8080"/>
 		<property name="path" ><![CDATA[/zmonitor/zanalyzerDummyService?&clientId=ZM_node_11]]></property>
-	</timeline-handler>
+	</monitor-sequence-handler>
 	  -->
 
 

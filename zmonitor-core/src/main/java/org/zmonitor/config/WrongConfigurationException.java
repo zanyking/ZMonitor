@@ -2,7 +2,7 @@
  * 2011/4/4
  * 
  */
-package org.zmonitor;
+package org.zmonitor.config;
 
 /**
  * 

@@ -10,7 +10,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.w3c.dom.Node;
-import org.zmonitor.WrongConfigurationException;
+import org.zmonitor.config.WrongConfigurationException;
 import org.zmonitor.util.DOMs;
 import org.zmonitor.util.PropertySetter;
 import org.zmonitor.util.Strings;

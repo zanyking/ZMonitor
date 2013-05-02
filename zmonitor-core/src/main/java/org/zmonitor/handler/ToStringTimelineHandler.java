@@ -7,20 +7,19 @@ package org.zmonitor.handler;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.w3c.dom.Node;
+import org.zmonitor.CustomConfigurable;
 import org.zmonitor.MonitorPoint;
 import org.zmonitor.MonitorSequence;
-import org.zmonitor.ZMonitorManager;
-import org.zmonitor.spi.CustomConfiguration;
+import org.zmonitor.bean.ZMBeanBase;
+import org.zmonitor.spi.ConfigContext;
 import org.zmonitor.spi.MonitorSequenceHandler;
-import org.zmonitor.spi.XMLConfiguration;
 import org.zmonitor.util.Strings;
 
 /**
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class ToStringTimelineHandler implements MonitorSequenceHandler, CustomConfiguration {
+public class ToStringTimelineHandler extends ZMBeanBase implements MonitorSequenceHandler, CustomConfigurable {
 	private static final SimpleDateFormat HHmmssSSS_yyyy_MM_dd = new SimpleDateFormat("HH:mm:ss:SSS yyyy/MM/dd");
 	public ToStringTimelineHandler(){}
 	
@@ -64,16 +63,11 @@ public class ToStringTimelineHandler implements MonitorSequenceHandler, CustomCo
 			write(sb, child, childPrefix, indent);
 		}
 	}
-	public void destroy() {
-		//Do nothing...
-	}
 
-	
-
-	public void apply(ZMonitorManager manager, XMLConfiguration config,
-			Node configNode) {
+	public void configure(ConfigContext webConf) {
 		// TODO Auto-generated method stub
-		
 	}
+
+
 
 }

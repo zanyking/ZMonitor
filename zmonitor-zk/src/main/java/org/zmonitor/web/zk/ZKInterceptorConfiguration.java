@@ -5,16 +5,16 @@
 package org.zmonitor.web.zk;
 
 import org.w3c.dom.Node;
-import org.zmonitor.WrongConfigurationException;
+import org.zmonitor.CustomConfigurable;
 import org.zmonitor.ZMonitorManager;
-import org.zmonitor.spi.CustomConfiguration;
+import org.zmonitor.config.WrongConfigurationException;
 import org.zmonitor.spi.XMLConfiguration;
 
 /**
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class ZKInterceptorConfiguration implements CustomConfiguration {
+public class ZKInterceptorConfiguration implements CustomConfigurable {
 
 	public void apply(ZMonitorManager manager,  XMLConfiguration config, Node configNode) {
 		//DO nothing now.

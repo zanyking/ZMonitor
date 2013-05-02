@@ -6,13 +6,9 @@ package org.zkoss.monitor.agent;
 import static org.zmonitor.impl.XMLConfigs.applyAttributesToBean;
 
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.zmonitor.ZMonitorManager;
-import org.zmonitor.impl.XmlConfiguratorLoader;
 import org.zmonitor.spi.XMLConfiguration;
-import org.zmonitor.util.DOMRetriever;
 import org.zmonitor.util.PropertySetter;
-import org.zmonitor.util.Strings;
 
 /**
  * @author Ian YT Tsai(Zanyking)

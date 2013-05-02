@@ -1,9 +1,8 @@
-package org.zmonitor.impl.config;
+package org.zmonitor.config;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.zmonitor.ConfigSource;
 import org.zmonitor.util.DOMRetriever;
 /**
  * 
@@ -29,4 +28,7 @@ public class InputStreamConfigSource implements ConfigSource {
 		return xmlDoc;
 	}
 
+	public boolean hasConfiguration(){
+		return in!=null;
+	}
 }

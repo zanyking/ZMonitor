@@ -1,12 +1,11 @@
 /**
  * 
  */
-package org.zmonitor.impl.config;
+package org.zmonitor.config;
 
 import java.io.IOException;
 import java.net.URL;
 
-import org.zmonitor.ConfigSource;
 import org.zmonitor.util.DOMRetriever;
 
 /**

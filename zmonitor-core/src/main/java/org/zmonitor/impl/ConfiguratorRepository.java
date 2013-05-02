@@ -14,7 +14,7 @@ import java.util.List;
 
 import org.zmonitor.IgnitionFailureException;
 import org.zmonitor.ZMonitorManager;
-import org.zmonitor.spi.ConfigurationError;
+import org.zmonitor.config.ConfigSource;
 import org.zmonitor.spi.Configurator;
 import org.zmonitor.spi.XMLConfiguration;
 /**
@@ -25,12 +25,11 @@ import org.zmonitor.spi.XMLConfiguration;
  *
  */
 public class ConfiguratorRepository {
-	private static final String CONFIG_PROPS = "META-INF/services/config.properties";
-	private static final String CONFIGURATORS = "configurators";
-	private static final String KEY_CONFIG_URL = "__configURL";
+	static final String CONFIG_PROPS = "META-INF/services/config.properties";
+	static final String KEY_CONFIG_URL = "__configURL";
 	
-	private List<ConfiguratorContextImpl> confCtxs = 
-			new ArrayList<ConfiguratorContextImpl>(10);
+	private List<JarContext> jarCtxs = 
+			new ArrayList<JarContext>(10);
 	
 	/**
 	 * 1. Scan all META-INF/zmonitor/config.properties
@@ -52,37 +51,33 @@ public class ConfiguratorRepository {
 		while(confUrls.hasMoreElements()){
 			// each zmonitor-xxx.jar might has one config.props
 			URL url = confUrls.nextElement();
-			ConfiguratorContextImpl cCtxt = new ConfiguratorContextImpl();
-			cCtxt.set(KEY_CONFIG_URL, url.toString());
-			initConfigCtxt(cCtxt, url);
-			confCtxs.add(cCtxt);
+			JarContext jCtx = new JarContext();
+			jCtx.set(KEY_CONFIG_URL, url.toString());
+			initJarContext(jCtx, url);
+			jarCtxs.add(jCtx);
 		}
 	}
 	
 	/**
 	 * 
 	 * @param manager
-	 * @param configuration
+	 * @param configSource
 	 */
-	public void performConfiguration(ZMonitorManager manager, XMLConfiguration configuration){
-		for (ConfiguratorContextImpl confCtx : confCtxs) {
-			confCtx.setConfiguration(configuration);
-			confCtx.setManager(manager);
-			try {
-				String val = confCtx.get(CONFIGURATORS);
-				if(val==null){
-					throw new ConfigurationError(
-							"must declare ["+CONFIGURATORS+ "] in: "+confCtx.get(KEY_CONFIG_URL));
-				}
+	public void performConfiguration(ZMonitorManager manager, ConfigSource configSource){
+		XMLConfiguration conf;
+		try {
+			 conf = new XMLConfigurationImpl( 
+					configSource.getDOMRetriever());
+		} catch (IOException e) {
+			throw new IgnitionFailureException(e);
+		}
+		
+		for (JarContext jCtx : jarCtxs) {
+			for(Configurator configurator : jCtx.getConfigurators()){
+				ConfigContextImpl impl = 
+					new ConfigContextImpl(jCtx.getAttrs(), manager, conf);
 				
-				String[] clzArr = val.split("[,]");
-				for(String clzStr : clzArr){
-					Configurator configurator = 
-						(Configurator) Class.forName(clzStr).newInstance();
-					configurator.configure(confCtx);
-				}
-			} catch (Exception e) {
-				throw new ConfigurationError(e);
+				configurator.configure(impl);
 			}
 		}
 	}
@@ -96,17 +91,17 @@ public class ConfiguratorRepository {
 	 * 	<li> the first equal sign( = ) will be treated as the separator.
 	 * 	<li>key should not contain any spaces or tabs.
 	 * </ul>
-	 * @param def
+	 * @param jCtx
 	 * @param url
 	 */
-	private static void initConfigCtxt(ConfiguratorContextImpl def, URL url){
+	private static void initJarContext(JarContext jCtx, URL url){
 		InputStream in = null;
 		BufferedReader r = null;
 		try {
 		    in = url.openStream();
 		    r = new BufferedReader(new InputStreamReader(in, "utf-8"));
 		    int lc = 1;
-		    while ((lc = parseLine(def, url, r, lc)) >= 0);
+		    while ((lc = parseLine(jCtx, url, r, lc)) >= 0);
 		    
 		} catch (IOException e) {
 			ZMLog.warn(e, "error happened while reading resource: ", url);
@@ -123,14 +118,14 @@ public class ConfiguratorRepository {
 	 * # is for comment 
 	 * UTF-8 encoded
 	 * 
-	 * @param def
+	 * @param jCtx
 	 * @param url
 	 * @param r
 	 * @param lc
 	 * @return
 	 * @throws IOException
 	 */
-	private static int parseLine(ConfiguratorContextImpl def, URL url,
+	private static int parseLine(JarContext jCtx, URL url,
 			BufferedReader r, int lc) throws IOException {
 		// TODO Auto-generated method stub
 		String ln = r.readLine();
@@ -150,7 +145,7 @@ public class ConfiguratorRepository {
 				throw new Error("Illegal config syntax, no empty or tab allowed in key");
 			
 			String value = ln.substring(eqPos+1, ln.length());
-			def.set(key, value);
+			jCtx.set(key, value);
 		}
 		return lc+1;
 	}

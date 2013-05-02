@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.zmonitor;
+package org.zmonitor.config;
 
 import java.io.IOException;
 

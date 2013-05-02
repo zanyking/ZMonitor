@@ -6,17 +6,16 @@ package org.zmonitor.handler;
 import org.w3c.dom.Node;
 import org.zmonitor.MonitorSequence;
 import org.zmonitor.ZMonitorManager;
-import org.zmonitor.spi.CustomConfiguration;
+import org.zmonitor.bean.ZMBeanBase;
 import org.zmonitor.spi.MonitorSequenceHandler;
 import org.zmonitor.spi.XMLConfiguration;
-import org.zmonitor.util.DOMRetriever;
 import org.zmonitor.util.concurrent.AsyncGroupingPipe;
 
 /**
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public abstract class NonblockingMonitorSequenceHandler implements MonitorSequenceHandler{
+public abstract class NonblockingMonitorSequenceHandler extends ZMBeanBase implements MonitorSequenceHandler{
 
 	protected AsyncGroupingPipe<MonitorSequence> asyncGroupPipe;
 	

@@ -2,7 +2,7 @@
  * 2011/10/11
  * 
  */
-package org.zmonitor.spi;
+package org.zkoss.monitor.agent;
 
 import org.zmonitor.ZMonitorManager;
 

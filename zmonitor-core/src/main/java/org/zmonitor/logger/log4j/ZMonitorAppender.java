@@ -12,19 +12,19 @@ import org.apache.log4j.spi.LocationInfo;
 import org.apache.log4j.spi.LoggingEvent;
 import org.zmonitor.AlreadyStartedException;
 import org.zmonitor.IgnitionFailureException;
-import org.zmonitor.Ignitor;
 import org.zmonitor.MonitorSequence;
 import org.zmonitor.ZMonitor;
 import org.zmonitor.ZMonitorManager;
+import org.zmonitor.config.ConfigSource;
+import org.zmonitor.config.ConfigSources;
+import org.zmonitor.impl.CoreConfigurator;
 import org.zmonitor.impl.JavaName;
 import org.zmonitor.impl.StringName;
 import org.zmonitor.impl.ThreadLocalMonitorSequenceLifecycleManager;
-import org.zmonitor.impl.CoreConfigurator;
-import org.zmonitor.impl.XmlConfiguratorLoader;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.logger.log4j.NdcContext.NdcObj;
-import org.zmonitor.spi.Name;
 import org.zmonitor.spi.MonitorSequenceLifecycle;
+import org.zmonitor.spi.Name;
 import org.zmonitor.util.Strings;
 
 /**
@@ -103,13 +103,12 @@ public class ZMonitorAppender extends AppenderSkeleton {
 		super.activateOptions();
 		if(ZMonitorManager.isInitialized())return;
 		try {
-			//TODO create configuration Source...
-			final CoreConfigurator xmlCofig = XmlConfiguratorLoader.loadForPureJavaProgram();
-			if(xmlCofig==null)
-				throw new IgnitionFailureException("cannot find Configuration:["+
-						XmlConfiguratorLoader.ZMONITOR_XML+
-						"] from current application context: "+this.getClass());
 			ZMonitorManager aZMonitorManager = new ZMonitorManager();
+			//TODO create configuration Source...
+			final ConfigSource configSrc = ConfigSources.loadForSimpleJavaProgram();
+			if(configSrc!=null){
+				aZMonitorManager.setConfigSource(configSrc);
+			}
 			aZMonitorManager.setLifecycleManager(new ThreadLocalMonitorSequenceLifecycleManager());
 			ZMonitorManager.init(aZMonitorManager);
 			isIgnitBySelf = true;

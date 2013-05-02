@@ -3,7 +3,7 @@
  */
 package org.zmonitor.bean;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * A repository designed to manage {@link ZMBean} lifecycle<br> 
@@ -19,7 +19,7 @@ public interface ZMBeanRepository extends LifeCycle{
 	 * @param clz
 	 * @return
 	 */
-	public <T> Collection<T> get(Class<T> clz);
+	public <T> List<T> get(Class<T> clz);
 	
 	/**
 	 * 

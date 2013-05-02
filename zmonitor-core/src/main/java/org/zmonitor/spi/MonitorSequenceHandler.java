@@ -1,4 +1,4 @@
-/**TimelineHandler.java
+/**
  * 2011/3/5
  * 
  */
@@ -13,7 +13,7 @@ import org.zmonitor.bean.ZMBean;
  * <ol>
  * <li> The name of a MonitorSequenceHandler should point out the destination e.g: Database, Http, Socket, RMI, File.</li>
  * <li> The internal architecture design of MonitorSequenceHandler must let user be able to define the data format that they want to used.</li>
- * <li> To provide user a way to do the configuration, please make the sub class implements {@link org.zmonitor.spi.CustomConfiguration CustomConfiguration}</li>
+ * <li> To provide user a way to do the configuration, please make the sub class implements {@link org.zmonitor.CustomConfigurable CustomConfiguration}</li>
  * <li> Only a few orthogonal features that can shared between handlers, for example:
  * 		<ul>
  *		<li> Asynchronous processing Module: Incoming MonitorSequences will be queued and consumed by different thread.        

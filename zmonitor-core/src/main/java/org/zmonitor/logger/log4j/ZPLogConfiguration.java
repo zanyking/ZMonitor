@@ -5,17 +5,15 @@
 package org.zmonitor.logger.log4j;
 
 import org.apache.log4j.Logger;
-import org.w3c.dom.Node;
-import org.zmonitor.ZMonitorManager;
+import org.zmonitor.CustomConfigurable;
 import org.zmonitor.impl.ZMLog;
-import org.zmonitor.spi.CustomConfiguration;
-import org.zmonitor.spi.XMLConfiguration;
+import org.zmonitor.spi.ConfigContext;
 
 /**
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class ZPLogConfiguration implements CustomConfiguration {
+public class ZPLogConfiguration implements CustomConfigurable {
 	
 	private boolean enable = true;
 	public boolean isEnable() {
@@ -24,11 +22,10 @@ public class ZPLogConfiguration implements CustomConfiguration {
 	public void setEnable(boolean enable) {
 		this.enable = enable;
 	}
-	public void apply(ZMonitorManager manager, XMLConfiguration config,
-			Node configNode) {
+	public void configure(ConfigContext webConf) {
 		if(enable){
 			ZMLog.setLogCore(new LoggerLogDevice(Logger.getLogger(ZMLog.class)));
-		}
+		}		
 	}
 	
 	
