@@ -4,11 +4,8 @@
  */
 package org.zmonitor;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.zmonitor.bean.ZMBean;
 import org.zmonitor.bean.ZMBeanRepository;
@@ -16,6 +13,8 @@ import org.zmonitor.bean.ZMBeanRepositoryBase;
 import org.zmonitor.config.ConfigSource;
 import org.zmonitor.impl.ConfiguratorRepository;
 import org.zmonitor.impl.DefaultMeasurePointInfoFactory;
+import org.zmonitor.impl.MSPipeProvider;
+import org.zmonitor.impl.MSPipeProvider.MSPipe;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.spi.MonitorPointInfoFactory;
 import org.zmonitor.spi.MonitorSequenceHandler;
@@ -118,6 +117,15 @@ public final class ZMonitorManager {
 	}
 	
 	private final ZMBeanRepository fZMBeanRepository;
+	private MSPipe msPipe;
+	public void setMSPipe(MSPipe pipe) {
+		msPipe = pipe;
+		fZMBeanRepository.add(msPipe);
+	}
+	public MSPipe getMSPipe(){
+		return msPipe;
+	}
+	
 	
 	public ZMonitorManager(){
 		fZMBeanRepository = new ZMBeanRepositoryBase(){
@@ -139,30 +147,6 @@ public final class ZMonitorManager {
 	private ZMonitorManager(ZMBeanRepository a){
 		fZMBeanRepository = a;
 	}
-	
-	@SuppressWarnings("rawtypes")
-	private final Map<Class, CustomConfigurable> customConfigurations = 
-		new LinkedHashMap<Class, CustomConfigurable>();
-	
-	@SuppressWarnings("unchecked")
-	public <T extends CustomConfigurable> T getCustomConfiguration(Class<T> clazz){
-		return (T) customConfigurations.get(clazz);
-	}
-	public void addCustomConfiguration(CustomConfigurable config){
-		customConfigurations.put(config.getClass(), config);
-	}
-	
-	
-	private  MonitorPointInfoFactory monitorPointInfoFactory = new DefaultMeasurePointInfoFactory(); 
-	public  MonitorPointInfoFactory getMeasurePointInfoFactory() {
-		return monitorPointInfoFactory;
-	}
-	public  void setMonitorPointInfoFactory(MonitorPointInfoFactory mpInfoFac) {
-		ZMLog.debug("ZMonitorManager::MPInfoFactory = "+mpInfoFac);
-		monitorPointInfoFactory = mpInfoFac;
-	}
-	
-
 	public void addMonitorSequenceHandler( MonitorSequenceHandler handler) {
 		ZMLog.debug("ZMonitorManager::addMonitorSequenceHandler: " +
 				handler.getId()+" = "+handler);
@@ -172,38 +156,8 @@ public final class ZMonitorManager {
 		fZMBeanRepository.remove(name);
 	}
 	public void handle(MonitorSequence mSquence) {
-		Collection<MonitorSequenceHandler> handlers = 
-			fZMBeanRepository.get(MonitorSequenceHandler.class);
-		
-		//TODO: sync or Async? that's the problem.
+		getMSPipe().pipe(mSquence);
 	}
-	
-	
-	private MonitorSequenceLifecycleManager lifecycleManager;
-	/**
-	 * this is a life-cycle method which will be called while ignition, should not be called in general customization.
-	 * @param lifecycleManager
-	 */
-	public void setLifecycleManager(
-			MonitorSequenceLifecycleManager lifecycleManager) {
-		this.lifecycleManager = lifecycleManager;
-	}
-	public MonitorSequenceLifecycleManager getLifecycleManager() {
-		return lifecycleManager;
-	}
-	public MonitorSequenceLifecycle getMonitorSequenceLifecycle() {
-		return getLifecycleManager().getLifecycle();
-	}
-
-	
-	private ConfigSource configSource;
-	public ConfigSource getConfigSource() {
-		return configSource;
-	}
-	public void setConfigSource(ConfigSource configSource) {
-		this.configSource = configSource;
-	}
-
 
 	public boolean isStarted() {
 		return fZMBeanRepository.isStarted();
@@ -238,11 +192,58 @@ public final class ZMonitorManager {
 	 * register a bean if it is a ZMBean, otherwise do nothing. 
 	 * @param bean
 	 */
-	public void register(Object bean){
+	public void accept(Object bean){
 		if(bean instanceof ZMBean){
-			fZMBeanRepository.add((ZMBean) bean);	
+			register((ZMBean) bean);	
 		}
 	}
+	/**
+	 * 
+	 * @param bean
+	 */
+	public void register(ZMBean bean){
+		fZMBeanRepository.add(bean);
+	}
+	
+	
+	//TODO doesn't seem to be a unique object
+	private  MonitorPointInfoFactory monitorPointInfoFactory = new DefaultMeasurePointInfoFactory(); 
+	public  MonitorPointInfoFactory getMeasurePointInfoFactory() {
+		return monitorPointInfoFactory;
+	}
+	public  void setMonitorPointInfoFactory(MonitorPointInfoFactory mpInfoFac) {
+		ZMLog.debug("ZMonitorManager::MPInfoFactory = "+mpInfoFac);
+		monitorPointInfoFactory = mpInfoFac;
+	}
+	
+	private MonitorSequenceLifecycleManager lifecycleManager;
+	/**
+	 * this is a life-cycle method which will be called while ignition, should not be called in general customization.
+	 * @param lifecycleManager
+	 */
+	public void setLifecycleManager(
+			MonitorSequenceLifecycleManager lifecycleManager) {
+		this.lifecycleManager = lifecycleManager;
+	}
+	public MonitorSequenceLifecycleManager getLifecycleManager() {
+		return lifecycleManager;
+	}
+	public MonitorSequenceLifecycle getMonitorSequenceLifecycle() {
+		return getLifecycleManager().getLifecycle();
+	}
+
+	
+	private ConfigSource configSource;
+	public ConfigSource getConfigSource() {
+		return configSource;
+	}
+	public void setConfigSource(ConfigSource configSource) {
+		this.configSource = configSource;
+	}
+	
+	
+
+
 
 }//end of class
 /**

@@ -3,19 +3,19 @@
  */
 package org.zmonitor.handler;
 
-import org.w3c.dom.Node;
+import org.zmonitor.CustomConfigurable;
 import org.zmonitor.MonitorSequence;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.bean.ZMBeanBase;
+import org.zmonitor.config.ConfigContext;
 import org.zmonitor.spi.MonitorSequenceHandler;
-import org.zmonitor.spi.XMLConfiguration;
 import org.zmonitor.util.concurrent.AsyncGroupingPipe;
 
 /**
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public abstract class NonblockingMonitorSequenceHandler extends ZMBeanBase implements MonitorSequenceHandler{
+public abstract class NonblockingMonitorSequenceHandler extends ZMBeanBase implements MonitorSequenceHandler, CustomConfigurable{
 
 	protected AsyncGroupingPipe<MonitorSequence> asyncGroupPipe;
 	
@@ -59,12 +59,11 @@ public abstract class NonblockingMonitorSequenceHandler extends ZMBeanBase imple
 	
 	/*
 	 * (non-Javadoc)
-	 * @see org.zmonitor.CustomConfiguration#apply(org.zmonitor.ZMonitorManager, org.zmonitor.util.DOMRetriever, org.w3c.dom.Node)
+	 * @see org.zmonitor.CustomConfigurable#configure(org.zmonitor.config.ConfigContext)
 	 */
-	public void apply(final ZMonitorManager manager, XMLConfiguration config,
-			Node configNode) {
+	public void configure(ConfigContext configCtx) {
 		asyncGroupPipe = new AsyncGroupingPipe<MonitorSequence>(
-				threshold, waitMillis, newExecutor(manager));
+				threshold, waitMillis, newExecutor(configCtx.getManager()));
 	}
 	/*
 	 * (non-Javadoc)
@@ -73,10 +72,7 @@ public abstract class NonblockingMonitorSequenceHandler extends ZMBeanBase imple
 	public void handle(MonitorSequence tLine)  {
 		asyncGroupPipe.push(tLine);
 	}
-	/*
-	 * (non-Javadoc)
-	 * @see org.zmonitor.TimelineHandler#destroy()
-	 */
+
 	public void destroy() {
 		asyncGroupPipe.flush();
 	}

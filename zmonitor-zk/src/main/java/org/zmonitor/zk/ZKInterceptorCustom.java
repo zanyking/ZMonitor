@@ -2,21 +2,20 @@
  * 2011/4/5
  * 
  */
-package org.zmonitor.web.zk;
+package org.zmonitor.zk;
 
-import org.w3c.dom.Node;
 import org.zmonitor.CustomConfigurable;
-import org.zmonitor.ZMonitorManager;
+import org.zmonitor.bean.ZMBeanBase;
+import org.zmonitor.config.ConfigContext;
 import org.zmonitor.config.WrongConfigurationException;
-import org.zmonitor.spi.XMLConfiguration;
 
 /**
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class ZKInterceptorConfiguration implements CustomConfigurable {
-
-	public void apply(ZMonitorManager manager,  XMLConfiguration config, Node configNode) {
+public class ZKInterceptorCustom extends ZMBeanBase implements CustomConfigurable {
+	
+	public void configure(ConfigContext configCtx) {
 		//DO nothing now.
 	}
 	private ZKInterceptorMPRenderer mpRenderer = new ZKInterceptorMPRenderer();
@@ -95,6 +94,7 @@ public class ZKInterceptorConfiguration implements CustomConfigurable {
 	public void setRenderMonitorAsyncUpdate(boolean renderMonitorAsyncUpdate) {
 		this.renderMonitorAsyncUpdate = renderMonitorAsyncUpdate;
 	}
+	
 	
 	
 }

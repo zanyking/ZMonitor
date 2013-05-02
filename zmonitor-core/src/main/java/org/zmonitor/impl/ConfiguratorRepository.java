@@ -12,11 +12,13 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+import org.w3c.dom.Node;
 import org.zmonitor.IgnitionFailureException;
 import org.zmonitor.ZMonitorManager;
+import org.zmonitor.config.ConfigContext;
 import org.zmonitor.config.ConfigSource;
 import org.zmonitor.spi.Configurator;
-import org.zmonitor.spi.XMLConfiguration;
+import org.zmonitor.util.DOMRetriever;
 /**
  * to make ZMonitor be adaptable to various container & logger, modulization is required.<br> 
  * this class is a helper class to collect {@link Configurator} implementation from META-INF/zmonitor/configurator  
@@ -25,9 +27,9 @@ import org.zmonitor.spi.XMLConfiguration;
  *
  */
 public class ConfiguratorRepository {
-	static final String CONFIG_PROPS = "META-INF/services/config.properties";
+	static final String CONFIG_PROPS = "META-INF/zmonitor/config.properties";
 	static final String KEY_CONFIG_URL = "__configURL";
-	
+	private static final String ABS_PROFILING_MANAGER = "/zmonitor";
 	private List<JarContext> jarCtxs = 
 			new ArrayList<JarContext>(10);
 	
@@ -51,6 +53,7 @@ public class ConfiguratorRepository {
 		while(confUrls.hasMoreElements()){
 			// each zmonitor-xxx.jar might has one config.props
 			URL url = confUrls.nextElement();
+			ZMLog.info("load zmonitor configurators from: ", url);
 			JarContext jCtx = new JarContext();
 			jCtx.set(KEY_CONFIG_URL, url.toString());
 			initJarContext(jCtx, url);
@@ -64,24 +67,22 @@ public class ConfiguratorRepository {
 	 * @param configSource
 	 */
 	public void performConfiguration(ZMonitorManager manager, ConfigSource configSource){
-		XMLConfiguration conf;
+		DOMRetriever domRetriever;
 		try {
-			 conf = new XMLConfigurationImpl( 
-					configSource.getDOMRetriever());
+			domRetriever = configSource.getDOMRetriever();
 		} catch (IOException e) {
 			throw new IgnitionFailureException(e);
 		}
-		
+		ConfigContext confCtx;
 		for (JarContext jCtx : jarCtxs) {
 			for(Configurator configurator : jCtx.getConfigurators()){
-				ConfigContextImpl impl = 
-					new ConfigContextImpl(jCtx.getAttrs(), manager, conf);
-				
-				configurator.configure(impl);
+				confCtx = new ConfigContextImpl(jCtx.getAttrs(), manager, domRetriever, null);
+				confCtx = confCtx.toNode(ABS_PROFILING_MANAGER);//to <zmonitor> element.
+				configurator.configure(confCtx);
+				manager.accept(configurator);// test if configurator is a ZMBean.
 			}
 		}
 	}
-	
 	
 	/**
 	 * the format of config.properties
@@ -113,11 +114,11 @@ public class ConfiguratorRepository {
 				ZMLog.warn(y, "error happened while reading resource: ",  url);
 			}
 		}
+		jCtx.init();
 	}
 	/**
 	 * # is for comment 
 	 * UTF-8 encoded
-	 * 
 	 * @param jCtx
 	 * @param url
 	 * @param r

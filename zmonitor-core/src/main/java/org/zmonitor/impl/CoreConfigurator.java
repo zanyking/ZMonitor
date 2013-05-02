@@ -9,15 +9,17 @@ import static org.zmonitor.impl.XMLConfigs.newInstanceByClassAttr;
 
 import org.w3c.dom.Node;
 import org.zmonitor.CustomConfigurable;
+import org.zmonitor.config.ConfigContext;
+import org.zmonitor.config.ConfigContext.Visitor;
+import org.zmonitor.config.Configs;
 import org.zmonitor.config.WrongConfigurationException;
-import org.zmonitor.spi.ConfigContext;
+import org.zmonitor.impl.MSPipeProvider.MSPipe;
+import org.zmonitor.impl.MSPipeProvider.Mode;
 import org.zmonitor.spi.Configurator;
 import org.zmonitor.spi.MonitorPointInfoFactory;
 import org.zmonitor.spi.MonitorSequenceHandler;
-import org.zmonitor.spi.XMLConfiguration.Visitor;
 import org.zmonitor.util.DOMs;
 import org.zmonitor.util.PropertySetter;
-import org.zmonitor.web.JavaWebConfiguration;
 
 /**
  * 
@@ -27,35 +29,28 @@ import org.zmonitor.web.JavaWebConfiguration;
  */
 public class CoreConfigurator  implements Configurator {
 	
-	private static final String ABS_PROFILING_MANAGER = "/zmonitor";
 	
 	public static final String REL_MEASURE_POINT_INFO_FACTORY = "mp-info-factory";
 	public static final String REL_TIMELINE_HANDLER = "monitor-sequence-handler";
+//	public static final String REL_MS_PIPE = "monitor-sequence-pipe";
 	
-	public static final String REL_WEB_CONF = "web-conf";
 	
-	public void configure(ConfigContext configCtx) {
-		ConfigContext  monitorMgmt = configCtx.query(ABS_PROFILING_MANAGER);
-		
-		prepareWebConf(monitorMgmt);
+	public void configure(ConfigContext monitorMgmt) {
+		prepareMSPipe(monitorMgmt);
 		prepareMPointInfoFacotry(monitorMgmt);
 		prepareMSHandlers(monitorMgmt);
 	}
 
-	private static void prepareWebConf(ConfigContext  monitorMgmt){
-		ConfigContext webConf = monitorMgmt.query(REL_WEB_CONF);
-		
-		if(webConf.getNode()==null)return;//use default...
-		
-		//TODO: Be careful of introducing sub packages stuff inside, it might not work.  
-		initCustomConfiguration(webConf, new JavaWebConfiguration(), true);
+	private static void prepareMSPipe(ConfigContext  monitorMgmt){
+		//TODO: make mode configurable...
+		MSPipe pipe = MSPipeProvider.getPipe(Mode.SYNC);
+		Configs.initCustomConfigurable(monitorMgmt, pipe, false);
+		monitorMgmt.getManager().setMSPipe(pipe);
 	}
-	
-		
 	
 	private static void prepareMPointInfoFacotry(ConfigContext  monitorMgmt){
 		
-		ConfigContext mpInfoFac = monitorMgmt.query(REL_MEASURE_POINT_INFO_FACTORY);
+		ConfigContext mpInfoFac = monitorMgmt.toNode(REL_MEASURE_POINT_INFO_FACTORY);
 		if(mpInfoFac.getNode()==null)return;//use default...
 		
 		MonitorPointInfoFactory mpInfoFactory = mpInfoFac.newBean(null, true);
@@ -76,28 +71,13 @@ public class CoreConfigurator  implements Configurator {
 				handler.setId(name);
 				monitorMgmt.getManager().addMonitorSequenceHandler(handler);
 				if(handler instanceof CustomConfigurable){
-					initCustomConfiguration(monitorMgmt, (CustomConfigurable) handler, false);
+					Configs.initCustomConfigurable(monitorMgmt, (CustomConfigurable) handler, false);
 				}
 				return false;
 			}
 		});
 		
 	}
-	/**
-	 * 
-	 * @param configCtx
-	 * @param customConf
-	 * @param shouldApplyProperties
-	 */
-	public static void initCustomConfiguration(ConfigContext configCtx, 
-			CustomConfigurable customConf, 
-			boolean shouldApplyProperties){
-		if(shouldApplyProperties){
-			configCtx.applyPropertyTags(new PropertySetter(customConf));
-		}
-		customConf.configure(configCtx);
-		//TODO: use ZMBean instead.
-		configCtx.getManager().addCustomConfiguration(customConf);
-	}
+	
 
 }

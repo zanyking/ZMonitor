@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.zmonitor.web.zk;
+package org.zmonitor.zk;
 
 import org.zkoss.zk.ui.ext.AfterCompose;
 import org.zkoss.zul.Label;

@@ -11,7 +11,7 @@ import org.zmonitor.CustomConfigurable;
 import org.zmonitor.MonitorPoint;
 import org.zmonitor.MonitorSequence;
 import org.zmonitor.bean.ZMBeanBase;
-import org.zmonitor.spi.ConfigContext;
+import org.zmonitor.config.ConfigContext;
 import org.zmonitor.spi.MonitorSequenceHandler;
 import org.zmonitor.util.Strings;
 
@@ -19,9 +19,12 @@ import org.zmonitor.util.Strings;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class ToStringTimelineHandler extends ZMBeanBase implements MonitorSequenceHandler, CustomConfigurable {
-	private static final SimpleDateFormat HHmmssSSS_yyyy_MM_dd = new SimpleDateFormat("HH:mm:ss:SSS yyyy/MM/dd");
-	public ToStringTimelineHandler(){}
+public class SampleConsoleMonitorSequenceHandler extends ZMBeanBase implements MonitorSequenceHandler, CustomConfigurable {
+	
+	private static SimpleDateFormat getHHmmssSSS_yyyy_MM_dd(){
+		return new SimpleDateFormat("HH:mm:ss:SSS yyyy/MM/dd");
+	}
+	public SampleConsoleMonitorSequenceHandler(){}
 	
 	public void handle(MonitorSequence tl){
 		//dump Records from Black Box
@@ -30,7 +33,7 @@ public class ToStringTimelineHandler extends ZMBeanBase implements MonitorSequen
 		String totalElipsd = Strings.alignedMillisStr(tl.getRoot().getBranchElipsedByEndTag());
 		StringBuffer sb = new StringBuffer();
 		
-		Strings.appendln(sb, "[ ",HHmmssSSS_yyyy_MM_dd.format(new Date())," ] ",tl.getName()," -> TIMELINE DUMP BEGIN");
+		Strings.appendln(sb, "[ ",getHHmmssSSS_yyyy_MM_dd().format(new Date())," ] ",tl.getName()," -> TIMELINE DUMP BEGIN");
 		Strings.appendln(sb, "[",totalElipsd,"]ms Elipsed - ZMonitor Measure Points:",tl.getRecordAmount(),
 				", self spend Nanosec: ", Strings.toNumericString(tl.getSelfSpendNanos(),","));
 		Strings.appendln(sb, indent,"[ pre~ | ~next ]ms");

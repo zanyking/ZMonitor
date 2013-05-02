@@ -4,7 +4,7 @@
  */
 package org.zmonitor.impl;
 
-import org.zmonitor.spi.ConfigContext;
+import org.zmonitor.config.ConfigContext;
 import org.zmonitor.spi.Configurator;
 
 /**

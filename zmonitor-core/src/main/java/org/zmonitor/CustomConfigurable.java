@@ -3,7 +3,8 @@
  */
 package org.zmonitor;
 
-import org.zmonitor.spi.ConfigContext;
+import org.zmonitor.bean.ZMBean;
+import org.zmonitor.config.ConfigContext;
 import org.zmonitor.spi.MonitorSequenceHandler;
 
 /**
@@ -15,7 +16,7 @@ import org.zmonitor.spi.MonitorSequenceHandler;
  * @see MonitorSequenceHandler
  * @author Ian YT Tsai(Zanyking)
  */
-public interface CustomConfigurable {
+public interface CustomConfigurable extends ZMBean{
 	/**
 	 * 
 	 * @param configCtx

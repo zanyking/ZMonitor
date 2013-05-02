@@ -1,13 +1,29 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-
-<zmonitor uuid="junit_test_1">
+<zmonitor>
 	 
 
 	<agent-conf masterHost="localhost" masterPort="8799">
 	</agent-conf>
 	
 	
-	<timeline-handler name="console-LOG4J" class="org.zmonitor.handler.ToStringTimelineHandler"/>
+	<monitor-sequence-handler name="console-LOG4J" 
+		class="org.zmonitor.handler.SampleConsoleMonitorSequenceHandler"/>
 
 
+	<web-conf>
+		<url-filer rule="not" mode="or">
+			<condition match="endWith" pattern=".dsp" />
+			<condition match="contains" pattern="/images/" />
+			<condition match="endWith" pattern=".css" />
+			<condition match="endWith" pattern=".wcs" />
+			<condition match="endWith" pattern=".wpd" />
+			<condition match="endWith" pattern=".html" />
+			<condition match="endWith" pattern=".htm" />
+			<condition match="endWith" pattern=".js" />
+			<condition match="endWith" pattern=".png" />
+			<condition match="endWith" pattern=".jpg" />
+			<condition match="endWith" pattern=".gif" />
+			<condition match="endWith" pattern=".txt" />
+		</url-filer>
+	</web-conf>
 </zmonitor>

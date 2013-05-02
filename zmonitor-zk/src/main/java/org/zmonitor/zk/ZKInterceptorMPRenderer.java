@@ -2,7 +2,7 @@
  * 2011/4/6
  * 
  */
-package org.zmonitor.web.zk;
+package org.zmonitor.zk;
 
 import java.util.List;
 

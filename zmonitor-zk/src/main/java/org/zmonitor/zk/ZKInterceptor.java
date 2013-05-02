@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.zmonitor.web.zk;
+package org.zmonitor.zk;
 
 import java.io.IOException;
 import java.util.List;
@@ -58,10 +58,10 @@ public class ZKInterceptor implements WebAppInit, WebAppCleanup,
 		return ZMonitorManager.getInstance();
 	}
 	
-	private static final ZKInterceptorConfiguration DEFAULT_CONFIG = new ZKInterceptorConfiguration();
+	private static final ZKInterceptorCustom DEFAULT_CONFIG = new ZKInterceptorCustom();
 	private static final String KEY_LIFECYCLE_MANAGER = "KEY_LIFECYCLE_MANAGER";
-	private static ZKInterceptorConfiguration getConfiguration(){
-		ZKInterceptorConfiguration conf = getPfMgmt().getCustomConfiguration(ZKInterceptorConfiguration.class);
+	private static ZKInterceptorCustom getConfiguration(){
+		ZKInterceptorCustom conf = getPfMgmt().getBeanIfAny(ZKInterceptorCustom.class);
 		if(conf==null)
 			conf = DEFAULT_CONFIG;
 		return conf;

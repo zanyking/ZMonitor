@@ -3,7 +3,7 @@
  */
 package org.zmonitor.slf4j;
 
-import org.zmonitor.spi.ConfigContext;
+import org.zmonitor.config.ConfigContext;
 import org.zmonitor.spi.Configurator;
 
 /**

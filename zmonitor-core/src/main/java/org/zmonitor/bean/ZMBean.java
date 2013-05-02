@@ -9,7 +9,7 @@ package org.zmonitor.bean;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public interface ZMBean extends LifeCycle{
+public interface ZMBean{
 	
 	/**
 	 * 

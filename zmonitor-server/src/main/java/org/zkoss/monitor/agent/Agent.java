@@ -7,10 +7,10 @@ package org.zkoss.monitor.agent;
 import org.zkoss.monitor.impl.JObjSStreamCommunicator;
 import org.zmonitor.CustomConfigurable;
 import org.zmonitor.bean.ZMBeanBase;
+import org.zmonitor.config.ConfigContext;
 import org.zmonitor.message.Communicator;
 import org.zmonitor.message.Receiever;
 import org.zmonitor.message.Transmitter;
-import org.zmonitor.spi.ConfigContext;
 
 /**
  * @author Ian YT Tsai(Zanyking)

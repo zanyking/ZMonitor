@@ -32,7 +32,7 @@ public class HttpRequestMonitorSequenceLifecycleManager  implements MonitorSeque
 			//this is not a Servlet thread, but a thread created by some part of a Java Web application.
 			lfcycle = thlTManager.getLifecycle();
 		}else{
-			lfcycle = (HttpRequestTimelineLifcycle) ctx.getRequest().getAttribute(KEY_REQ_MSL);	
+			lfcycle = (HttpRequestMonitorSequenceLifcycle) ctx.getRequest().getAttribute(KEY_REQ_MSL);	
 		}
 		
 		return lfcycle;
@@ -40,7 +40,7 @@ public class HttpRequestMonitorSequenceLifecycleManager  implements MonitorSeque
 	
 	public void initLifeCycle(HttpServletRequest req){
 		req.setAttribute(KEY_REQ_MSL, 
-			new HttpRequestTimelineLifcycle(
+			new HttpRequestMonitorSequenceLifcycle(
 					req.getRequestURL().toString()));
 	}
 	

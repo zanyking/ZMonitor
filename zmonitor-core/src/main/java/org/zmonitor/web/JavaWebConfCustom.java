@@ -10,9 +10,10 @@ import static org.zmonitor.impl.XMLConfigs.getTextFromAttrOrContent;
 
 import org.w3c.dom.Node;
 import org.zmonitor.CustomConfigurable;
-import org.zmonitor.impl.CoreConfigurator;
-import org.zmonitor.spi.ConfigContext;
-import org.zmonitor.spi.XMLConfiguration.Visitor;
+import org.zmonitor.bean.ZMBeanBase;
+import org.zmonitor.config.ConfigContext;
+import org.zmonitor.config.ConfigContext.Visitor;
+import org.zmonitor.config.Configs;
 import org.zmonitor.util.PropertySetter;
 import org.zmonitor.web.filter.Condition;
 import org.zmonitor.web.filter.DefaultUrlFilter;
@@ -22,7 +23,7 @@ import org.zmonitor.web.filter.UrlFilter;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class JavaWebConfiguration implements CustomConfigurable {
+public class JavaWebConfCustom extends ZMBeanBase implements CustomConfigurable {
 
 	private static final String REL_URL_FILTER = "url-filer";
 	private static final String REL_CONDITION = "condition";
@@ -40,7 +41,7 @@ public class JavaWebConfiguration implements CustomConfigurable {
 	
 	public void configure(ConfigContext webConf) {
 	
-		ConfigContext urlFilterCtx = webConf.query(REL_URL_FILTER);
+		ConfigContext urlFilterCtx = webConf.toNode(REL_URL_FILTER);
 		if(urlFilterCtx.getNode()==null)return;
 		
 		filter = urlFilterCtx.newBean(DefaultUrlFilter.class, false);
@@ -51,11 +52,10 @@ public class JavaWebConfiguration implements CustomConfigurable {
 			initUrlFilterByDefault(urlFilterCtx, (DefaultUrlFilter)filter);
 			
 		} else if(filter instanceof CustomConfigurable){
-			CoreConfigurator.initCustomConfiguration(urlFilterCtx, 
+			Configs.initCustomConfigurable(urlFilterCtx, 
 					(CustomConfigurable) filter, 
 					true);
 		}
-		
 	}
 	
 	private static UrlFilter initUrlFilterByDefault(

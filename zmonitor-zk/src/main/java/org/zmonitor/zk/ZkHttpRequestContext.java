@@ -2,7 +2,7 @@
  * 2011/4/1
  * 
  */
-package org.zmonitor.web.zk;
+package org.zmonitor.zk;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

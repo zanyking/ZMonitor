@@ -27,7 +27,7 @@ import org.zmonitor.bean.ZMBean;
 public interface MonitorSequenceHandler extends ZMBean{
 
 	/**
-	 * 
+	 * in any case, handle should not throw an exception, because no one outside knows how to handle it. 
 	 * @param mSequence
 	 */
 	public void handle(MonitorSequence mSequence);

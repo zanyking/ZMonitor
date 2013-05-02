@@ -6,10 +6,11 @@ package org.zmonitor.impl;
 import java.util.Map;
 
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.zmonitor.ZMonitorManager;
-import org.zmonitor.spi.ConfigContext;
-import org.zmonitor.spi.XMLConfiguration;
-import org.zmonitor.spi.XMLConfiguration.Visitor;
+import org.zmonitor.config.ConfigContext;
+import org.zmonitor.util.DOMRetriever;
+import org.zmonitor.util.DOMs;
 import org.zmonitor.util.PropertySetter;
 
 /**
@@ -20,35 +21,24 @@ public class ConfigContextImpl implements ConfigContext{
 
 	private final Map<String, String> attrs;
 	private final ZMonitorManager zMonitorManager;
-	private final XMLConfiguration configuration;
+	private final DOMRetriever domRetriever;
 	private final Node currentNode;
 	
 	/**
 	 * 
-	 * @param jarContext
-	 * @param zMonitorManager
-	 * @param configuration
-	 */
-	public ConfigContextImpl(Map<String, String> attrs,
-			ZMonitorManager zMonitorManager, 
-			XMLConfiguration configuration) {
-		this(attrs, zMonitorManager, configuration, null);
-	}
-	/**
-	 * 
 	 * @param attrs
 	 * @param zMonitorManager
-	 * @param configuration
+	 * @param domRetriever
 	 * @param currentNode
 	 */
 	public ConfigContextImpl(Map<String, String> attrs,
 			ZMonitorManager zMonitorManager, 
-			XMLConfiguration configuration, 
+			DOMRetriever domRetriever, 
 			Node currentNode) {
 		
 		this.attrs = attrs;
 		this.zMonitorManager = zMonitorManager;
-		this.configuration = configuration;
+		this.domRetriever = domRetriever;
 		this.currentNode = currentNode;
 	}
 	
@@ -60,23 +50,36 @@ public class ConfigContextImpl implements ConfigContext{
 		return zMonitorManager;
 	}
 	
-	public XMLConfiguration getConfiguration() {
-		return configuration;
-	}
-	
-	public ConfigContext query(String xPath) {
-		Node next = configuration.getNode(xPath, null);
+	public ConfigContext toNode(String xPath) {
+		NodeList nList = (currentNode==null) ?
+				domRetriever.getNodeList(xPath) : 
+					domRetriever.getNodeList(currentNode, xPath);
+		Node next = nList.item(0);
 		
 		return new ConfigContextImpl(
-			attrs, zMonitorManager, configuration, next);
+			attrs, zMonitorManager, domRetriever, next);
 	}
 
 	public void forEach(String xPath, Visitor visitor) {
-		configuration.forEach(currentNode, xPath, visitor);
+		NodeList nodeList = domRetriever.getNodeList(currentNode, xPath);
+		for(int i=0, j=nodeList.getLength();i<j;i++){
+			boolean b = visitor.visit(i, nodeList.item(i));
+			if(!b)break;
+		}
 	}
 
-	public void applyPropertyTags(PropertySetter setter) {
-		configuration.applyPropertyTagsToBean(currentNode, setter);
+	public static final String NAME = "name";
+	public static final String VALUE = "value";
+	public static final String PROPERTY = "property";
+	
+	public void applyPropertyTags(final PropertySetter setter) {
+		forEach( PROPERTY, new Visitor(){
+			public boolean visit(int idx, Node propNode) {
+				String name = DOMs.getAttributeValue(propNode, NAME);
+				String value = XMLConfigs.getTextFromAttrOrContent(propNode, VALUE);
+				setter.setProperty(name, value);
+				return true;
+			}});
 	}
 	public void applyAttributes(PropertySetter setter, String... ignores) {
 		XMLConfigs.applyAttributesToBean(

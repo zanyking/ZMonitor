@@ -17,7 +17,7 @@ import org.zmonitor.MonitorSequence;
  * 
  * @author Ian YT Tsai(Zanyking)
  * @see org.zmonitor.impl.SimpleMonitorSequenceLifecycle
- * @see org.zmonitor.web.HttpRequestTimelineLifcycle
+ * @see org.zmonitor.web.HttpRequestMonitorSequenceLifcycle
  */
 public interface MonitorSequenceLifecycle {
 	/**

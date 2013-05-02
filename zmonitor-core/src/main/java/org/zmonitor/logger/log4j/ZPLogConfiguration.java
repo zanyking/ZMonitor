@@ -6,14 +6,15 @@ package org.zmonitor.logger.log4j;
 
 import org.apache.log4j.Logger;
 import org.zmonitor.CustomConfigurable;
+import org.zmonitor.bean.ZMBeanBase;
+import org.zmonitor.config.ConfigContext;
 import org.zmonitor.impl.ZMLog;
-import org.zmonitor.spi.ConfigContext;
 
 /**
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class ZPLogConfiguration implements CustomConfigurable {
+public class ZPLogConfiguration extends ZMBeanBase implements CustomConfigurable {
 	
 	private boolean enable = true;
 	public boolean isEnable() {

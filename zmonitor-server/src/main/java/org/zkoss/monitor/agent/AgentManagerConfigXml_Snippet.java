@@ -3,11 +3,7 @@
  */
 package org.zkoss.monitor.agent;
 
-import static org.zmonitor.impl.XMLConfigs.applyAttributesToBean;
-
-import org.w3c.dom.Node;
-import org.zmonitor.ZMonitorManager;
-import org.zmonitor.spi.XMLConfiguration;
+import org.zmonitor.config.ConfigContext;
 import org.zmonitor.util.PropertySetter;
 
 /**
@@ -17,14 +13,13 @@ import org.zmonitor.util.PropertySetter;
 public class AgentManagerConfigXml_Snippet {
 
 	public static final String REL_AGENT_CONF = "agent-conf";
-	private static void prepareAgent( ZMonitorManager manager, 
-			final XMLConfiguration config, 
-			Node monitorMgmtNode){
+	private static void prepareAgent(ConfigContext monitorMgmt){
 		// init agent
-		Node node = config.getNode(REL_AGENT_CONF, monitorMgmtNode);
-		if(node!=null){//init Master...
+		ConfigContext agentConf = monitorMgmt.toNode(REL_AGENT_CONF);
+		
+		if(agentConf.getNode()!=null){//init Master...
 			Agent agent = new Agent();
-			applyAttributesToBean( node, new PropertySetter(agent), null);
+			agentConf.applyAttributes(new PropertySetter(agent));
 //			initCustomConfiguration(manager, xmlDoc, node, agent, true);
 //			manager.setAgent(agent);
 		}

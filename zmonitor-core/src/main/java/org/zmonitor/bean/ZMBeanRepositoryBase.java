@@ -4,7 +4,6 @@
 package org.zmonitor.bean;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -30,9 +29,9 @@ public abstract class ZMBeanRepositoryBase extends LifeCycleBase implements ZMBe
 	public <T> List<T> get(Class<T> clz){
 		
 		ArrayList<T> arr = new ArrayList<T>();
-		for(ZMBean b : new ArrayList<ZMBean>(beans)){
-			if(clz.isInstance(b)){
-				arr.add((T) b);
+		for(ZMBean bean : new ArrayList<ZMBean>(beans)){
+			if(clz.isInstance(bean)){
+				arr.add((T) bean);
 			}
 		}
 		return arr;
@@ -44,12 +43,14 @@ public abstract class ZMBeanRepositoryBase extends LifeCycleBase implements ZMBe
 	 * @return
 	 */
 	public <T> T get(String id){
+		if(id==null || id.isEmpty())
+			throw new IllegalArgumentException("id cannot be null or empty!");
+		
 		for(ZMBean b : new ArrayList<ZMBean>(beans)){
 			if(id.equals(b.getId()))return (T) b;
 		}
 		return null;
 	}
-	
 	
 	/**
 	 * add a new bean
@@ -64,14 +65,15 @@ public abstract class ZMBeanRepositoryBase extends LifeCycleBase implements ZMBe
 			ZMLog.warn("cannot add zmBean multipletimes, operation ignored. zmbean: "+zmBean);
 			return;
 		}
-		
-		if(zmBean.isStopped()){
-			throw new IllegalArgumentException(
-					"cannot accept a stopped bean: "+zmBean);
-		}
-		
-		if(isStarted() && !zmBean.isStarted()){
-			zmBean.start();
+		if(zmBean instanceof LifeCycle){
+			LifeCycle lc = (LifeCycle) zmBean;
+			if(lc.isStopped()){
+				throw new IllegalArgumentException(
+						"cannot accept a stopped bean: "+zmBean);
+			}
+			if(isStarted() && !lc.isStarted()){
+				lc.start();
+			}
 		}
 		beans.add(zmBean);
 	}
@@ -80,12 +82,15 @@ public abstract class ZMBeanRepositoryBase extends LifeCycleBase implements ZMBe
 	 * @param id
 	 */
 	public void remove(String id){
+		if(id==null || id.isEmpty())
+			throw new IllegalArgumentException("id cannot be null or empty!");
+		
 		ZMBean zmBean = get(id);
 		if(zmBean!=null){
 			remove(zmBean);	
 		}
 		
-		//TODO handle null case
+		//TODO handle null case, currently do nothing...
 	}
 	/**
 	 * 
@@ -98,9 +103,12 @@ public abstract class ZMBeanRepositoryBase extends LifeCycleBase implements ZMBe
 		}
 		boolean b = beans.remove(zmBean);
 		if(b){
-			if(zmBean.isStarted() && !zmBean.isStopped()){
-				//only a started bean can be stopped.
-				zmBean.stop();
+			if(zmBean instanceof LifeCycle){
+				LifeCycle lc = (LifeCycle) zmBean;
+				if(lc.isStarted() && !lc.isStopped()){
+					//only a started bean can be stopped.
+					lc.stop();
+				}
 			}
 		}else{
 			throw new IllegalArgumentException(
@@ -114,10 +122,13 @@ public abstract class ZMBeanRepositoryBase extends LifeCycleBase implements ZMBe
 	protected void doStart(){
 		ArrayList<Throwable> errs = new ArrayList<Throwable>();
 		for(ZMBean zmBean : beans){
-			try{
-				zmBean.start();	
-			}catch(Throwable e){
-				errs.add(e);
+			if(zmBean instanceof LifeCycle){
+				LifeCycle lc = (LifeCycle) zmBean;
+				try{
+					lc.start();	
+				}catch(Throwable e){
+					errs.add(e);
+				}
 			}
 		}
 		if(!errs.isEmpty()){
@@ -131,10 +142,13 @@ public abstract class ZMBeanRepositoryBase extends LifeCycleBase implements ZMBe
 	protected void doStop(){
 		ArrayList<Throwable> errs = new ArrayList<Throwable>();
 		for(ZMBean zmBean : new ArrayList<ZMBean>(beans)){
-			try{
-				zmBean.stop();
-			}catch(Throwable e){
-				errs.add(e);
+			if(zmBean instanceof LifeCycle){
+				LifeCycle lc = (LifeCycle) zmBean;
+				try{
+					lc.stop();
+				}catch(Throwable e){
+					errs.add(e);
+				}
 			}
 		}
 		if(!errs.isEmpty()){

@@ -2,7 +2,7 @@
  * 2011/3/17
  * 
  */
-package org.zmonitor.web.zk;
+package org.zmonitor.zk;
 
 import java.io.Serializable;
 

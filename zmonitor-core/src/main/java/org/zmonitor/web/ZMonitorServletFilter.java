@@ -20,10 +20,7 @@ import org.zmonitor.ZMonitorManager;
 import org.zmonitor.config.ConfigSource;
 import org.zmonitor.config.ConfigSources;
 import org.zmonitor.impl.StringName;
-import org.zmonitor.impl.ThreadLocalMonitorSequenceLifecycleManager;
 import org.zmonitor.impl.ZMLog;
-import org.zmonitor.spi.MonitorSequenceLifecycle;
-import org.zmonitor.spi.MonitorSequenceLifecycleManager;
 
 /**
  * 
