@@ -10,13 +10,11 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.junit.Test;
 
-import zmonitor.test.TestBase;
-
 /**
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class NDCStackOperation_TEST extends TestBase {
+public class NDCStackOperation_TEST extends Log4JTestBase {
 
 	protected static Logger getLogger(){ 
 		return Logger.getLogger(NDCStackOperation_TEST.class);

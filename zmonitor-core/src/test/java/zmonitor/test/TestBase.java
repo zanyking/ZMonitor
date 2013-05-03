@@ -54,7 +54,7 @@ public class TestBase {
 					"] from every level of package: [" +packagePath+
 					"]. Current application context is: "+this.getClass());
 		}
-		ZMLog.info(">>>>>>>>>>>>>>>load config from: [",url,"]");
+		ZMLog.info("ZMonitor JUnit TestBase: load config from: [",url,"]");
 		
 		aZMonitorManager.setConfigSource(new URLConfigSource(url));
 		
@@ -89,6 +89,8 @@ public class TestBase {
 			url;
 	}
 	
+	
+
 	/**
 	 * @throws java.lang.Exception
 	 */

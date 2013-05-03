@@ -17,7 +17,6 @@ import org.zmonitor.ZMonitor;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.config.ConfigSource;
 import org.zmonitor.config.ConfigSources;
-import org.zmonitor.impl.CoreConfigurator;
 import org.zmonitor.impl.JavaName;
 import org.zmonitor.impl.StringName;
 import org.zmonitor.impl.ThreadLocalMonitorSequenceLifecycleManager;
@@ -39,6 +38,7 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	private static ZMonitorAppender singleton;
 	
 	public ZMonitorAppender(){
+		System.out.println(">>>>>>>>>"+ ZMonitorAppender.class);
 		this.name = "ZMonitor";
 		synchronized (ZMonitorAppender.class) {
 			if(singleton ==null)

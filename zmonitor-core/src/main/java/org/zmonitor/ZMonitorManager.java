@@ -13,7 +13,6 @@ import org.zmonitor.bean.ZMBeanRepositoryBase;
 import org.zmonitor.config.ConfigSource;
 import org.zmonitor.impl.ConfiguratorRepository;
 import org.zmonitor.impl.DefaultMeasurePointInfoFactory;
-import org.zmonitor.impl.MSPipeProvider;
 import org.zmonitor.impl.MSPipeProvider.MSPipe;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.spi.MonitorPointInfoFactory;
@@ -137,6 +136,7 @@ public final class ZMonitorManager {
 					cRepo.scan();
 					cRepo.performConfiguration(ZMonitorManager.this, configSource);
 				}
+				
 				super.doStart();
 			}
 			
