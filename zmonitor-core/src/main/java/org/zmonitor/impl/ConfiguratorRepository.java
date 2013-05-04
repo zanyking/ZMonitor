@@ -12,11 +12,9 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-import org.w3c.dom.Node;
 import org.zmonitor.IgnitionFailureException;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.config.ConfigContext;
-import org.zmonitor.config.ConfigSource;
 import org.zmonitor.spi.Configurator;
 import org.zmonitor.util.DOMRetriever;
 /**
@@ -64,12 +62,11 @@ public class ConfiguratorRepository {
 	/**
 	 * 
 	 * @param manager
-	 * @param configSource
 	 */
-	public void performConfiguration(ZMonitorManager manager, ConfigSource configSource){
+	public void performConfiguration(ZMonitorManager manager){
 		DOMRetriever domRetriever;
 		try {
-			domRetriever = configSource.getDOMRetriever();
+			domRetriever = manager.getConfigSource().getDOMRetriever();
 		} catch (IOException e) {
 			throw new IgnitionFailureException(e);
 		}

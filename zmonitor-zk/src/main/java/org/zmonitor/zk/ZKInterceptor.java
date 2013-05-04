@@ -100,7 +100,7 @@ public class ZKInterceptor implements WebAppInit, WebAppCleanup,
 			ZMLog.warn("If you want to give your custom settings, " ,
 					"please give your own \"",ConfigSource.ZMONITOR_XML,"\" under /WEB-INF/");
 		}else{
-			manager.setConfigSource(confSrc);
+			manager.performConfiguration(confSrc);
 		}
 		
 		manager.setLifecycleManager(getLifeCycleManager(wapp));

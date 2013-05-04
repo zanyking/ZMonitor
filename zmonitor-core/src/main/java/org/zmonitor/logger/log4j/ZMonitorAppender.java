@@ -32,13 +32,22 @@ import org.zmonitor.util.Strings;
  */
 public class ZMonitorAppender extends AppenderSkeleton {
 
-	protected boolean locationInfo = true;
-	protected String measurePointNameType = "LOG4J";
+	protected boolean javaSourceLocationInfo = true;
+	protected String mpNameType = "LOG4J";
+
+	protected boolean embedded;//default is false
+	
+	
+	public boolean isEmbedded() {
+		return embedded;
+	}
+	public void setEmbedded(boolean embedded) {
+		this.embedded = embedded;
+	}
 
 	private static ZMonitorAppender singleton;
 	
 	public ZMonitorAppender(){
-		System.out.println(">>>>>>>>>"+ ZMonitorAppender.class);
 		this.name = "ZMonitor";
 		synchronized (ZMonitorAppender.class) {
 			if(singleton ==null)
@@ -60,7 +69,7 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	 * @return the current value of the <b>LocationInfo</b> option.
 	 */
 	public boolean getLocationInfo() {
-		return locationInfo;
+		return javaSourceLocationInfo;
 	}
 
 	/**
@@ -75,21 +84,21 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	 * @param flag true if location information should be extracted.
 	 */
 	public void setLocationInfo(final boolean flag) {
-		locationInfo = flag;
+		javaSourceLocationInfo = flag;
 	}
 	/**
 	 * 
 	 * @return
 	 */
-	public String getMeasurePointNameType() {
-		return measurePointNameType;
+	public String getMonitorPointNameType() {
+		return mpNameType;
 	}
 	/**
 	 * 
-	 * @param measurePointNameType
+	 * @param mpNameType
 	 */
-	public void setMeasurePointNameType(String measurePointNameType) {
-		this.measurePointNameType = measurePointNameType;
+	public void setMonitorPointNameType(String mpNameType) {
+		this.mpNameType = mpNameType;
 	}
 
 
@@ -101,18 +110,19 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	@Override
 	public void activateOptions() {
 		super.activateOptions();
-		if(ZMonitorManager.isInitialized())return;
+		
+		if(ZMonitorManager.isInitialized() || isEmbedded())return;
 		try {
 			ZMonitorManager aZMonitorManager = new ZMonitorManager();
 			//TODO create configuration Source...
 			final ConfigSource configSrc = ConfigSources.loadForSimpleJavaProgram();
 			if(configSrc!=null){
-				aZMonitorManager.setConfigSource(configSrc);
+				aZMonitorManager.performConfiguration(configSrc);
 			}
-			aZMonitorManager.setLifecycleManager(new ThreadLocalMonitorSequenceLifecycleManager());
 			ZMonitorManager.init(aZMonitorManager);
+			aZMonitorManager.setLifecycleManager(new ThreadLocalMonitorSequenceLifecycleManager());
 			isIgnitBySelf = true;
-			ZMLog.info(">> Ignit ZMonitor in: ",ZMonitorAppender.class.getCanonicalName());
+			ZMLog.info(">> Ignite ZMonitor in: ",ZMonitorAppender.class.getCanonicalName());
 		} catch (IOException e) {
 			throw new IgnitionFailureException(e);
 		} catch (AlreadyStartedException e) {
@@ -146,13 +156,13 @@ public class ZMonitorAppender extends AppenderSkeleton {
 		    event.getMDCCopy();
 		}
 	    
-	    if(shallRecursionPrevented(this.getClass(), event.getLoggerName()) || 
-	    		shallRecursionPrevented(ZMLog.class, event.getLoggerName()))
+	    if(preventRecursion(this.getClass(), event.getLoggerName()) || 
+	    		preventRecursion(ZMLog.class, event.getLoggerName()))
 	    	return;
 	    
 	    
 	    {//IMPORTANT: this section is something MUST be called!
-	    	event.getRenderedMessage();
+	    	String mesg = event.getRenderedMessage();
 	    	event.getThrowableStrRep();
 	    	
 	    	/*
@@ -170,12 +180,12 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	    	 *  depth>0, tl==started, controlByOthers	[recording] watch out the depth problem.
 	    	 *  
 	    	 *  depth>0, tl!=started, controlBySelf		 [do Start] 
-	    	 *  depth>0, tl!=started, controlByOthers	 [do Start] 
+	    	 *  depth>0, tl!=started, controlByOthers	 do nothing... 
 	    	 *  
 	    	 */
 	    	MonitorSequenceLifecycle lfc = ZMonitorManager.getInstance().getMonitorSequenceLifecycle();
 	    	
-			String mesg = event.getRenderedMessage();
+			
 	    	if(depth==0){
 	    		if(ZMonitor.isMonitoring()){
 	    			if(isControlledBySelf(lfc)){
@@ -186,10 +196,12 @@ public class ZMonitorAppender extends AppenderSkeleton {
 				}
 	    		// do nothing...
 	    		//tl.start must satisfy (depth > 0), otherwise there's no way for appender to know when to complete timeline.
-	    	}else{
+	    	}else if(depth>0){
 	    		if(ZMonitor.isMonitoring()){
 	    			record(event, depth, lfc, ndcStr);
-	    		}else{
+	    		}else if(isIgnitBySelf){
+	    			// if the ms life-cycle is controlled by others, log4j should never take over the control.   
+	    			// be cause we'd never know if log4j's logging methods will be called inside a managed thread. 
 	    			start(event, depth, lfc, ndcStr);
 	    			setControlledBySelf(lfc);
 	    		}
@@ -243,7 +255,7 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	 *  
 	 *  If: current NDC Depth > last NDC Depth( or there's no last NDC Depth)
 	 *  	we need to do tl.start(), and push current NDC Depth.
-	 *  	(check : if currentTlDepth != lastTlDepth do failover.)
+	 *  	(check : if currentTlDepth != lastTlDepth do fail-over.)
 	 *  
 	 *  If: current NDC Depth = last NDC Depth
 	 *  	we simply do tl.record().
@@ -252,11 +264,11 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	 *   	if: current NDC Depth = last.last NDC Depth
 	 *      	We call tl.end() and pop NDC stack, because user is telling 
 	 *      	us he want to end the current stack.
-	 *      	(check : if currentTlDepth != lastTlDepth do failover.)
+	 *      	(check : if currentTlDepth != lastTlDepth do fail-over.)
 	 *      
 	 *      if: current NDC Depth >  last.last NDC Depth
 	 *      	We simply do tl.record() because it's not reach the end yet.
-	 *      	(check : if currentTlDepth != lastTlDepth do failover.)
+	 *      	(check : if currentTlDepth != lastTlDepth do fail-over.)
 	 *      	 
 	 *      if: current NDC Depth <  last.last NDC Depth
 	 *      	We recursively do tl.end with Pop NDCStack and renew the last NDC depth 
@@ -361,8 +373,8 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	 * @return
 	 */
 	protected Name createName(LoggingEvent event, String name) {
-		JavaName jName = new JavaName(name==null ? measurePointNameType : name);
-		if (locationInfo) {
+		JavaName jName = new JavaName(name==null ? mpNameType : name);
+		if (javaSourceLocationInfo) {
 			LocationInfo locInfo = event.getLocationInformation();
 			jName.setClassName(locInfo.getClassName());
 			jName.setMethodName(locInfo.getMethodName());
@@ -385,7 +397,7 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	 * @param loggerName
 	 * @return
 	 */
-	protected static boolean shallRecursionPrevented(Class<?> claz, String loggerName){
+	protected static boolean preventRecursion(Class<?> claz, String loggerName){
 		return Logger.getLogger(claz).getName().equals(loggerName);
 	}
 

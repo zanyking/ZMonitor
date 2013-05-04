@@ -2,7 +2,7 @@
  * 2011/10/24
  * 
  */
-package zmonitor.test;
+package zmonitor.test.slf4j;
 
 import java.net.URL;
 

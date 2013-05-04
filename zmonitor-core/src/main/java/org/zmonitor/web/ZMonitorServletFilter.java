@@ -57,7 +57,7 @@ public class ZMonitorServletFilter implements Filter {
 		}
 		
 		
-		aZMonitorManager.setConfigSource(configSource);
+		aZMonitorManager.performConfiguration(configSource);
 		
 		hReqMSLfManager = new HttpRequestMonitorSequenceLifecycleManager();
 		aZMonitorManager.setLifecycleManager(hReqMSLfManager);

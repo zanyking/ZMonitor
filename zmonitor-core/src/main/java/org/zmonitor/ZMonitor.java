@@ -1,4 +1,4 @@
-/**Profilers.java
+/**ZMonitor.java
  * 2011/3/4
  * 
  */
@@ -62,7 +62,7 @@ public final class ZMonitor {
 					ZMLog.warn("If you want to give your custom settings, " +
 							"please provide a \""+ConfigSource.ZMONITOR_XML+"\" file under classpath.");
 				}else{
-					aZMonitorManager.setConfigSource(confSrc);	
+					aZMonitorManager.performConfiguration(confSrc);	
 				}
 				aZMonitorManager.setLifecycleManager(
 					new ThreadLocalMonitorSequenceLifecycleManager());
@@ -85,14 +85,6 @@ public final class ZMonitor {
 	}
 	
 
-
-	/**
-	 * 
-	 * @return will create or return a timeline instance.
-	 */
-	private static MonitorSequence getInstance(){
-		return ZMonitorManager.getInstance().getMonitorSequenceLifecycle().getInstance();
-	}
 	
 	private static MonitorSequenceLifecycle getLifecycle(){
 		return ZMonitorManager.getInstance().getMonitorSequenceLifecycle();
@@ -106,7 +98,7 @@ public final class ZMonitor {
 	 * @return true if there's a monitor sequence instance and which is started.
 	 */
 	public static boolean isMonitoring(){
-		//TODO There's an ambiguity here, this method implies an existence of a threadLocal object. 
+		 
 		return getLifecycle().isMonitorStarted();
 	}
 	
@@ -164,7 +156,9 @@ public final class ZMonitor {
 	private static MonitorPoint start0(Name name, String mesg, boolean traceCallerStack){
 		long nanosec = System.nanoTime();
 		long createMillis = System.currentTimeMillis();
-		if(!getLifecycle().shouldMeasure(name, mesg, createMillis)) {
+		MonitorSequenceLifecycle lc = getLifecycle();
+		
+		if(lc==null || !lc.shouldMeasure(name, mesg, createMillis)) {
 			return null;
 		}
 		MPContext mpCtx = new MPContext(
@@ -172,10 +166,10 @@ public final class ZMonitor {
 		
 		name = (mpCtx.getName()==null) ? 
 				new StringName(START): mpCtx.getName();
-				
-		MonitorPoint mp = getInstance().start(name, mpCtx.getMesg(), createMillis);
+		MonitorSequence ms = lc.getInstance();
+		MonitorPoint mp = ms.start(name, mpCtx.getMesg(), createMillis);
 		
-		mp.mSequence.accumulateSelfSpendNanos(System.nanoTime()- nanosec);
+		ms.accumulateSelfSpendNanos(System.nanoTime()- nanosec);
 		return mp;
 	}
 	private static StackTraceElement getOuterCallerInfo(boolean shouldDo, int callerLevel){
@@ -234,14 +228,20 @@ public final class ZMonitor {
 	private static MonitorPoint record0(Name name, String mesg, boolean traceCallerStack){
 		long nanosec = System.nanoTime();
 		long createMillis = System.currentTimeMillis();
-		if(!getLifecycle().shouldMeasure(name, mesg, createMillis))return null;
-		boolean started = getLifecycle().isMonitorStarted();
+		MonitorSequenceLifecycle lc = getLifecycle();
+		
+		if(lc==null || !lc.shouldMeasure(name, mesg, createMillis))return null;
+		boolean started = lc.isMonitorStarted();
+		
 		MPContext mpCtx = new MPContext(getOuterCallerInfo(traceCallerStack, 3), 
 				started?RECORDING:START, name, mesg, createMillis);
-		MonitorPoint mp = started ? getInstance().record(mpCtx.getName(), mpCtx.getMesg(), createMillis) 
-				: getInstance().start(mpCtx.getName(), mpCtx.getMesg(), createMillis);
+		MonitorSequence ms = lc.getInstance();
 		
-		mp.mSequence.accumulateSelfSpendNanos(System.nanoTime()- nanosec);
+		MonitorPoint mp = started ? 
+				ms.record(mpCtx.getName(), mpCtx.getMesg(), createMillis) 
+				: ms.start(mpCtx.getName(), mpCtx.getMesg(), createMillis);
+		
+		ms.accumulateSelfSpendNanos(System.nanoTime()- nanosec);
 		return mp;
 	}
 	
@@ -290,20 +290,22 @@ public final class ZMonitor {
 	}
 	private static MonitorPoint end0(Name name, String message, boolean traceCallerStack){
 		long nanosec = System.nanoTime();
-		if(!getLifecycle().isMonitorStarted()){
+		MonitorSequenceLifecycle lc = getLifecycle();
+		
+		if(lc==null || !lc.isMonitorStarted()){
 			return null;
 //			throw new IllegalStateException("You need to start a {@link Timeline} before end any level of it!");
 		}
 		long createMillis = System.currentTimeMillis();	
-		if(!getLifecycle().shouldMeasure(name, message, createMillis))return null;
+		if(!lc.shouldMeasure(name, message, createMillis))return null;
 		MPContext mpCtx = new MPContext(getOuterCallerInfo(traceCallerStack, 3), 
 				END, name, message, createMillis);
-		MonitorSequence tl = getLifecycle().getMonitorSequence();
+		MonitorSequence tl = lc.getMonitorSequence();
 		MonitorPoint mp = tl.end(mpCtx.getName(), mpCtx.getMesg());
 		
 		tl.accumulateSelfSpendNanos(System.nanoTime()- nanosec);
 		if(tl.isFinished()){
-			getLifecycle().finish();
+			lc.finish();
 		}
 		
 		return mp;

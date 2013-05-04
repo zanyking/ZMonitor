@@ -21,11 +21,12 @@ public class NDCStackOperation_TEST extends Log4JTestBase {
 	}
 
 	@Test
-	public void normalLog4jUsage() throws InterruptedException, IOException{
+	public void normalLog4jUsage() throws IOException{
 		Logger logger = getLogger();
 		
 		NDC.push("TIMELINE");
 		logger.info("ndc["+NDC.getDepth()+"]");
+		
 		logger.debug("ndc["+NDC.getDepth()+"] >>> DEBUG,DEBUG,DEBUG,DEBUG,DEBUG,DEBUG,DEBUG,");
 		logger.info("ndc["+NDC.getDepth()+"] before doA()");
 		doA();

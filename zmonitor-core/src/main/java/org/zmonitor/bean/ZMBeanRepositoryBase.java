@@ -14,7 +14,7 @@ import org.zmonitor.impl.ZMLog;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public abstract class ZMBeanRepositoryBase extends LifeCycleBase implements ZMBeanRepository{
+public abstract class ZMBeanRepositoryBase extends ZMBeanBase implements ZMBeanRepository{
 
 	
 	protected final List<ZMBean> beans = 
@@ -26,6 +26,7 @@ public abstract class ZMBeanRepositoryBase extends LifeCycleBase implements ZMBe
 	 * @param clz
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public <T> List<T> get(Class<T> clz){
 		
 		ArrayList<T> arr = new ArrayList<T>();

@@ -12,7 +12,7 @@ import java.util.List;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public interface ZMBeanRepository extends LifeCycle{
+public interface ZMBeanRepository extends ZMBean, LifeCycle{
 	
 	/**
 	 * every bean that either is or instanceof the given class will be in the result.

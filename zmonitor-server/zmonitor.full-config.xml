@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!-- 
+			
+	 -->
 <zmonitor >
 	<!-- 
 		Give multiple configurations for those suppose to be singleton won't cause error, but the rest would be ignored.
@@ -15,23 +18,67 @@
 	<!-- NOT SUPPORTED YET, it's still a draft. 
 	<internal-log device="console" />
 	 -->
-	
-	<!-- could be: log4j, slf4j, logback, web, zmonitor... -->
-	<!-- <incharge-zmonitor-initialization>log4j</incharge-zmonitor-initialization> -->
-	
 	 
-	<!-- configuration manipulation is at org.zmonitor.logger.log4j -->
-	<log4j-conf>
-		<logger-filter></logger-filter>
-		
-		
-	</log4j-conf>
-	
+	 
+
 	
 	
 	
 	<!-- 
-		+. Custom Configurable is a ZMBean, it can be initialized and destroyed at runtime.
+		<agent-conf> represents an agent which will connect to a remote Server (as a stub object) that this ZMonitor instance will work with.     
+		0. masterHost & masterPort are required.
+		1. master will be initialized very early, if ZMonitor failed to communicate with Master, <init-failover> will be used. 
+			(the default impl will simply throw Error to stop application) 
+		2. After init, any error related to the communication with Master will handled by<communication-failover>  
+		3. Master has the ability to intercept the Init process of ZMonitor and change ZMonitor's configuration at Runtime if necessary.
+		
+		POSSIBLE FEATURE in the future...
+		<init-failover class=""  />
+		<communication-failover class="" />
+		
+		<id> is a conceptual identity for Master or any analyzing tools to determine which "logical Node" the monitor-sequence should belongs to.
+		+. You can give an id manually. 
+		+. You can provide fetcherClass to to fetch & generate a proper id.
+			-. any ID value which is get from fetcher will stored in  Local Repository, so if there's already one, the fetcherClass won't be used.
+			-. UuIdFetcher will use Java UUID to generate the Id.
+			-. OSIdFetcher will generate Id according to System information.
+			-. MasterIdFetcher will gather current ZMonitor's information(System, network) first, send them to Master and get the generated Id  
+				from the Master.  
+		id="manual_id_client_01"
+		idFetcherClass="org.zkoss.zmonitor.id.UuIdFetcher" 
+		idFetcherClass="org.zkoss.zmonitor.id.OSIdFetcher"
+		idFetcherClass="org.zkoss.zmonitor.id.MasterIdFetcher"	
+	-->
+	<agent-conf masterHost="localhost" masterPort="8799" id="manual_web_client_01">
+		<!-- 
+		<communicator class="org.zkoss.monitor.impl.JObjSStreamCommunicator">
+			<property name=""></property>
+			<property name=""></property>
+			<property name=""></property>
+			<property name=""></property>
+		</communicator>
+	 	-->
+	 	<!-- 
+		<repository> is designed for temporary storage & persistence purpose.   
+			 For example, a File Rotate TimelineHandler without given location could use <repository> as it's default file location.
+			 Virtual Memory, Configuration persistency & internal Error Log can use this to store objects.
+			 	+. repository could be null, in these case, ZMonitor is running in stateless mode.  
+				+. class is for customization. rarely need to implement one. 
+				+. you can simply erase the configuration memory by deleting the configure entries inside.
+				+. "baseDir" is must have
+				+.  
+		-->
+		<repository class="DefaultLocalRepository">
+			<property name="baseDir"><![CDATA[C:\TEMP\MyWebProject_zmonitor_persistence\]]></property>
+		</repository>
+		<repository baseDir="C:\TEMP\MyWebProject_zmonitor_persistence\" />
+	</agent-conf>
+	
+	<!-- 
+	configuration is a way to configure, customize and provide context environment to ZMonitor  
+		+. the Identity of a configuration is it's full qualified class name.
+		+. org.zmonitor.web.JavaWebConfiguration and org.zkoss.monitor.web.zk.ZKInterceptorConfiguration are the two already existed.
+		+. configuration is a ZMonitor Component with lifecycle, it can be initialized and destroyed at Runtime.
 		+. url-filter is used to determine an incoming request "should accept" by ZMonitor.
 			for example, if url-filer has rule=["not"|null] and mode=["or"|"and"], that means:
 			-. if any condition bellow get a match (condition.match == true) then return NOT true, which is "false".  
@@ -65,7 +112,26 @@
 			<condition match="endWith" pattern=".txt" />
 		</url-filer>
 	</web-conf>
+	<!--
+	 zk-interceptor-conf is used to configure the ZK Interceptor 
+	 if you are using ZK Framework in your Java web application. 
+	 -->
+	<!-- class="org.zkoss.monitor.web.zk.ZKInterceptorConfiguration" -->
+	<zk-conf>
+		<property name="renderURIIntercepter" value="true"/>
+		<property name="renderExecutionInit" value="true"/>
+		<property name="renderBeforeSendEvent" value="true"/>
+		<property name="renderBeforePostEvent" value="true"/>
+		<property name="renderProcessEvent" value="true"/>
+		<property name="renderMonitorAsyncUpdate" value="true"/>
+	</zk-conf>
 
+
+	<!-- 
+	<configuration class="org.zkoss.monitor.log4j.ZPLogConfiguration">
+		<property name="enable" value="true"/>
+	</configuration>
+	 -->
 	
 	
 	<!-- <monitor-sequence-pipe>

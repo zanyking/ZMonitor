@@ -92,7 +92,7 @@ public final class ZMonitorManager {
 	 */
 	public static synchronized void init(ZMonitorManager manager) throws AlreadyStartedException{
 		if(manager==NOOP)return;
-		
+		ZMLog.info("ZMonitor Ignition START... ");// will print out in any case, since there's no customized ZKLog here yet!
 		if(manager.isStopped()){
 			throw new IllegalArgumentException("the given instance is already stopped");
 		}
@@ -127,37 +127,13 @@ public final class ZMonitorManager {
 	
 	
 	public ZMonitorManager(){
-		fZMBeanRepository = new ZMBeanRepositoryBase(){
-			protected void doStart() {
-				ZMLog.info("ZMonitor Ignition START... ");// will print out in any case, since there's no customized ZKLog here yet!
-				
-				if(configSource != null){
-					ConfiguratorRepository cRepo = new ConfiguratorRepository();
-					cRepo.scan();
-					cRepo.performConfiguration(ZMonitorManager.this, configSource);
-				}
-				
-				super.doStart();
-			}
-			
-		};
+		fZMBeanRepository = new ZMBeanRepositoryBase(){};
 	}
-
 	
 	private ZMonitorManager(ZMBeanRepository a){
 		fZMBeanRepository = a;
 	}
-	public void addMonitorSequenceHandler( MonitorSequenceHandler handler) {
-		ZMLog.debug("ZMonitorManager::addMonitorSequenceHandler: " +
-				handler.getId()+" = "+handler);
-		fZMBeanRepository.add(handler);
-	}
-	public void removeMonitorSequenceHandler(String name){
-		fZMBeanRepository.remove(name);
-	}
-	public void handle(MonitorSequence mSquence) {
-		getMSPipe().pipe(mSquence);
-	}
+	
 
 	public boolean isStarted() {
 		return fZMBeanRepository.isStarted();
@@ -171,6 +147,25 @@ public final class ZMonitorManager {
 	public void stop() {
 		fZMBeanRepository.stop();
 	}
+	
+	private final ConfiguratorRepository cRepo = new ConfiguratorRepository();
+	private ConfigSource configSource;
+	/**
+	 * 
+	 * @return
+	 */
+	public void performConfiguration(ConfigSource configSource){
+		if(configSource==null)
+			throw new IllegalArgumentException("configSource cannot be null!");
+		
+		this.configSource = configSource;
+		cRepo.scan();
+		cRepo.performConfiguration(ZMonitorManager.this);
+	}
+	public ConfigSource getConfigSource() {
+		return configSource;
+	}
+
 	/**
 	 * @param tClz bean type.
 	 * @return every bean that matches the given type, size could be 0~n.
@@ -205,6 +200,29 @@ public final class ZMonitorManager {
 		fZMBeanRepository.add(bean);
 	}
 	
+	/**
+	 * 
+	 * @param handler
+	 */
+	public void addMonitorSequenceHandler( MonitorSequenceHandler handler) {
+		ZMLog.debug("ZMonitorManager::addMonitorSequenceHandler: " +
+				handler.getId()+" = "+handler);
+		fZMBeanRepository.add(handler);
+	}
+	/**
+	 * 
+	 * @param name
+	 */
+	public void removeMonitorSequenceHandler(String name){
+		fZMBeanRepository.remove(name);
+	}
+	/**
+	 * 
+	 * @param mSquence
+	 */
+	public void handle(MonitorSequence mSquence) {
+		getMSPipe().pipe(mSquence);
+	}
 	
 	//TODO doesn't seem to be a unique object
 	private  MonitorPointInfoFactory monitorPointInfoFactory = new DefaultMeasurePointInfoFactory(); 
@@ -232,18 +250,6 @@ public final class ZMonitorManager {
 		return getLifecycleManager().getLifecycle();
 	}
 
-	
-	private ConfigSource configSource;
-	public ConfigSource getConfigSource() {
-		return configSource;
-	}
-	public void setConfigSource(ConfigSource configSource) {
-		this.configSource = configSource;
-	}
-	
-	
-
-
 
 }//end of class
 /**
@@ -262,5 +268,11 @@ class NoOpZMBeanRepository implements ZMBeanRepository{
 	public boolean isStopped() {return false;}
 	public void start() {}
 	public void stop() {}
+	public String getId() {
+		return "noop";
+	}
+	public void setId(String id) {
+		
+	}
 }
 
