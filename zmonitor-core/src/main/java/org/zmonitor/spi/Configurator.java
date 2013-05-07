@@ -16,7 +16,7 @@ import org.zmonitor.config.ConfigContext;
 public interface Configurator {
 	/**
 	 * 
-	 * @param zmonitorConfigCtx the initial DOM node selection is &lt;zmonitor> 
+	 * @param configCtx the initial DOM node selection is &lt;zmonitor> 
 	 */
-	public void configure(ConfigContext zmonitorConfigCtx);
+	public void configure(ConfigContext configCtx);
 }

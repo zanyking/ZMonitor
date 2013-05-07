@@ -103,7 +103,7 @@ public final class ZMonitor {
 	 * @param mCtx
 	 * @return
 	 */
-	public static MonitorPoint push(MonitorContext mCtx){
+	public static MonitorPoint push(TrackingContext mCtx){
 		return null;
 	}
 	/**
@@ -111,7 +111,7 @@ public final class ZMonitor {
 	 * @param mCtx
 	 * @return
 	 */
-	public static MonitorPoint record(MonitorContext mCtx){
+	public static MonitorPoint record(TrackingContext mCtx){
 		return null;
 	}
 	/**
@@ -119,7 +119,7 @@ public final class ZMonitor {
 	 * @param mCtx
 	 * @return
 	 */
-	public static MonitorPoint pop(MonitorContext mCtx){
+	public static MonitorPoint pop(TrackingContext mCtx){
 		return null;
 	}
 	/**
@@ -127,7 +127,7 @@ public final class ZMonitor {
 	 * @param mCtx
 	 * @return
 	 */
-	public static MonitorPoint finish(MonitorContext mCtx){
+	public static MonitorPoint finish(TrackingContext mCtx){
 		return null;
 	}
 	/**
@@ -201,7 +201,7 @@ public final class ZMonitor {
 		return mp;
 	}
 	
-	private static MonitorPoint start0(MonitorContext mCtx){
+	private static MonitorPoint start0(TrackingContext mCtx){
 		return null;
 	}
 	private static StackTraceElement getOuterCallerInfo(boolean shouldDo, int callerLevel){

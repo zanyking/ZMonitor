@@ -135,7 +135,30 @@ public final class ZMonitorManager {
 	public ConfigSource getConfigSource() {
 		return configSource;
 	}
+	
+	private ResourceProvider resourceProvider;
 
+	/**
+	 * 
+	 * @return
+	 */
+	public ResourceProvider getResourceProvider() {
+		return resourceProvider;
+	}
+	/**
+	 * 
+	 * @param resourceProvider if the given object is also a ZMBean, 
+	 * the life-cycle will be managed by ZMonitorManager.
+	 */
+	public void setResourceProvider(ResourceProvider resourceProvider) {
+		if(resourceProvider==null)return;
+		if(this.resourceProvider!=null)
+			throw new IllegalStateException("a ResourceProvider is already exist: "+
+					this.resourceProvider.getClass());
+		
+		this.resourceProvider = resourceProvider;
+		this.accept(resourceProvider);
+	}
 	/**
 	 * @param tClz bean type.
 	 * @return every bean that matches the given type, size could be 0~n.

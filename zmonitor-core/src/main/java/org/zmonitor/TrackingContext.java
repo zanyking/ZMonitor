@@ -10,7 +10,7 @@ import org.zmonitor.spi.Name;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public interface MonitorContext {
+public interface TrackingContext {
 	Name getName(); 
 	Object getMessage();
 	StackTraceElement getMonitorPointStackTraceElement();
