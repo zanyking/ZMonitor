@@ -6,6 +6,7 @@ package org.zmonitor;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.zmonitor.spi.Name;
 
@@ -26,7 +27,7 @@ public class MonitorPoint implements Serializable{
 	public int stack;
 	public int index;
 	public MonitorPoint parent;
-	public ArrayList<MonitorPoint> children;	
+	private ArrayList<MonitorPoint> children;	
 	
 	public Name name;
 	public String message;
@@ -67,6 +68,17 @@ public class MonitorPoint implements Serializable{
 		}
 	}
 
+	public List<MonitorPoint> getChildren(){
+		return children;
+	}
+	
+	/**
+	 * 
+	 * @return the amount of kids.
+	 */
+	public int size(){
+		return children.size();
+	}
 	/**
 	 * search the 
 	 * @param finalMillis

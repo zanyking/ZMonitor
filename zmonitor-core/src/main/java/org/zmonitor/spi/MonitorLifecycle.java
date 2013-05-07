@@ -16,13 +16,13 @@ import org.zmonitor.MonitorSequence;
  * </p>
  * 
  * @author Ian YT Tsai(Zanyking)
- * @see org.zmonitor.impl.SimpleMonitorSequenceLifecycle
+ * @see org.zmonitor.impl.SimpleMonitorLifecycle
  * @see org.zmonitor.web.HttpRequestMonitorSequenceLifcycle
  */
-public interface MonitorSequenceLifecycle {
+public interface MonitorLifecycle {
 	/**
-	 * Initialize a MonitorSequence instance if not exist, or just return the existing one.<br>
-	 * The first time to call this method will initialize a new MonitorSequence lifecycle. 
+	 * Initialize a MonitorSequence instance if not exist, or simply return the existing one.<br>
+	 * The first time to call this method will also initialize a new MonitorSequence. 
 	 * @return a MonitorSequence instance, shouldn't return null.
 	 */
 	public MonitorSequence getInstance();

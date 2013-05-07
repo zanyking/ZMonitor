@@ -19,10 +19,10 @@ import org.zmonitor.config.ConfigSource;
 import org.zmonitor.config.ConfigSources;
 import org.zmonitor.impl.JavaName;
 import org.zmonitor.impl.StringName;
-import org.zmonitor.impl.ThreadLocalMonitorSequenceLifecycleManager;
+import org.zmonitor.impl.ThreadLocalMonitorLifecycleManager;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.logger.log4j.NdcContext.NdcObj;
-import org.zmonitor.spi.MonitorSequenceLifecycle;
+import org.zmonitor.spi.MonitorLifecycle;
 import org.zmonitor.spi.Name;
 import org.zmonitor.util.Strings;
 
@@ -120,7 +120,7 @@ public class ZMonitorAppender extends AppenderSkeleton {
 				aZMonitorManager.performConfiguration(configSrc);
 			}
 			ZMonitorManager.init(aZMonitorManager);
-			aZMonitorManager.setLifecycleManager(new ThreadLocalMonitorSequenceLifecycleManager());
+			aZMonitorManager.setLifecycleManager(new ThreadLocalMonitorLifecycleManager());
 			isIgnitBySelf = true;
 			ZMLog.info(">> Ignite ZMonitor in: ",ZMonitorAppender.class.getCanonicalName());
 		} catch (IOException e) {
@@ -183,7 +183,7 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	    	 *  depth>0, tl!=started, controlByOthers	 do nothing... 
 	    	 *  
 	    	 */
-	    	MonitorSequenceLifecycle lfc = ZMonitorManager.getInstance().getMonitorSequenceLifecycle();
+	    	MonitorLifecycle lfc = ZMonitorManager.getInstance().getMonitorLifecycle();
 	    	
 			
 	    	if(depth==0){
@@ -210,15 +210,15 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	}
 	
 	private static final String KEY_CONTROLLED_BY_SELF = "KEY_CONTROLLED_BY_SELF";
-	private static boolean isControlledBySelf(MonitorSequenceLifecycle lfc){
+	private static boolean isControlledBySelf(MonitorLifecycle lfc){
 		return lfc.getAttribute(KEY_CONTROLLED_BY_SELF)!=null;
 	}
-	private static void setControlledBySelf(MonitorSequenceLifecycle lfc){
+	private static void setControlledBySelf(MonitorLifecycle lfc){
 		lfc.setAttribute(KEY_CONTROLLED_BY_SELF, KEY_CONTROLLED_BY_SELF);
 	}
 	
 	private static final String KEY_NDC_CTXT = "KEY_"+NdcContext.class;
-	private static NdcContext getNdcContext(MonitorSequenceLifecycle lfc){
+	private static NdcContext getNdcContext(MonitorLifecycle lfc){
 		NdcContext stack = lfc.getAttribute(KEY_NDC_CTXT);
 		if(stack==null){
 			lfc.setAttribute(KEY_NDC_CTXT, 
@@ -234,7 +234,7 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	 * @param lfc
 	 * @param ndcStr
 	 */
-	private void start(LoggingEvent event, int depth, MonitorSequenceLifecycle lfc,
+	private void start(LoggingEvent event, int depth, MonitorLifecycle lfc,
 			String ndcStr) {
 		NdcContext ndcCtxt = getNdcContext(lfc);
 		if(ndcCtxt.getNdcObj()!=null)
@@ -280,7 +280,7 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	 * @param ndcDepth
 	 * @param ndcStr 
 	 */
-	private void record(LoggingEvent event, int ndcDepth, MonitorSequenceLifecycle lfc, String ndcStr){
+	private void record(LoggingEvent event, int ndcDepth, MonitorLifecycle lfc, String ndcStr){
 		
 		//TODO: how to figure out this part?
 		// condition 1. Timeline already started.
@@ -332,7 +332,7 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	 * @param finalName
 	 * @param finalMesg
 	 */
-	private void complete(LoggingEvent event, String finalMesg, MonitorSequenceLifecycle lfc){
+	private void complete(LoggingEvent event, String finalMesg, MonitorLifecycle lfc){
 		Name jName = createName(event, "END");
 		
 		NdcContext ndcCtxt = getNdcContext(lfc);
@@ -361,7 +361,7 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	 * 
 	 * @return -1 if timeline is not initialized,  
 	 */
-	protected static int getCurrentTlDepth(MonitorSequenceLifecycle lfc){
+	protected static int getCurrentTlDepth(MonitorLifecycle lfc){
 		
 		MonitorSequence tl = lfc.getMonitorSequence();
 		return (tl==null)? -1 : tl.getCurrentDepth();

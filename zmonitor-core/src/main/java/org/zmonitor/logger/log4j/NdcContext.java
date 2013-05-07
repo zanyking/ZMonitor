@@ -7,7 +7,7 @@ package org.zmonitor.logger.log4j;
 import org.zmonitor.MonitorSequence;
 import org.zmonitor.ZMonitor;
 import org.zmonitor.spi.Name;
-import org.zmonitor.spi.MonitorSequenceLifecycle;
+import org.zmonitor.spi.MonitorLifecycle;
 
 /**
  * @author Ian YT Tsai(Zanyking)
@@ -16,11 +16,11 @@ import org.zmonitor.spi.MonitorSequenceLifecycle;
 /*package*/ class NdcContext {
 
 	
-	private final MonitorSequenceLifecycle lfc;
+	private final MonitorLifecycle lfc;
 	/**
 	 * @param lfc
 	 */
-	public NdcContext(MonitorSequenceLifecycle lfc) {
+	public NdcContext(MonitorLifecycle lfc) {
 		this.lfc = lfc;
 	}
 	

@@ -5,19 +5,19 @@
 package org.zmonitor.web;
 
 import org.zmonitor.ZMonitorManager;
-import org.zmonitor.impl.SimpleMonitorSequenceLifecycle;
-import org.zmonitor.spi.MonitorSequenceLifecycle;
+import org.zmonitor.impl.SimpleMonitorLifecycle;
+import org.zmonitor.spi.MonitorLifecycle;
 import org.zmonitor.spi.Name;
 
 /**
- * A HttpRequest life long {@link MonitorSequenceLifecycle}.
+ * A HttpRequest life long {@link MonitorLifecycle}.
  *   
  * @author Ian YT Tsai(Zanyking)
  */
-public class HttpRequestMonitorSequenceLifcycle extends SimpleMonitorSequenceLifecycle {
+public class HttpRequestMonitorSequenceLifcycle extends SimpleMonitorLifecycle {
 	private boolean urlAccepted = true;
 	/**
-	 * The lifetime of this {@link MonitorSequenceLifecycle} is as long as a request.
+	 * The lifetime of this {@link MonitorLifecycle} is as long as a request.
 	 * @param requestCtx
 	 */
 	public HttpRequestMonitorSequenceLifcycle(String oriReqUrl) {

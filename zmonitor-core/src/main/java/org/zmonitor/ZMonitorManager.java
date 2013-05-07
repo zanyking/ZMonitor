@@ -17,8 +17,8 @@ import org.zmonitor.impl.MSPipeProvider.MSPipe;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.spi.MonitorPointInfoFactory;
 import org.zmonitor.spi.MonitorSequenceHandler;
-import org.zmonitor.spi.MonitorSequenceLifecycle;
-import org.zmonitor.spi.MonitorSequenceLifecycleManager;
+import org.zmonitor.spi.MonitorLifecycle;
+import org.zmonitor.spi.MonitorLifecycleManager;
 import org.zmonitor.spi.Name;
 
 
@@ -29,41 +29,9 @@ import org.zmonitor.spi.Name;
 public final class ZMonitorManager {
 	
 	private static final ZMonitorManager NOOP = 
-		new ZMonitorManager(new NoOpZMBeanRepository());
-	static{
-		NOOP.setLifecycleManager(new MonitorSequenceLifecycleManager(){
-			MonitorSequenceLifecycle noop = new MonitorSequenceLifecycle(){
-
-				public boolean shouldMeasure(Name name, String mesg,
-						long createMillis) {
-					return false;// this should take care the rest of all...
-				}
-				public MonitorSequence getInstance() {
-					return null;
-				}
-				public MonitorSequence getMonitorSequence() {
-					return null;
-				}
-				public boolean isInitialized() {
-					return false;
-				}
-				public boolean isMonitorStarted() {
-					return false;
-				}
-				public void finish() {
-				}
-				public boolean isFinished() {
-					return false;
-				}
-				public void setAttribute(String key, Object value) {
-				}
-				public <T> T getAttribute(String key) {
-					return null;
-				}};
-			public MonitorSequenceLifecycle getLifecycle() {
-				return noop;
-			}});
-	}
+		new ZMonitorManager(new NOOPZMBeanRepository(), 
+				new NOOPMonitorLifecycleManager());
+	
 	//class-Loader singleton.
 	private static volatile ZMonitorManager sZMM = NOOP;
 	
@@ -130,8 +98,10 @@ public final class ZMonitorManager {
 		fZMBeanRepository = new ZMBeanRepositoryBase(){};
 	}
 	
-	private ZMonitorManager(ZMBeanRepository a){
-		fZMBeanRepository = a;
+	private ZMonitorManager(ZMBeanRepository beanRepo,
+			NOOPMonitorLifecycleManager lifecycleManager){
+		fZMBeanRepository = beanRepo;
+		this.lifecycleManager = lifecycleManager;
 	}
 	
 
@@ -226,7 +196,7 @@ public final class ZMonitorManager {
 	
 	//TODO doesn't seem to be a unique object
 	private  MonitorPointInfoFactory monitorPointInfoFactory = new DefaultMeasurePointInfoFactory(); 
-	public  MonitorPointInfoFactory getMeasurePointInfoFactory() {
+	public  MonitorPointInfoFactory getMonitorPointInfoFactory() {
 		return monitorPointInfoFactory;
 	}
 	public  void setMonitorPointInfoFactory(MonitorPointInfoFactory mpInfoFac) {
@@ -234,19 +204,19 @@ public final class ZMonitorManager {
 		monitorPointInfoFactory = mpInfoFac;
 	}
 	
-	private MonitorSequenceLifecycleManager lifecycleManager;
+	private MonitorLifecycleManager lifecycleManager;
 	/**
 	 * this is a life-cycle method which will be called while ignition, should not be called in general customization.
 	 * @param lifecycleManager
 	 */
 	public void setLifecycleManager(
-			MonitorSequenceLifecycleManager lifecycleManager) {
+			MonitorLifecycleManager lifecycleManager) {
 		this.lifecycleManager = lifecycleManager;
 	}
-	public MonitorSequenceLifecycleManager getLifecycleManager() {
+	public MonitorLifecycleManager getLifecycleManager() {
 		return lifecycleManager;
 	}
-	public MonitorSequenceLifecycle getMonitorSequenceLifecycle() {
+	public MonitorLifecycle getMonitorLifecycle() {
 		return getLifecycleManager().getLifecycle();
 	}
 
@@ -257,7 +227,7 @@ public final class ZMonitorManager {
  * @author Ian YT Tsai(Zanyking)
  *
  */
-class NoOpZMBeanRepository implements ZMBeanRepository{
+class NOOPZMBeanRepository implements ZMBeanRepository{
 
 	public <T> List<T> get(Class<T> clz) {return Collections.emptyList();}
 	public <T> T get(String id) {return null;}
@@ -274,5 +244,39 @@ class NoOpZMBeanRepository implements ZMBeanRepository{
 	public void setId(String id) {
 		
 	}
-}
-
+}//end of class
+/**
+ * @author Ian YT Tsai(Zanyking)
+ */
+class NOOPMonitorLifecycleManager implements MonitorLifecycleManager{
+	MonitorLifecycle noop = new MonitorLifecycle(){
+		public boolean shouldMeasure(Name name, String mesg,
+				long createMillis) {
+			return false;// this should take care the rest of all...
+		}
+		public MonitorSequence getInstance() {
+			return null;
+		}
+		public MonitorSequence getMonitorSequence() {
+			return null;
+		}
+		public boolean isInitialized() {
+			return false;
+		}
+		public boolean isMonitorStarted() {
+			return false;
+		}
+		public void finish() {
+		}
+		public boolean isFinished() {
+			return false;
+		}
+		public void setAttribute(String key, Object value) {
+		}
+		public <T> T getAttribute(String key) {
+			return null;
+		}};
+	public MonitorLifecycle getLifecycle() {
+		return noop;
+	}
+}//end of class

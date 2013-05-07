@@ -6,10 +6,10 @@ package org.zmonitor.spi;
 
 import org.zmonitor.ZMonitor;
 import org.zmonitor.MonitorSequence;
-import org.zmonitor.spi.MonitorSequenceLifecycle;
+import org.zmonitor.spi.MonitorLifecycle;
 /**
  * 
- * the {@link ZMonitor} implementation requires a manager to get a {@link MonitorSequenceLifecycle} 
+ * the {@link ZMonitor} implementation requires a manager to get a {@link MonitorLifecycle} 
  * which is the keeper of {@link MonitorSequence}.<br>
  * 
  * <p>
@@ -18,18 +18,18 @@ import org.zmonitor.spi.MonitorSequenceLifecycle;
  * </p>
  * 
  * <p>
- * The implementation of the manager normally based on Threadlocal to keep the reference to {@link MonitorSequenceLifecycle} to preserve the continuation. 
+ * The implementation of the manager normally based on Threadlocal to keep the reference to {@link MonitorLifecycle} to preserve the continuation. 
  * which will be retrieved by monitoring point in the thread the application created.
  * </p>
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public interface MonitorSequenceLifecycleManager {
+public interface MonitorLifecycleManager {
 	 
 	/**
-	 * could be called by logger in any place of the application.<br>
+	 * could be called by logger adaptor implementation in any place of the application.<br>
 	 * @return
 	 */
-	public MonitorSequenceLifecycle getLifecycle();
+	public MonitorLifecycle getLifecycle();
 	
 }

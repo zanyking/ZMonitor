@@ -14,7 +14,7 @@ import org.zmonitor.IgnitionFailureException;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.config.ConfigSource;
 import org.zmonitor.config.URLConfigSource;
-import org.zmonitor.impl.ThreadLocalMonitorSequenceLifecycleManager;
+import org.zmonitor.impl.ThreadLocalMonitorLifecycleManager;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.util.Loader;
 
@@ -58,8 +58,8 @@ public class TestBase {
 		
 		aZMonitorManager.performConfiguration(new URLConfigSource(url));
 		
-		ThreadLocalMonitorSequenceLifecycleManager lifecycleMgmt = 
-			new ThreadLocalMonitorSequenceLifecycleManager();
+		ThreadLocalMonitorLifecycleManager lifecycleMgmt = 
+			new ThreadLocalMonitorLifecycleManager();
 		
 		aZMonitorManager.setLifecycleManager(lifecycleMgmt);
 		

@@ -1,4 +1,4 @@
-/**NDCTimelineLifecycle.java
+/**
  * 2011/4/1
  * 
  */
@@ -10,14 +10,14 @@ import java.util.Map;
 import org.zmonitor.MonitorSequence;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.spi.Name;
-import org.zmonitor.spi.MonitorSequenceLifecycle;
+import org.zmonitor.spi.MonitorLifecycle;
 
 /**
  * 
  * this implementation will manage the {@link MonitorSequence} instance 
  * {@inheritDoc}<br> 
  */
-public class SimpleMonitorSequenceLifecycle implements MonitorSequenceLifecycle {
+public class SimpleMonitorLifecycle implements MonitorLifecycle {
 	
 	protected MonitorSequence mSquence;
 	protected boolean finished;

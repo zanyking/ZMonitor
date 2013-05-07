@@ -5,9 +5,9 @@ package org.zmonitor.web;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.zmonitor.impl.ThreadLocalMonitorSequenceLifecycleManager;
-import org.zmonitor.spi.MonitorSequenceLifecycle;
-import org.zmonitor.spi.MonitorSequenceLifecycleManager;
+import org.zmonitor.impl.ThreadLocalMonitorLifecycleManager;
+import org.zmonitor.spi.MonitorLifecycle;
+import org.zmonitor.spi.MonitorLifecycleManager;
 
 /**
  * 
@@ -17,17 +17,17 @@ import org.zmonitor.spi.MonitorSequenceLifecycleManager;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class HttpRequestMonitorSequenceLifecycleManager  implements MonitorSequenceLifecycleManager{
+public class HttpRequestMonitorLifecycleManager  implements MonitorLifecycleManager{
 
 	private static final String KEY_REQ_MSL = "KEY_REQ_MSL";
-	private final ThreadLocalMonitorSequenceLifecycleManager thlTManager = 
-			new ThreadLocalMonitorSequenceLifecycleManager();
+	private final ThreadLocalMonitorLifecycleManager thlTManager = 
+			new ThreadLocalMonitorLifecycleManager();
 		
 	
-	public MonitorSequenceLifecycle getLifecycle() {
+	public MonitorLifecycle getLifecycle() {
 		HttpRequestContext ctx = HttpRequestContexts.get();
 		
-		MonitorSequenceLifecycle lfcycle = null;
+		MonitorLifecycle lfcycle = null;
 		if(ctx==null){
 			//this is not a Servlet thread, but a thread created by some part of a Java Web application.
 			lfcycle = thlTManager.getLifecycle();

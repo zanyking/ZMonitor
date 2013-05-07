@@ -1,4 +1,4 @@
-/**ToStringTimelineHandler.java
+/**
  * 2011/3/23
  * 
  */
@@ -48,21 +48,21 @@ public class SampleConsoleMonitorSequenceHandler extends ZMBeanBase implements M
 		System.out.println(result);
 	}
 	
-	private void write(StringBuffer sb, MonitorPoint record, String prefix, String indent){
-		if(record==null)return;
-		String mesgPfx = Strings.append(prefix, "[",Strings.alignedMillisStr(record.tickPeriod),
-				"|",Strings.alignedMillisStr(record.getAfterPeriod()),"]ms [",record.name,"]");
+	private void write(StringBuffer sb, MonitorPoint mp, String prefix, String indent){
+		if(mp==null)return;
+		String mesgPfx = Strings.append(prefix, "[",Strings.alignedMillisStr(mp.tickPeriod),
+				"|",Strings.alignedMillisStr(mp.getAfterPeriod()),"]ms [",mp.name,"]");
 //				"|",Strings.alignedMillisStr(record.getSelfPeriod()),"]ms [",record.name,"]");
 		
-		if(record.isLeaf()){
-			Strings.appendln(sb, mesgPfx," - ",record.message);
+		if(mp.isLeaf()){
+			Strings.appendln(sb, mesgPfx," - ",mp.message);
 			return;
 		}
 		
-		Strings.appendln(sb, mesgPfx , " children:",record.children.size(), " - ",record.message);
+		Strings.appendln(sb, mesgPfx , " children:",mp.size(), " - ",mp.message);
 		
 		String childPrefix = prefix+indent;
-		for(MonitorPoint child : record.children){
+		for(MonitorPoint child : mp.getChildren()){
 			write(sb, child, childPrefix, indent);
 		}
 	}

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.zmonitor.slf4j;
+package org.slf4j.impl;
 
 import org.zmonitor.config.ConfigContext;
 import org.zmonitor.spi.Configurator;

@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.zkoss.zk.ui.Executions;
-import org.zmonitor.spi.MonitorSequenceLifecycle;
+import org.zmonitor.spi.MonitorLifecycle;
 import org.zmonitor.web.HttpRequestContext;
 
 /**

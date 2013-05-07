@@ -78,7 +78,7 @@ public class Ribosome {
 		//iterate every version of children, see if there's any matches.
 		VersionNodeChildren vChildren = null;
 		for(VersionNodeChildren children : target.getChildrens()){
-			boolean isSame = match(record.children, children.getAll());
+			boolean isSame = match(record.getChildren(), children.getAll());
 			if(isSame){
 				vChildren = children;
 				break;
@@ -87,11 +87,11 @@ public class Ribosome {
 		
 		if(vChildren==null){//TODO: create new children for this record
 			int idx = 0;
-			if(record.children!=null){
+			if(!record.isLeaf()){
 				target.addChildren(vChildren = new VersionNodeChildren());	
 				writeRec2Measurable(record, vChildren);
 				VersionNode newVNode;
-				for(MonitorPoint rec : record.children){
+				for(MonitorPoint rec : record.getChildren()){
 					newVNode = new VersionNode(target.getStack()+1, idx++, rec.name);			
 					vChildren.add(newVNode);
 					vNodeStack.add(new WriteNodeCtx(rec, newVNode));
@@ -99,7 +99,7 @@ public class Ribosome {
 			}
 		}else{
 			writeRec2Measurable(record, vChildren);
-			zipping(record.children, vChildren.getAll(), new Operator(){
+			zipping(record.getChildren(), vChildren.getAll(), new Operator(){
 				public boolean operate(MonitorPoint record, VersionNode vNode) {
 					vNodeStack.add(new WriteNodeCtx(record, vNode));
 					return true;

@@ -31,7 +31,7 @@ public class ZMonitorServletFilter implements Filter {
 	
 	private boolean isIgnitBySelf;
 	
-	private HttpRequestMonitorSequenceLifecycleManager hReqMSLfManager;
+	private HttpRequestMonitorLifecycleManager hReqMSLfManager;
 	
 	public void init(FilterConfig fConfig) throws ServletException {
 		// init ProfilingManager...
@@ -59,7 +59,7 @@ public class ZMonitorServletFilter implements Filter {
 		
 		aZMonitorManager.performConfiguration(configSource);
 		
-		hReqMSLfManager = new HttpRequestMonitorSequenceLifecycleManager();
+		hReqMSLfManager = new HttpRequestMonitorLifecycleManager();
 		aZMonitorManager.setLifecycleManager(hReqMSLfManager);
 		try {
 			ZMonitorManager.init(aZMonitorManager);

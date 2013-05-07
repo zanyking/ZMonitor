@@ -2,9 +2,10 @@
  * 2011/4/5
  * 
  */
-package org.zmonitor;
+package org.zmonitor.impl;
 
-import org.zmonitor.impl.StringName;
+import org.zmonitor.ZMonitor;
+import org.zmonitor.ZMonitorManager;
 import org.zmonitor.spi.MonitorPointInfoFactory;
 import org.zmonitor.spi.Name;
 
@@ -12,7 +13,7 @@ import org.zmonitor.spi.Name;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class MPContext {
+public class MPContextImpl {
 	private final StackTraceElement sElemt;
 	private final String mpType;
 	private Name name;
@@ -20,7 +21,7 @@ public class MPContext {
 	private final long createMillis;
 	
 	private static MonitorPointInfoFactory getRenderer(){
-		 return ZMonitorManager.getInstance().getMeasurePointInfoFactory() ;
+		 return ZMonitorManager.getInstance().getMonitorPointInfoFactory() ;
 	}
 	
 	/**
@@ -31,7 +32,7 @@ public class MPContext {
 	 * @param mesg
 	 * @param createMillis 
 	 */
-	public MPContext(StackTraceElement sElemt, String mpType, Name name, String mesg, long createMillis) {
+	public MPContextImpl(StackTraceElement sElemt, String mpType, Name name, String mesg, long createMillis) {
 		super();
 		this.sElemt = sElemt;
 		this.mpType = mpType;

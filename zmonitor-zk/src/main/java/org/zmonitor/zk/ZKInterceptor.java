@@ -38,7 +38,7 @@ import org.zmonitor.impl.StringName;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.web.HttpRequestContext;
 import org.zmonitor.web.HttpRequestContexts;
-import org.zmonitor.web.HttpRequestMonitorSequenceLifecycleManager;
+import org.zmonitor.web.HttpRequestMonitorLifecycleManager;
 import org.zmonitor.web.StantardHttpRequestContext;
 
 /**
@@ -67,12 +67,12 @@ public class ZKInterceptor implements WebAppInit, WebAppCleanup,
 		return conf;
 	}
 	
-	private static HttpRequestMonitorSequenceLifecycleManager getLifeCycleManager(WebApp wapp){
-		HttpRequestMonitorSequenceLifecycleManager mg = 
-			(HttpRequestMonitorSequenceLifecycleManager) wapp.getAttribute(KEY_LIFECYCLE_MANAGER);
+	private static HttpRequestMonitorLifecycleManager getLifeCycleManager(WebApp wapp){
+		HttpRequestMonitorLifecycleManager mg = 
+			(HttpRequestMonitorLifecycleManager) wapp.getAttribute(KEY_LIFECYCLE_MANAGER);
 		if(mg==null){
 			wapp.setAttribute(KEY_LIFECYCLE_MANAGER, 
-					mg = new HttpRequestMonitorSequenceLifecycleManager()); 
+					mg = new HttpRequestMonitorLifecycleManager()); 
 		}
 		return mg;
 	}
@@ -146,7 +146,7 @@ public class ZKInterceptor implements WebAppInit, WebAppCleanup,
 	private static final String KEY_REQUEST_ZUL_URI = "KEY_REQUEST_ZUL_URI";
 	
 	public void request(String uri) throws Exception {
-		if(getPfMgmt().getMonitorSequenceLifecycle().isMonitorStarted()){
+		if(getPfMgmt().getMonitorLifecycle().isMonitorStarted()){
 			getContext().getRequest().setAttribute(KEY_REQUEST_ZUL_URI, uri);
 			RenderResult result = getRenderer().getURIInterceptorResult(uri);
 			if(getConfiguration().isRenderURIIntercepter())
