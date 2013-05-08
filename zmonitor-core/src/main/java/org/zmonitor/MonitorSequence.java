@@ -67,7 +67,7 @@ public class MonitorSequence implements Serializable{
 	}
 	
 	public Name getName() {
-		return root==null? null : root.name;
+		return root==null? null : root.getName();
 	}
 	
 	public MonitorPoint getCurrent() {
@@ -91,8 +91,17 @@ public class MonitorSequence implements Serializable{
 	 * @return
 	 */
 	public long getVeryEndCreateMillis(){
-		long veryEndCreateTime = MonitorPoint.getVeryEnd(current).createMillis;
+		long veryEndCreateTime = getVeryEnd(current).getCreateMillis();
 		return veryEndCreateTime;
+	}
+	/**
+	 * 
+	 * @param current
+	 * @return
+	 */
+	private static MonitorPoint getVeryEnd(MonitorPoint current){
+		MonitorPoint lastChild = current.getLastChild();
+		return (lastChild==null)? current : getVeryEnd(lastChild);
 	}
 	
 	private MonitorPoint newInstance(Name name, String mesg, MonitorPoint parent, boolean isLeaf, long createMillis){
@@ -125,7 +134,8 @@ public class MonitorSequence implements Serializable{
 		return rec;
 	}
 	/**
-	 * Give an end {@link MonitorPoint} to current stack level then pop it out. 
+	 * Using a {@link MonitorPoint} as an end of current ms-mp-stack, 
+	 * a pop operation will be performed immediately after tracking. 
 	 * 
 	 * @param name the name of the new {@link MonitorPoint}
 	 * @param mesg the message of the new {@link MonitorPoint}
@@ -135,19 +145,31 @@ public class MonitorSequence implements Serializable{
 	public MonitorPoint end(Name name, String mesg){
 		return end(name, mesg, System.currentTimeMillis());
 	}
+	/**
+	 * 	|-mp		-> START (createMillis)
+	 * 		|-mp
+	 *		|-mp				
+	 *		|-mp	-> END (createMillis)
+	 *
+	 * @param name
+	 * @param mesg
+	 * @param createMillis
+	 * @return a new monitor point which is an end of current monitor point. 
+	 */
 	public MonitorPoint end(Name name, String mesg, long createMillis){
 		if(current==null){
-			throw new IllegalStateException("you already ended this Measure Sequence and want to end it again?");
+			//TODO how about return null?
+			throw new IllegalStateException("you already ended this monitor Sequence and want to end it again?");
 		}
-		if(current.createMillis > createMillis){
-			throw new IllegalArgumentException("try to tag a measure point which create time is smaller than start stack.");
+		if(current.getCreateMillis() > createMillis){
+			throw new IllegalArgumentException("try to tag a monitor point which create time is smaller than start stack.");
 		}
 		currentDepth--;
-		MonitorPoint rec = newInstance(name, mesg, current, true, createMillis);
-		current.markFinalEnd(rec.createMillis);
+		MonitorPoint endMP = newInstance(name, mesg, current, true, createMillis);
+		current.markLastMillis(endMP.getCreateMillis());
 		
-		current = current.parent;
-		return rec;
+		current = current.getParent();
+		return endMP;
 	}
 	
 }

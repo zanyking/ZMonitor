@@ -2,13 +2,16 @@
 <zmonitor>
 	 
 
-	<agent-conf masterHost="localhost" masterPort="8799">
-	</agent-conf>
 	
 	
 	<monitor-sequence-handler name="console-LOG4J" 
 		class="org.zmonitor.handler.SampleConsoleMonitorSequenceHandler"/>
-
+	
+	
+	
+	<agent-conf masterHost="localhost" masterPort="8799">
+	</agent-conf>
+	
 
 	<web-conf>
 		<url-filer rule="not" mode="or">

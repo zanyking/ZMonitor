@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Stack;
 
 import org.zmonitor.MonitorPoint;
-
+import static org.zmonitor.util.MPTrees.*;
 
 /**
  * @author Ian YT Tsai(Zanyking)
@@ -58,7 +58,7 @@ public class Ribosome {
 		VersionNode reqVNode = null;
 		for(VersionNodeChildren cildren : rootVNode.getChildrens()){
 			reqVNode = cildren.getAll().get(0);
-			if(reqVNode.getName().equals(root.name)){
+			if(reqVNode.getName().equals(root.getName())){
 				writeRec2Measurable(root, cildren);
 				return reqVNode;
 			}
@@ -66,7 +66,7 @@ public class Ribosome {
 		VersionNodeChildren vChildren = new VersionNodeChildren();
 		rootVNode.addChildren(vChildren);
 		writeRec2Measurable(root, vChildren);
-		vChildren.add(reqVNode = new VersionNode(0, 0, root.name));
+		vChildren.add(reqVNode = new VersionNode(0, 0, root.getName()));
 		return reqVNode;
 	}
 	
@@ -92,7 +92,7 @@ public class Ribosome {
 				writeRec2Measurable(record, vChildren);
 				VersionNode newVNode;
 				for(MonitorPoint rec : record.getChildren()){
-					newVNode = new VersionNode(target.getStack()+1, idx++, rec.name);			
+					newVNode = new VersionNode(target.getStack()+1, idx++, rec.getName());			
 					vChildren.add(newVNode);
 					vNodeStack.add(new WriteNodeCtx(rec, newVNode));
 				}	
@@ -115,8 +115,9 @@ public class Ribosome {
 		if(summary==null){
 			aNode.setRecordSummary(summary = new RecordSummary<String>(1));
 		}
-		summary.append(rec.message);
-		summary.accumulate(rec.tickPeriod, rec.getAfterPeriod());
+		summary.append(rec.getMessage());
+		summary.accumulate(retrieveElapsedMillisFromPrevious(rec), 
+				retrieveElapsedMillisToNext(rec));
 	}
 	
 	private static boolean match(List<MonitorPoint> records, List<VersionNode> children){
@@ -126,7 +127,7 @@ public class Ribosome {
 		final boolean[] flag = new boolean[]{true};
 		zipping(records, children, new Operator(){
 			public boolean operate(MonitorPoint record, VersionNode vNode) {
-				if(!record.name.equals(vNode.getName())){
+				if(!record.getName().equals(vNode.getName())){
 					flag[0] = false;	
 				}
 				return flag[0];

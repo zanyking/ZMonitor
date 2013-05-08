@@ -6,7 +6,10 @@ package org.zmonitor;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.zmonitor.spi.Name;
 
@@ -21,131 +24,334 @@ import org.zmonitor.spi.Name;
 public class MonitorPoint implements Serializable{
 	private static final long serialVersionUID = 1772552143735347953L;
 	
-	public MonitorSequence mSequence;
-	public long createMillis;
-	public long tickPeriod;
-	public int stack;
-	public int index;
-	public MonitorPoint parent;
-	private ArrayList<MonitorPoint> children;	
+	private MonitorSequence mSequence;
+	private long createMillis;
+	private int stack;
+	private int index;
 	
-	public Name name;
-	public String message;
-	public long finalEnd;// Measure Point
+	
+	private MonitorPoint parent;
+	private MonitorPoint previousSibling;
+	private MonitorPoint nextSibling;
+	
+	
+	private MonitorPoint firstChild;
+	private MonitorPoint lastChild;
+	
+	
+	
+	private Name name;
+	private String message;
+	private long lastMillis;// Measure Point
 	
 	/**
 	 * 
 	 * @param parent
 	 * @param mesg
 	 */
-	public MonitorPoint(Name name, String mesg, MonitorPoint parent, boolean isLeaf, MonitorSequence bb, long createMillis) {
+	public MonitorPoint(Name name, String mesg, MonitorPoint parent, 
+			boolean isLeaf, 
+			MonitorSequence mSequence, 
+			long createMillis) {
 		
-		mSequence = bb;
-		mSequence.increament();
+		
+		this.mSequence = mSequence;
+		this.mSequence.increament();
+		
 		this.createMillis = createMillis;
 		this.name = name;
 		this.message = mesg;//TODO: has potential to be an object...
 		this.parent = parent;
 		this.stack = (parent==null) ? 0 : parent.stack+1;
 		
-		this.children = isLeaf ? null : new ArrayList<MonitorPoint>(10);
-		MonitorPoint previousSibling = (parent==null) ?  
-				null : parent.getLastChild();
-		if(previousSibling==null){
-			if(parent!=null){
-				tickPeriod = createMillis - parent.createMillis;
-			}else{
-				tickPeriod = 0;	
-			}
-		}else{
-			tickPeriod = createMillis - previousSibling.createMillis;
-		}
 		if(parent!=null){
-			index = parent.children.size(); 
-			parent.children.add(this);
-		}else{
+			index = parent.size(); 
+			parent.append(this);
+		}else{// this is the root mp.
 			index = 0;
 		}
 	}
-
-	public List<MonitorPoint> getChildren(){
-		return children;
-	}
-	
 	/**
 	 * 
 	 * @return the amount of kids.
 	 */
 	public int size(){
-		return children.size();
+		if(lastChild==null)return 0;
+		return lastChild.getIndex()+1;
+	}
+	
+	/**
+	 * 
+	 * @param newChild
+	 */
+	private void append(MonitorPoint newChild){
+		if(this.firstChild==null){
+			this.firstChild = this.lastChild = newChild;
+			return;
+		}
+		if(this.lastChild.nextSibling!=null)
+			throw new IllegalStateException("the lastChild's nextSibling is not null!!!");
+		if(newChild.equals(this.lastChild))
+			throw new IllegalStateException("try to append lastChild twice!");
+		
+		this.lastChild.nextSibling = newChild;//reference: old -> new 
+		newChild.previousSibling = this.lastChild;//reference: old <- new
+		/*
+		 *     parent
+		 * 			|- lastChildRef
+		 * old <=> new 
+		 */
+		this.lastChild = newChild;
+	}
+	
+	/**
+	 * this mp is the end of it's parent 
+	 *<pre>
+	 *|-mp     -> START (parent)
+	 *   |-mp
+	 *   |-mp				
+	 *   |-mp  -> END   (this)
+	 *</pre>
+	 * @param lastMillis
+	 */
+	public void markLastMillis(long lastMillis) {
+		this.lastMillis = lastMillis;
+		if(parent!=null){
+			parent.markLastMillis(lastMillis);
+		}
 	}
 	/**
-	 * search the 
-	 * @param finalMillis
+	 * @return
 	 */
-	public void markFinalEnd(long finalMillis) {
-		finalEnd = finalMillis;
-		if(parent!=null){
-			parent.markFinalEnd(finalMillis);
-		}
+	public long getLastMillis(){
+		return lastMillis;
+	}
+	
+	
+	public int getIndex() {
+		return index;
+	}
+	public void setName(Name name) {
+		this.name = name;
+	}
+	public Name getName() {
+		return name;
+	}
+	
+	
+	public void setMessage(String message) {
+		this.message = message;
+	}
+	public String getMessage() {
+		return message;
 	}
 
-	public long getAfterPeriod(){
-		if(parent==null) {
-			return finalEnd - this.createMillis;
-		}
-		
-		MonitorPoint next = getNext(this);
-		if(next==null)return 0;
-		return next.createMillis - this.createMillis;
+	public MonitorPoint getParent(){
+		return parent;
 	}
 	
-	public long getSelfPeriod(){
-		long self = getAfterPeriod();
-		if(isLeaf()) return self;
-		MonitorPoint mp1 = children.get(0);
-		return self - (finalEnd - mp1.createMillis);
+	public long getCreateMillis(){
+		return createMillis;
 	}
 	
-	public long getBranchElipsedByEndTag(){
-		if(isLeaf()){//is leaf
-			return 0;
-		}
-		return finalEnd - this.createMillis;
+	/**
+	 * @return
+	 */
+	public MonitorPoint getPreviousSibling(){
+		return previousSibling;
 	}
-	
-	public MonitorPoint getLastChild(){
-		if(children==null|| children.size()==0)return null;
-		int k = children.size();
-		return  children.get(k-1);
-	}
-
-	public boolean isLeaf(){
-		return children==null|| children.size()==0;
+	/**
+	 * @return
+	 */
+	public MonitorPoint getNextSibling() {
+		return nextSibling;
 	}
 	/**
 	 * 
-	 * @param current
 	 * @return
 	 */
-	public static MonitorPoint getVeryEnd(MonitorPoint current){
-		MonitorPoint lastChild = current.getLastChild();
-		return (lastChild==null)? current : getVeryEnd(lastChild);
+	public MonitorPoint getFirstChild() {
+		return firstChild;
+	}
+	/**
+	 * 
+	 * @return
+	 */
+	public MonitorPoint getLastChild(){
+		return  lastChild;
+	}
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean isLeaf(){
+		return firstChild==null;
 	}
 	
-	private static MonitorPoint getNext(MonitorPoint current){
-		if(current==null)
-			throw new IllegalArgumentException("shouldn't be null");
-		if(current.parent == null)return null;//this is a root record.
-		
-		MonitorPoint next = null;
-		int parentChildrenSize = current.parent.children.size();
-		if(current.index+1 >= parentChildrenSize){// this is the last one of parent child
-			next = getNext(current.parent);
-		}else{
-			next = current.parent.children.get(current.index+1);
-		}
-		return next;
+	/**
+	 * 
+	 * @return
+	 */
+	public List<MonitorPoint> getChildren(){
+		return new KidsList();
 	}
+
+	
+	/**
+	 * @author Ian YT Tsai(Zanyking)
+	 */
+	private class KidsList implements List<MonitorPoint> {
+		public int size() {
+			return MonitorPoint.this.size();
+		}
+
+		public boolean isEmpty() {
+			return isLeaf();
+		}
+
+		public boolean contains(Object o) {
+			if(!(o instanceof MonitorPoint))return false;
+			for(MonitorPoint mp=firstChild; mp!=null; mp=mp.getNextSibling()){
+				if(mp.equals(o))return true;
+			}
+			return false;
+		}
+
+		public Iterator<MonitorPoint> iterator() {
+			return new Iterator<MonitorPoint>(){
+				private MonitorPoint cursor = null;
+				private MonitorPoint next = firstChild;
+				public boolean hasNext() {
+					return next!=null;
+				}
+				public MonitorPoint next() {
+					cursor = next;
+					next = cursor.getNextSibling();
+					return cursor;
+				}
+				public void remove() {
+					throw new UnsupportedOperationException(
+							"this is a read only iterator");
+				}
+			};
+		}
+
+		public Object[] toArray() {
+			MonitorPoint[] arr = new MonitorPoint[size()];
+			int i=0;
+			for(MonitorPoint mp=firstChild; mp!=null; mp=mp.getNextSibling()){
+				arr[i++] = mp;
+			}
+			return arr;
+		}
+
+		public <T> T[] toArray(T[] a) {
+			Object[] arr = new Object[size()];
+			int i=0;
+			for(MonitorPoint mp=firstChild; mp!=null; mp=mp.getNextSibling()){
+				arr[i++] = mp;
+			}
+			return (T[]) arr;
+		}
+
+		public boolean add(MonitorPoint e) {
+			throw new UnsupportedOperationException("this is a read-only list");
+		}
+
+		public boolean remove(Object o) {
+			throw new UnsupportedOperationException("this is a read-only list");
+		}
+
+		public boolean containsAll(Collection<?> c) {
+			throw new UnsupportedOperationException("this is a read-only list");
+		}
+
+		public boolean addAll(Collection<? extends MonitorPoint> c) {
+			throw new UnsupportedOperationException("this is a read-only list");
+		}
+
+		public boolean addAll(int index,
+				Collection<? extends MonitorPoint> c) {
+			throw new UnsupportedOperationException("this is a read-only list");
+		}
+
+		public boolean removeAll(Collection<?> c) {
+			throw new UnsupportedOperationException("this is a read-only list");
+		}
+
+		public boolean retainAll(Collection<?> c) {
+			throw new UnsupportedOperationException("this is a read-only list");
+		}
+
+		public void clear() {
+			throw new UnsupportedOperationException("this is a read-only list");
+		}
+
+		public MonitorPoint get(int index) {
+			if(index<0 || index>=size())
+				throw new IndexOutOfBoundsException("size: "+size()+", idx: "+index);
+			MonitorPoint mp;
+			if(index+1 < size()-index ){//->
+				mp = firstChild;
+				for(int k=0; k<index; k++){
+					mp = mp.getNextSibling();
+				}
+			}else{//<-
+				mp = lastChild;// size-1
+				for(int k=size()-1; k>index; k--){
+					mp = mp.getPreviousSibling();
+				}
+			}
+			return mp;
+		}
+
+		public MonitorPoint set(int index, MonitorPoint element) {
+			throw new UnsupportedOperationException("this is a read-only list");
+		}
+		public void add(int index, MonitorPoint element) {
+			throw new UnsupportedOperationException("this is a read-only list");
+		}
+		public MonitorPoint remove(int index) {
+			throw new UnsupportedOperationException("this is a read-only list");
+		}
+		public int indexOf(Object o) {
+			int i=0;
+			for(MonitorPoint mp=firstChild; mp!=null; mp=mp.getNextSibling()){
+				if(o.equals(mp))return i;
+				i++;
+			}
+			return -1;
+		}
+
+		public int lastIndexOf(Object o) {
+			int i=size()-1;
+			for(MonitorPoint mp=lastChild; mp!=null; mp=mp.getPreviousSibling()){
+				if(o.equals(mp))return i;
+				i--;
+			}
+			return -1;
+		}
+
+		public ListIterator<MonitorPoint> listIterator() {
+			throw new UnsupportedOperationException("this is a read-only list");
+		}
+		public ListIterator<MonitorPoint> listIterator(int index) {
+			throw new UnsupportedOperationException("this is a read-only list");
+		}
+		public List<MonitorPoint> subList(int fromIndex, int toIndex) {
+			throw new UnsupportedOperationException("this is a read-only list");
+		}
+	}//end of class...
+
+
+	
+
+
+	
+
+	
+	
+	
+
 	
 }

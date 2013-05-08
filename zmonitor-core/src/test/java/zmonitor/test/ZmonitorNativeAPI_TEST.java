@@ -28,9 +28,10 @@ public class ZmonitorNativeAPI_TEST extends TestBase {
 		ZMonitor.pop(true);
 	}
 	
-	private static void method1(){
+	private static void method1() throws Exception{
 		ZMonitor.push("start method 1", true);
 		ZMonitor.record("point 1");
+		Thread.sleep(1234);
 		ZMonitor.record("point 2");
 		ZMonitor.pop(true);
 		

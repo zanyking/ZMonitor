@@ -254,15 +254,15 @@ public class ZKInterceptor implements WebAppInit, WebAppCleanup,
 		}
 		public void applyName(){
 			RenderResult result = getRenderer().getMonitorAsyncUpdateResult(requests, desktop);
-			auStartMpoint.name = result.getName();
-			auStartMpoint.message = result.getMessage();
+			auStartMpoint.setName(result.getName());
+			auStartMpoint.setMessage(result.getMessage());
 		}
 	}//end of class...
 	private static final String KEY_ASYNC_UPDATE_RECORD = "KEY_ASYNC_UPDATE_RECORD";
 	@SuppressWarnings("rawtypes")
 	public void beforeUpdate(Desktop desktop, List requests) {
 		if(getConfiguration().isRenderMonitorAsyncUpdate()){
-			MonitorPoint rec = ZMonitor.push(null);
+			MonitorPoint rec = ZMonitor.push((String)null);
 			if(rec!=null){//measure it
 				getContext().getRequest().setAttribute(KEY_ASYNC_UPDATE_RECORD, 
 					new AuRecContext(requests, rec, desktop));
