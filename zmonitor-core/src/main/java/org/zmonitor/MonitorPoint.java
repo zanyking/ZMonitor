@@ -5,7 +5,6 @@
 package org.zmonitor;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -24,31 +23,26 @@ import org.zmonitor.spi.Name;
 public class MonitorPoint implements Serializable{
 	private static final long serialVersionUID = 1772552143735347953L;
 	
-	private MonitorSequence mSequence;
-	private long createMillis;
-	private int stack;
-	private int index;
-	
-	
+	// tree node data
 	private MonitorPoint parent;
+	private int index;
 	private MonitorPoint previousSibling;
 	private MonitorPoint nextSibling;
-	
-	
 	private MonitorPoint firstChild;
 	private MonitorPoint lastChild;
+	private MonitorSequence mSequence;
 	
-	
-	
+	// Context info 
+	private long createMillis;
 	private Name name;
-	private String message;
+	private Object message;
 	
 	/**
 	 * 
 	 * @param parent
 	 * @param mesg
 	 */
-	public MonitorPoint(Name name, String mesg, MonitorPoint parent, 
+	public MonitorPoint(Name name, Object mesg, MonitorPoint parent, 
 			boolean isLeaf, 
 			MonitorSequence mSequence, 
 			long createMillis) {
@@ -61,14 +55,31 @@ public class MonitorPoint implements Serializable{
 		this.name = name;
 		this.message = mesg;//TODO: has potential to be an object...
 		this.parent = parent;
-		this.stack = (parent==null) ? 0 : parent.stack+1;
 		
 		if(parent!=null){
 			index = parent.size(); 
-			parent.append(this);
+			parent.appendChild(this);//TODO move this method outside of constructor.
 		}else{// this is the root mp.
 			index = 0;
 		}
+	}
+	
+	
+	
+	public void appendChild(MonitorPoint newChild){
+		if(this.firstChild==null){
+			this.firstChild = this.lastChild = newChild;
+			return;
+		}
+		
+		if(this.lastChild.nextSibling!=null)
+			throw new IllegalStateException("the lastChild's nextSibling is supposed to be null !!!");
+		if(newChild.equals(this.lastChild))
+			throw new IllegalStateException("try to append lastChild twice!");
+		
+		this.lastChild.nextSibling = newChild;//reference: old -> new 
+		newChild.previousSibling = this.lastChild;//reference: old <- new
+		this.lastChild = newChild;
 	}
 	/**
 	 * 
@@ -78,31 +89,6 @@ public class MonitorPoint implements Serializable{
 		if(lastChild==null)return 0;
 		return lastChild.getIndex()+1;
 	}
-	
-	/**
-	 * 
-	 * @param newChild
-	 */
-	private void append(MonitorPoint newChild){
-		if(this.firstChild==null){
-			this.firstChild = this.lastChild = newChild;
-			return;
-		}
-		if(this.lastChild.nextSibling!=null)
-			throw new IllegalStateException("the lastChild's nextSibling is not null!!!");
-		if(newChild.equals(this.lastChild))
-			throw new IllegalStateException("try to append lastChild twice!");
-		
-		this.lastChild.nextSibling = newChild;//reference: old -> new 
-		newChild.previousSibling = this.lastChild;//reference: old <- new
-		/*
-		 *     parent
-		 * 			|- lastChildRef
-		 * old <=> new 
-		 */
-		this.lastChild = newChild;
-	}
-	
 	
 	public int getIndex() {
 		return index;
@@ -115,10 +101,10 @@ public class MonitorPoint implements Serializable{
 	}
 	
 	
-	public void setMessage(String message) {
+	public void setMessage(Object message) {
 		this.message = message;
 	}
-	public String getMessage() {
+	public Object getMessage() {
 		return message;
 	}
 
@@ -169,14 +155,14 @@ public class MonitorPoint implements Serializable{
 	 * @return
 	 */
 	public List<MonitorPoint> getChildren(){
-		return new KidsList();
+		return new KidList();
 	}
 
 	
 	/**
 	 * @author Ian YT Tsai(Zanyking)
 	 */
-	private class KidsList implements List<MonitorPoint> {
+	private class KidList implements List<MonitorPoint> {
 		public int size() {
 			return MonitorPoint.this.size();
 		}

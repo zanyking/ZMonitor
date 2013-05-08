@@ -110,10 +110,10 @@ public class Ribosome {
 	
 	// might has customization in the future.
 	private void writeRec2Measurable( MonitorPoint rec, AbstractNode aNode){
-		RecordSummary<String> summary = aNode.getRecordSummary();
+		RecordSummary<Object> summary = aNode.getRecordSummary();
 		
 		if(summary==null){
-			aNode.setRecordSummary(summary = new RecordSummary<String>(1));
+			aNode.setRecordSummary(summary = new RecordSummary<Object>(1));
 		}
 		summary.append(rec.getMessage());
 		summary.accumulate(retrieveMillisFromPrevious(rec), 

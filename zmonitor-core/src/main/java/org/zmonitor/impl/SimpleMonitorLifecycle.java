@@ -55,7 +55,7 @@ public class SimpleMonitorLifecycle implements MonitorLifecycle {
 	public boolean isFinished() {
 		return false;
 	}
-	public boolean shouldMeasure(Name name, String mesg, long createMillis) {
+	public boolean shouldMonitor(Name name, Object mesg, long createMillis) {
 		return true;// override this.
 	}
 	

@@ -35,15 +35,7 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	protected boolean javaSourceLocationInfo = true;
 	protected String mpNameType = "LOG4J";
 
-	protected boolean embedded;//default is false
-	
-	
-	public boolean isEmbedded() {
-		return embedded;
-	}
-	public void setEmbedded(boolean embedded) {
-		this.embedded = embedded;
-	}
+
 
 	private static ZMonitorAppender singleton;
 	
@@ -53,6 +45,23 @@ public class ZMonitorAppender extends AppenderSkeleton {
 			if(singleton ==null)
 				singleton = this;
 		}
+	}
+	
+	private boolean testMode;
+	
+	public boolean isTestMode(){
+		return testMode;
+	}
+	public void setTestMode(boolean b) {
+		testMode = b;
+	}
+	
+	protected boolean embedded;//default is false
+	public boolean isEmbedded() {
+		return embedded;
+	}
+	public void setEmbedded(boolean embedded) {
+		this.embedded = embedded;
 	}
 	/**
 	 * 
@@ -199,7 +208,7 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	    	}else if(depth>0){
 	    		if(ZMonitor.isMonitoring()){
 	    			record(event, depth, lfc, ndcStr);
-	    		}else if(isIgnitBySelf){
+	    		}else if(isIgnitBySelf ||  testMode){
 	    			// if the ms life-cycle is controlled by others, log4j should never take over the control.   
 	    			// be cause we'd never know if log4j's logging methods will be called inside a managed thread. 
 	    			start(event, depth, lfc, ndcStr);
@@ -400,6 +409,7 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	protected static boolean preventRecursion(Class<?> claz, String loggerName){
 		return Logger.getLogger(claz).getName().equals(loggerName);
 	}
+	
 
 	
 }

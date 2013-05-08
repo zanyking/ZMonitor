@@ -17,7 +17,7 @@ import org.slf4j.spi.LocationAwareLogger;
  * @author Ian YT Tsai(Zanyking)
  * 
  */
-public class ZmonitorLogger extends MarkerIgnoringBase {
+public class ZMonitorLogger extends MarkerIgnoringBase {
 	private static final long serialVersionUID = -5063731853235642189L;
 
 	private static final int LOG_LEVEL_TRACE = LocationAwareLogger.TRACE_INT;
@@ -30,12 +30,19 @@ public class ZmonitorLogger extends MarkerIgnoringBase {
 	/** The current log level */
 	protected int currentLogLevel = LOG_LEVEL_INFO;
 
-	
-	 private void log(int level, String message, Throwable t) {
+	private String name;
+	ZMonitorLogger(String name) {
+		this.name = name;
+	}
+
+	private void log(int level, String message, Throwable t) {
 		    if (!isLevelEnabled(level)) {
 		      return;
 		    }
-		    //TODO: zmonitor logging...
+		    //TODO: zmonitor slf4j logging...
+		    // more than dozens of properties can be used at this place.
+		    // 
+		    
 	 }
 	 
 	 /**
@@ -53,6 +60,7 @@ public class ZmonitorLogger extends MarkerIgnoringBase {
 	    }
 	    FormattingTuple tp = MessageFormatter.format(format, arg1, arg2);
 	    log(level, tp.getMessage(), tp.getThrowable());
+	  //TODO might have to handle the message pattern directly in the future(for performance issue)
 	  }
 
 	  /**
@@ -68,6 +76,7 @@ public class ZmonitorLogger extends MarkerIgnoringBase {
 	    }
 	    FormattingTuple tp = MessageFormatter.arrayFormat(format, arguments);
 	    log(level, tp.getMessage(), tp.getThrowable());
+	    //TODO might have to handle the message pattern directly in the future(for performance issue)
 	  }
 	 
 	/**

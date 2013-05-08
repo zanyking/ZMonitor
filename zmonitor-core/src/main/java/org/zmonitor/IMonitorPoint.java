@@ -3,13 +3,14 @@
  */
 package org.zmonitor;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public interface IMonitorPoint {
+public interface IMonitorPoint extends Serializable{
 	/**
 	 * 
 	 * @return

@@ -17,7 +17,7 @@ public class MPContextImpl {
 	private final StackTraceElement sElemt;
 	private final String mpType;
 	private Name name;
-	private String mesg;
+	private Object mesg;
 	private final long createMillis;
 	
 	private static MonitorPointInfoFactory getRenderer(){
@@ -32,7 +32,7 @@ public class MPContextImpl {
 	 * @param mesg
 	 * @param createMillis 
 	 */
-	public MPContextImpl(StackTraceElement sElemt, String mpType, Name name, String mesg, long createMillis) {
+	public MPContextImpl(StackTraceElement sElemt, String mpType, Name name, Object mesg, long createMillis) {
 		super();
 		this.sElemt = sElemt;
 		this.mpType = mpType;
@@ -70,10 +70,10 @@ public class MPContextImpl {
 			throw new IllegalArgumentException("name cannot be null!");
 		this.name = name;
 	}
-	public String getMesg() {
+	public Object getMesg() {
 		return mesg;
 	}
-	public void setMesg(String mesg) {
+	public void setMesg(Object mesg) {
 		this.mesg = mesg;
 	}
 	public StackTraceElement getsElemt() {

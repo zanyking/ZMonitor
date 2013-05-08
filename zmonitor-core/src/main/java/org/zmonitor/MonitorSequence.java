@@ -86,25 +86,9 @@ public class MonitorSequence implements Serializable{
 	public int getCurrentDepth() {
 		return currentDepth;
 	}
-	/**
-	 * 
-	 * @return
-	 */
-	public long getVeryEndCreateMillis(){
-		long veryEndCreateTime = getVeryEnd(current).getCreateMillis();
-		return veryEndCreateTime;
-	}
-	/**
-	 * 
-	 * @param current
-	 * @return
-	 */
-	private static MonitorPoint getVeryEnd(MonitorPoint current){
-		MonitorPoint lastChild = current.getLastChild();
-		return (lastChild==null)? current : getVeryEnd(lastChild);
-	}
+
 	
-	private MonitorPoint newInstance(Name name, String mesg, MonitorPoint parent, boolean isLeaf, long createMillis){
+	private MonitorPoint newInstance(Name name, Object mesg, MonitorPoint parent, boolean isLeaf, long createMillis){
 		return new MonitorPoint(name, mesg, parent, isLeaf, this, createMillis);
 	}
 	
@@ -113,7 +97,7 @@ public class MonitorSequence implements Serializable{
 	 * @param name
 	 * @param mesg
 	 */
-	public MonitorPoint start(Name name, String mesg, long createMillis){
+	public MonitorPoint start(Name name, Object mesg, long createMillis){
 		if(root==null){
 			current = root = newInstance(name, mesg, null, false, createMillis);
 		}else{
@@ -129,7 +113,7 @@ public class MonitorSequence implements Serializable{
 	 * @param mesg the message of the new {@link MonitorPoint}
 	 * @return the new {@link MonitorPoint}
 	 */
-	public MonitorPoint record(Name name, String mesg, long createMillis){
+	public MonitorPoint record(Name name, Object mesg, long createMillis){
 		MonitorPoint rec = newInstance(name, mesg, current, true, createMillis);
 		return rec;
 	}
@@ -142,7 +126,7 @@ public class MonitorSequence implements Serializable{
 	 * @return the end {@link MonitorPoint}
 	 * @throws IllegalStateException if {@link MonitorSequence}) is already ended.
 	 */
-	public MonitorPoint end(Name name, String mesg){
+	public MonitorPoint end(Name name, Object mesg){
 		return end(name, mesg, System.currentTimeMillis());
 	}
 	/**
@@ -156,7 +140,7 @@ public class MonitorSequence implements Serializable{
 	 * @param createMillis
 	 * @return a new monitor point which is an end of current monitor point. 
 	 */
-	public MonitorPoint end(Name name, String mesg, long createMillis){
+	public MonitorPoint end(Name name, Object mesg, long createMillis){
 		if(current==null){
 			//TODO how about return null?
 			throw new IllegalStateException("you already ended this monitor Sequence and want to end it again?");

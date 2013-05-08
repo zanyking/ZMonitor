@@ -9,8 +9,10 @@
 		</layout>
 	</appender>
 	<!-- ZMonitor as a Log4j appender  -->
-	<appender name="ZMonitorIgnition" 
-		class="org.zmonitor.logger.log4j.ZMonitorAppender"/>
+	<appender name="ZMonitorIgnition" class="org.zmonitor.logger.log4j.ZMonitorAppender">
+		<param name="testMode" value="true"/>
+		<param name="embedded" value="true"/>
+	</appender>
 		
 	<root>
 		<priority value="debug" />

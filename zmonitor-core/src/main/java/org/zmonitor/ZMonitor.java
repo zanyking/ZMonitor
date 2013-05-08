@@ -1,4 +1,4 @@
-/**ZMonitor.java
+/**
  * 2011/3/4
  * 
  */
@@ -95,7 +95,6 @@ public final class ZMonitor {
 	 * @return true if there's a monitor sequence instance and which is started.
 	 */
 	public static boolean isMonitoring(){
-		 
 		return getLifecycle().isMonitorStarted();
 	}
 	/**
@@ -144,10 +143,10 @@ public final class ZMonitor {
 	 * @param mesg the message of this {@link MonitorPoint}.
 	 * @param traceCallerStack
 	 * @return
-	 * @see #push(String)
+	 * @see #push(Object)
 	 */
-	public static MonitorPoint push(Name name, String mesg, boolean traceCallerStack) {
-		return start0(name, mesg, traceCallerStack);
+	public static MonitorPoint push(Name name, Object mesg, boolean traceCallerStack) {
+		return push0(name, mesg, traceCallerStack);
 	}
 	/**
 	 * traceCallerStack is default false.
@@ -155,38 +154,38 @@ public final class ZMonitor {
 	 * @param mesg
 	 * @return
 	 */
-	public static MonitorPoint push(Name name, String mesg){
-		return start0(name, mesg, false);
+	public static MonitorPoint push(Name name, Object mesg){
+		return push0(name, mesg, false);
 	}
 	/**
 	 * If you want to start a {@link MonitorPoint} in your Java code manually, use this method.<br>
 	 * <p>
 	 * This method will collect the caller's {@link StackTraceElement} information by retrieving current thread's programming stack.<br>
-	 * So this method will be cause some performance overhead to your program, if you are able to compose a {@link Name} by yourself, please use {@link #push(Name, String)} instead.
+	 * So this method will be cause some performance overhead to your program, if you are able to compose a {@link Name} by yourself, please use {@link #push(Name, Object)} instead.
 	 * </p>
 	 * @param mesg the message that you want to assign to {@link MonitorPoint}.
 	 * @param traceCallerStack
 	 * @return A {@link MonitorPoint} that will contain caller's java source information.
-	 * @see #push(Name, String)
+	 * @see #push(Name, Object)
 	 */
-	public static MonitorPoint push(String mesg, boolean traceCallerStack) {
-		return start0(null, mesg, traceCallerStack);
+	public static MonitorPoint push(Object mesg, boolean traceCallerStack) {
+		return push0(null, mesg, traceCallerStack);
 	}
 	/**
 	 * 
 	 * @param mesg
 	 * @return
 	 */
-	public static MonitorPoint push(String mesg){
-		return start0(null, mesg, false);
+	public static MonitorPoint push(Object mesg){
+		return push0(null, mesg, false);
 	}
 	
-	private static MonitorPoint start0(Name name, String mesg, boolean traceCallerStack){
+	private static MonitorPoint push0(Name name, Object mesg, boolean traceCallerStack){
 		long nanosec = System.nanoTime();
 		long createMillis = System.currentTimeMillis();
 		MonitorLifecycle lc = getLifecycle();
 		
-		if(lc==null || !lc.shouldMeasure(name, mesg, createMillis)) {
+		if(lc==null || !lc.shouldMonitor(name, mesg, createMillis)) {
 			return null;
 		}
 		MPContextImpl mpCtx = new MPContextImpl(
@@ -201,9 +200,6 @@ public final class ZMonitor {
 		return mp;
 	}
 	
-	private static MonitorPoint start0(TrackingContext mCtx){
-		return null;
-	}
 	private static StackTraceElement getOuterCallerInfo(boolean shouldDo, int callerLevel){
 		if(!shouldDo)return null;
 		StackTraceElement[] stackElemts = Thread.currentThread().getStackTrace();
@@ -218,13 +214,13 @@ public final class ZMonitor {
 	
 	/**
 	 *
-	 * If you want to give a measure point in your Java code manually, use this method.<br>
+	 * If you want to give a monitor point in your Java code manually, use this method.<br>
 	 * It will collect the caller's {@link StackTraceElement} information by retrieving current thread's programming stack. 
 	 * 
 	 * @param mesg the message that you want to assign to {@link MonitorPoint}.
 	 * @return a {@link MonitorPoint} that will contain caller's java source information. 
 	 */
-	public static MonitorPoint record(String mesg, boolean traceCallerStack){
+	public static MonitorPoint record(Object mesg, boolean traceCallerStack){
 		return record0(null, mesg, traceCallerStack);
 	}
 	/**
@@ -236,13 +232,13 @@ public final class ZMonitor {
 		return record0(null, mesg, false);
 	}
 	/**
-	 * recording using a customized {@link Name} to the result measure point.<br>
-	 * The Profiler will use the measure point's name as an identifier, 
+	 * recording using a customized {@link Name} to the result monitor point.<br>
+	 * The Profiler will use the monitor point's name as an identifier, 
 	 * so you need to make sure {@link Name#hashCode()} and {@link Name#equals(Object)} are implemented properly. 
 	 * 
 	 * @param name the identifier that you want to use while recording. 
 	 * @param mesg the message that you want to record.
-	 * @return a measure Point with a custom name.
+	 * @return a monitor Point with a custom name.
 	 */
 	public static MonitorPoint record(Name name, String mesg, boolean traceCallerStack){
 		return record0(name, mesg, traceCallerStack);
@@ -254,15 +250,15 @@ public final class ZMonitor {
 	 * @param mesg
 	 * @return
 	 */
-	public static MonitorPoint record(Name name, String mesg){
+	public static MonitorPoint record(Name name, Object mesg){
 		return record0(name, mesg, false);
 	}
-	private static MonitorPoint record0(Name name, String mesg, boolean traceCallerStack){
+	private static MonitorPoint record0(Name name, Object mesg, boolean traceCallerStack){
 		long nanosec = System.nanoTime();
 		long createMillis = System.currentTimeMillis();
 		MonitorLifecycle lc = getLifecycle();
 		
-		if(lc==null || !lc.shouldMeasure(name, mesg, createMillis))return null;
+		if(lc==null || !lc.shouldMonitor(name, mesg, createMillis))return null;
 		
 		boolean started = lc.isMonitorStarted();
 		
@@ -288,19 +284,19 @@ public final class ZMonitor {
 	 * which means you didn't initialize or started a {@link MonitorSequence} before. 
 	 * @return null if timeline already reach the root. 
 	 */
-	public static MonitorPoint pop(Name name, String message, boolean traceCallerStack){
+	public static MonitorPoint pop(Name name, Object message, boolean traceCallerStack){
 		return end0(name, message, traceCallerStack);
 	}
 	/**
 	 * traceCallerStack is default false.
 	 */
-	public static MonitorPoint pop(Name name, String message ){
+	public static MonitorPoint pop(Name name, Object message ){
 		return end0(name, message, false);
 	}
 	/**
 	 * traceCallerStack is default false.
 	 */
-	public static MonitorPoint pop( String message, boolean traceCallerStack){
+	public static MonitorPoint pop( Object message, boolean traceCallerStack){
 		return end0(null, message, traceCallerStack);
 	}
 	/**
@@ -321,7 +317,7 @@ public final class ZMonitor {
 	public static MonitorPoint pop(){
 		return end0(null, null, true);
 	}
-	private static MonitorPoint end0(Name name, String message, boolean traceCallerStack){
+	private static MonitorPoint end0(Name name, Object message, boolean traceCallerStack){
 		long nanosec = System.nanoTime();
 		MonitorLifecycle lc = getLifecycle();
 		
@@ -330,7 +326,7 @@ public final class ZMonitor {
 //			throw new IllegalStateException("You need to start a {@link Timeline} before end any level of it!");
 		}
 		long createMillis = System.currentTimeMillis();	
-		if(!lc.shouldMeasure(name, message, createMillis))return null;
+		if(!lc.shouldMonitor(name, message, createMillis))return null;
 		MPContextImpl mpCtx = new MPContextImpl(getOuterCallerInfo(traceCallerStack, 3), 
 				END, name, message, createMillis);
 		MonitorSequence tl = lc.getMonitorSequence();

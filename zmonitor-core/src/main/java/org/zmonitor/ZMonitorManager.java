@@ -273,7 +273,7 @@ class NOOPZMBeanRepository implements ZMBeanRepository{
  */
 class NOOPMonitorLifecycleManager implements MonitorLifecycleManager{
 	MonitorLifecycle noop = new MonitorLifecycle(){
-		public boolean shouldMeasure(Name name, String mesg,
+		public boolean shouldMonitor(Name name, Object mesg,
 				long createMillis) {
 			return false;// this should take care the rest of all...
 		}

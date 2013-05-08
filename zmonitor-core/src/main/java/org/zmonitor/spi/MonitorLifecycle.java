@@ -78,6 +78,6 @@ public interface MonitorLifecycle {
 	 * @param createMillis
 	 * @return
 	 */
-	public boolean shouldMeasure(Name name, String mesg, long createMillis);
+	public boolean shouldMonitor(Name name, Object mesg, long createMillis);
 
 }
