@@ -31,7 +31,7 @@ public class SampleConsoleMonitorSequenceHandler extends ZMBeanBase implements M
 		//dump Records from Black Box
 		long nano = System.nanoTime();
 		String indent = "    ";
-		String totalElipsd = Strings.alignedMillisStr(getBranchElipsedByEndTag(tl.getRoot()));
+		String totalElipsd = Strings.alignedMillisStr(retrieveMillisToVeryEnd(tl.getRoot()));
 		StringBuffer sb = new StringBuffer();
 		
 		Strings.appendln(sb, "[ ",getHHmmssSSS_yyyy_MM_dd().format(new Date())," ] ",tl.getName()," -> TIMELINE DUMP BEGIN");
@@ -50,15 +50,13 @@ public class SampleConsoleMonitorSequenceHandler extends ZMBeanBase implements M
 	}
 	private void writeRoot(StringBuffer sb, MonitorPoint root, String prefix, String indent){
 		String mesgPfx = Strings.append(prefix, "[",Strings.alignedMillisStr(0),
-				"|",Strings.alignedMillisStr(retrieveElapsedMillisToNext(root)),"]ms [",root.getName(),"]");
+				"|",Strings.alignedMillisStr(retrieveMillisToVeryEnd(root)),"]ms [",root.getName(),"]");
 //				"|",Strings.alignedMillisStr(record.getSelfPeriod()),"]ms [",record.name,"]");
 		
 		Strings.appendln(sb, mesgPfx , " children:",root.size(), " - ",root.getMessage());
 		
 		String childPrefix = prefix+indent;
-		int i=0;
 		for(MonitorPoint child : root.getChildren()){
-			System.out.println("mp["+i+++"]: "+child.getMessage());
 			write(sb, child, childPrefix, indent);
 		}
 	}
@@ -66,8 +64,8 @@ public class SampleConsoleMonitorSequenceHandler extends ZMBeanBase implements M
 	private void write(StringBuffer sb, MonitorPoint mp, String prefix, String indent){
 		if(mp==null)return;
 		String mesgPfx = Strings.append(prefix, "[",
-				Strings.alignedMillisStr(retrieveElapsedMillisFromPrevious(mp)),
-				"|",Strings.alignedMillisStr(retrieveElapsedMillisToNext(mp)),"]ms [",mp.getName(),"]");
+				Strings.alignedMillisStr(retrieveMillisFromPrevious(mp)),
+				"|",Strings.alignedMillisStr(retrieveMillisToNext(mp)),"]ms [",mp.getName(),"]");
 //				"|",Strings.alignedMillisStr(record.getSelfPeriod()),"]ms [",record.name,"]");
 		
 		if(mp.isLeaf()){

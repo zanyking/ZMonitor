@@ -166,7 +166,7 @@ public class MonitorSequence implements Serializable{
 		}
 		currentDepth--;
 		MonitorPoint endMP = newInstance(name, mesg, current, true, createMillis);
-		current.markLastMillis(endMP.getCreateMillis());
+//		current.markLastMillis(endMP.getCreateMillis());
 		
 		current = current.getParent();
 		return endMP;

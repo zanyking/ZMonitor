@@ -116,8 +116,8 @@ public class Ribosome {
 			aNode.setRecordSummary(summary = new RecordSummary<String>(1));
 		}
 		summary.append(rec.getMessage());
-		summary.accumulate(retrieveElapsedMillisFromPrevious(rec), 
-				retrieveElapsedMillisToNext(rec));
+		summary.accumulate(retrieveMillisFromPrevious(rec), 
+				retrieveMillisToNext(rec));
 	}
 	
 	private static boolean match(List<MonitorPoint> records, List<VersionNode> children){

@@ -42,7 +42,6 @@ public class MonitorPoint implements Serializable{
 	
 	private Name name;
 	private String message;
-	private long lastMillis;// Measure Point
 	
 	/**
 	 * 
@@ -102,29 +101,6 @@ public class MonitorPoint implements Serializable{
 		 * old <=> new 
 		 */
 		this.lastChild = newChild;
-	}
-	
-	/**
-	 * this mp is the end of it's parent 
-	 *<pre>
-	 *|-mp     -> START (parent)
-	 *   |-mp
-	 *   |-mp				
-	 *   |-mp  -> END   (this)
-	 *</pre>
-	 * @param lastMillis
-	 */
-	public void markLastMillis(long lastMillis) {
-		this.lastMillis = lastMillis;
-		if(parent!=null){
-			parent.markLastMillis(lastMillis);
-		}
-	}
-	/**
-	 * @return
-	 */
-	public long getLastMillis(){
-		return lastMillis;
 	}
 	
 	
@@ -344,14 +320,4 @@ public class MonitorPoint implements Serializable{
 	}//end of class...
 
 
-	
-
-
-	
-
-	
-	
-	
-
-	
 }
