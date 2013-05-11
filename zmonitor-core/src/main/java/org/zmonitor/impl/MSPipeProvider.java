@@ -38,6 +38,18 @@ public class MSPipeProvider {
 		public void pipe(MonitorSequence ms);  
 	}//end of class...
 	
+	
+	public static MSPipe getPipe(String modeStr){
+		Mode mode = null;
+		if("sync".equalsIgnoreCase(modeStr))mode = Mode.SYNC;
+		else if("async".equalsIgnoreCase(modeStr))mode = Mode.ASYNC;
+		else{
+			throw new IllegalArgumentException("must be \"SYNC\" or \"ASYNC\" mode:"+modeStr);
+		}
+		return getPipe(mode);
+		
+	}
+	
 	/**
 	 * 
 	 * @param mode
@@ -125,13 +137,14 @@ public class MSPipeProvider {
 		}
 
 		public void configure(final ConfigContext configCtx) {
+			final ZMonitorManager manager = configCtx.getManager();
 			asyncGroupPipe = new AsyncGroupingPipe<MonitorSequence>(threshold,
 					waitMillis,
 					new AsyncGroupingPipe.Executor<MonitorSequence>() {
 
 						public void doSend(List<MonitorSequence> tls)
 								throws Exception {
-							ZMonitorManager manager = configCtx.getManager();
+							
 							List<MonitorSequenceHandler> handlers = 
 								manager.getBeans(MonitorSequenceHandler.class);
 							

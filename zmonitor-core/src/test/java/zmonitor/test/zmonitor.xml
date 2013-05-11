@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <zmonitor>
 	 
-
+	<!-- 
+	<monitor-sequence-pipe 
+		mode="ASYNC" waitMillis="200" threshold="0"/> -->
+		
+	<monitor-sequence-pipe mode="SYNC" />
 	
 	
 	<monitor-sequence-handler name="console-LOG4J" 

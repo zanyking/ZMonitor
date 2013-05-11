@@ -1,7 +1,7 @@
 /**
  * 
  */
-package zmonitor.test.log4j;
+package org.zmonitor.test;
 
 import java.net.URL;
 
@@ -10,7 +10,6 @@ import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.Before;
 import org.zmonitor.util.Loader;
 
-import zmonitor.test.TestBase;
 
 /**
  * @author Ian YT Tsai(Zanyking)

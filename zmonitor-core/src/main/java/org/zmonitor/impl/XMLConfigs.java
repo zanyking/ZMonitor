@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.zmonitor.config.WrongConfigurationException;
 import org.zmonitor.util.DOMs;
@@ -61,6 +62,13 @@ public class XMLConfigs {
 			setter.setProperty(name, (String)attr.getValue());
 		}
 	}
+	
+	/**
+	 * 
+	 * @param node
+	 * @param attribute
+	 * @return
+	 */
 	public static String getTextFromAttrOrContent(Node node, String attribute){
 		String value = DOMs.getAttributeValue(node, attribute);
 		if(Strings.isEmpty(value)){
@@ -93,6 +101,7 @@ public class XMLConfigs {
 	 * @param defaultClass
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public static <T> T newInstance(String clazzStr, Class<T> defaultClass){
 		Class<T> clazz = null;
 		try {
@@ -101,8 +110,8 @@ public class XMLConfigs {
 			}else {
 				clazz = (Class<T>) Class.forName(clazzStr);
 			}
-			if(clazz==null)
-				throw new WrongConfigurationException("Both class String and defaultClass are NULL!");
+			if(clazz==null)return null;
+			
 			return (T) clazz.newInstance();
 			
 		} catch (ClassNotFoundException e) {

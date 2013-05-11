@@ -1,5 +1,57 @@
 
 
+<slf4j-conf>
+	<tracker name="slf4jAdaptor">
+		<attribute name="logFile"></attribute>
+		<attribute name="DefaultLogLevel"></attribute>
+		logStatement
+		showDateTime 
+		dateTimeFormat 
+		showThreadName 
+		showLogName 
+		showShortLogName 
+		levelInBrackets 
+		warnLevelString 
+
+	</tracker>
+</slf4j-conf>
+
+
++. <slf4j-conf> 裡宣告的template，預設就是給 <MSHandler>裡的mp renderer 在遇上mp.trackingCtx 顯示mp為slf4j.Logger所產生時用的。
+	+. 一定需要一種方法，使得tracking to MS Handling 之間的投捕手關係可以建立
+		(投:ZMonitor tracking API, 捕: MSHandler Rendering API)。
+	+. pesudo code(tracking Context):
+		<slf4j-conf>
+			<tracker name="slf4jAdaptor"/>
+		</slf4j-conf>
+		<log4j-conf>
+			<tracker name="log4jAdaptor"/>
+		</log4j-conf>
+		<web-conf>
+			<tracker name="webAdaptor"/>
+		</web-conf>
+
+
+	+. pesudo code(render template declaration):
+		<ms-handler class="org.zmonitor.handler.ConsoleMSHandler" >
+			<writer>
+				<!-- named template -->
+				<header-template trackerName="slf4jAdaptor"><![CDATA[................ ]]></header-template>
+				<mp-template trackerName="slf4jAdaptor"><![CDATA[................ ]]></mp-template>
+				<mp-template trackerName="log4jAdaptor"><![CDATA[................ ]]></mp-template>
+				<mp-template trackerName="webAdaptor"><![CDATA[................ ]]></mp-template>
+				<footer-template trackerName="slf4jAdaptor"><![CDATA[................ ]]></footer-template>	
+				<!-- default template -->
+				<header-template><![CDATA[................ ]]></header-template>
+				<mp-template><![CDATA[................ ]]></mp-template>
+				<footer-template><![CDATA[................ ]]></footer-template>	
+			</writer>
+		</ms-handler>
+		OR:
+		<render-template-provider path="/WEB-INF/zmonitor-render-template.properties"
+				class="org.zmonitor.core.render.PropertyRenderTemplateProvider"/>
+		
+
 
 ZMonitorManager:
 
@@ -11,3 +63,6 @@ ZMonitorManager會有Start(), Stop()
 當start()時，系統不該有人存取正在start中的instance。
 stop()時，系統亦不該有人存取stop中的instance。
 
+
+
+ZMonitorManager.getInstance();

@@ -42,8 +42,14 @@ public class ConfigContextImpl implements ConfigContext{
 		this.currentNode = currentNode;
 	}
 	
-	public String get(String key){
+	
+	public String getSysAttribute(String key){
 		return attrs.get(key);
+		
+	}
+	
+	public String getAttribute(String key){
+		return  XMLConfigs.getTextFromAttrOrContent(currentNode, key);
 	}
 	
 	public ZMonitorManager getManager() {
@@ -85,6 +91,7 @@ public class ConfigContextImpl implements ConfigContext{
 		XMLConfigs.applyAttributesToBean(
 			currentNode, setter, XMLConfigs.ignores(ignores));
 	}
+	
 	public Node getNode() {
 		return currentNode;
 	}

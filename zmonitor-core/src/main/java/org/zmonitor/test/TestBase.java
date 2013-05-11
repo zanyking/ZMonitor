@@ -2,7 +2,7 @@
  * 2011/10/24
  * 
  */
-package zmonitor.test;
+package org.zmonitor.test;
 
 import java.net.URL;
 

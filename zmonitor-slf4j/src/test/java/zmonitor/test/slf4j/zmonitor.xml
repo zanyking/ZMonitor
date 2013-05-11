@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<zmonitor>
+	 
+
+	
+	
+	<monitor-sequence-handler name="console-LOG4J" 
+		class="org.zmonitor.handler.SampleConsoleMonitorSequenceHandler"/>
+	
+	
+	<slf4j-conf logLevel="error">
+		<tracker name="slf4jAdaptor"/>
+		<property name="org.myapp">error</property>
+		<property name="org.myapp.web.ui">info</property>
+	</slf4j-conf>
+</zmonitor>

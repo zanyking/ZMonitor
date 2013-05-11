@@ -22,7 +22,13 @@ public interface ConfigContext {
 	 * @param key the key to access property
 	 * @return value 
 	 */
-	public String get(String key);
+	public String getAttribute(String key);
+	/**
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public String getSysAttribute(String key);
 	/**
 	 * 
 	 * @return the manager that Configurator should manipulated.

@@ -5,6 +5,7 @@ package zmonitor.test;
 
 import org.junit.Test;
 import org.zmonitor.ZMonitor;
+import org.zmonitor.test.TestBase;
 
 /**
  * @author ian

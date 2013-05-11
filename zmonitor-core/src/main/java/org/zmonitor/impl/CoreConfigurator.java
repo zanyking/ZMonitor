@@ -32,7 +32,7 @@ public class CoreConfigurator  implements Configurator {
 	
 	public static final String REL_MEASURE_POINT_INFO_FACTORY = "mp-info-factory";
 	public static final String REL_TIMELINE_HANDLER = "monitor-sequence-handler";
-//	public static final String REL_MS_PIPE = "monitor-sequence-pipe";
+	private static final String REL_MONITOR_SEQUENCE_PIPE = "monitor-sequence-pipe";
 	
 	
 	public void configure(ConfigContext monitorMgmt) {
@@ -43,9 +43,20 @@ public class CoreConfigurator  implements Configurator {
 
 	private static void prepareMSPipe(ConfigContext  monitorMgmt){
 		//TODO: make mode configurable...
-		MSPipe pipe = MSPipeProvider.getPipe(Mode.SYNC);
-		Configs.initCustomConfigurable(monitorMgmt, pipe, false);
-		monitorMgmt.getManager().setMSPipe(pipe);
+		ConfigContext msPipeCtx = monitorMgmt.toNode(REL_MONITOR_SEQUENCE_PIPE);
+		if(msPipeCtx.getNode()==null){
+			MSPipe pipe = MSPipeProvider.getPipe(Mode.SYNC);
+			monitorMgmt.getManager().setMSPipe(pipe);
+			return;//use default...
+		}
+		
+		MSPipe pipe = newInstanceByClassAttr(msPipeCtx.getNode(), null, false);
+		if(pipe==null){
+			pipe = MSPipeProvider.getPipe(msPipeCtx.getAttribute("mode")); 
+		}		
+		msPipeCtx.applyAttributes(new PropertySetter(pipe), "mode", "class");
+		Configs.initCustomConfigurable(msPipeCtx, pipe, false);
+		msPipeCtx.getManager().setMSPipe(pipe);
 	}
 	
 	private static void prepareMPointInfoFacotry(ConfigContext  monitorMgmt){

@@ -23,13 +23,13 @@ public class HttpRequestMonitorSequenceLifcycle extends SimpleMonitorLifecycle {
 	public HttpRequestMonitorSequenceLifcycle(String oriReqUrl) {
 		super();
 		
-		JavaWebConfCustom webProfilingConf = 
+		WebConfigurator webConf = 
 			ZMonitorManager.getInstance().getBeanIfAny(
-					JavaWebConfCustom.class);
+					WebConfigurator.class);
 		
 		
-		if(webProfilingConf != null)
-			urlAccepted = webProfilingConf.shouldAccept(oriReqUrl);
+		if(webConf != null)
+			urlAccepted = webConf.shouldAccept(oriReqUrl);
 	}
 	
 	
