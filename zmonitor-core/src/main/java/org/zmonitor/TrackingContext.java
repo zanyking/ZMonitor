@@ -28,14 +28,15 @@ public interface TrackingContext {
 	
 	/**
 	 * 
+	 * @param parent
 	 * @return
 	 */
-	MonitorPoint newMonitorPoint();
+	MonitorPoint create(MonitorPoint parent);
 	/**
 	 * 
 	 * @return
 	 */
-	StackTraceElement getMonitorPointStackTraceElement();
+	StackTraceElement getStackTraceElement();
 	/**
 	 * 
 	 * @return

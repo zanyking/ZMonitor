@@ -32,9 +32,10 @@ public class MonitorPoint implements Serializable{
 	private MonitorPoint lastChild;
 	private MonitorSequence mSequence;
 	
-	// Context info 
-	private long createMillis;
+	// Context info
 	private Name name;
+	private long createMillis;
+	private CallerInfo callerInfo;
 	private Object message;
 	
 	/**
@@ -43,20 +44,19 @@ public class MonitorPoint implements Serializable{
 	 * @param mesg
 	 */
 	public MonitorPoint(Name name, 
+			CallerInfo callerInfo,
 			Object mesg, 
 			MonitorSequence mSequence, 
 			long createMillis) {
-		
+		this.name = name;
+		this.callerInfo = callerInfo;
+		this.message = mesg;
 		this.mSequence = mSequence;
 		this.mSequence.increament();
 		
 		this.createMillis = createMillis;
-		this.name = name;
-		this.message = mesg;//TODO: has potential to be an object...
-		
-		
-		
 	}
+	
 	
 	public void setParent(MonitorPoint parent){
 		if(parent==null)

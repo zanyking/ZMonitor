@@ -4,7 +4,6 @@
  */
 package org.zmonitor.impl;
 
-import org.zmonitor.ZMonitor;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.spi.MonitorPointInfoFactory;
 import org.zmonitor.spi.Name;
@@ -52,16 +51,15 @@ public class MPContextImpl {
 		this.createMillis = createMillis;
 	}
 	
-	public boolean isStart(){
-		return mpType.equals(ZMonitor.START);
-	}
-	public boolean isEnd(){
-		return mpType.equals(ZMonitor.END);
-	}
-	public boolean isRecording(){
-		return mpType.equals(ZMonitor.RECORDING);
-	}
-	
+//	public boolean isStart(){
+//		return mpType.equals(ZMonitor.START);
+//	}
+//	public boolean isEnd(){
+//		return mpType.equals(ZMonitor.END);
+//	}
+//	public boolean isRecording(){
+//		return mpType.equals(ZMonitor.RECORDING);
+//	}
 	public Name getName() {
 		return name;
 	}

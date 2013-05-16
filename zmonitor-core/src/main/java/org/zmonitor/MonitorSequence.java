@@ -88,30 +88,20 @@ public class MonitorSequence implements Serializable{
 	}
 
 	
-	private MonitorPoint newInstance(Name name, Object mesg, MonitorPoint parent, long createMillis){
-		MonitorPoint mp = new MonitorPoint(name, mesg, this, createMillis);
-		if(parent!=null)
-			mp.setParent(parent);
-		return mp;
-	}
-	
 	/**
 	 * 
 	 * @param name
 	 * @param mesg
 	 */
-	public MonitorPoint start(Name name, Object mesg, long createMillis){
+	public MonitorPoint start(TrackingContext trackingCtx){
 		if(root==null){
-			current = root = newInstance(name, mesg, null, createMillis);
+			current = root = trackingCtx.create(null);
 		}else{
-			current = newInstance(name, mesg, current, createMillis);
+			current = trackingCtx.create(current);
 		}
 		currentDepth++;
 		return current;
 	}
-
-	
-	
 	
 	/**
 	 * if {@link MonitorSequence} has not started before, start it, otherwise, add a simple leaf {@link MonitorPoint} as current stack level's child.   
@@ -119,8 +109,8 @@ public class MonitorSequence implements Serializable{
 	 * @param mesg the message of the new {@link MonitorPoint}
 	 * @return the new {@link MonitorPoint}
 	 */
-	public MonitorPoint record(Name name, Object mesg, long createMillis){
-		MonitorPoint rec = newInstance(name, mesg, current, createMillis);
+	public MonitorPoint record(TrackingContext trackingCtx){
+		MonitorPoint rec = trackingCtx.create(current);
 		return rec;
 	}
 	/**
@@ -135,17 +125,16 @@ public class MonitorSequence implements Serializable{
 	 * @param createMillis
 	 * @return a new monitor point which is an end of current monitor point. 
 	 */
-	public MonitorPoint end(Name name, Object mesg, long createMillis){
+	public MonitorPoint end(TrackingContext trackingCtx){
 		if(current==null){
 			//TODO how about return null?
 			throw new IllegalStateException("you already ended this monitor Sequence and want to end it again?");
 		}
-		if(current.getCreateMillis() > createMillis){
+		if(current.getCreateMillis() > trackingCtx.getCreateMillis()){
 			throw new IllegalArgumentException("try to tag a monitor point which create time is smaller than start stack.");
 		}
 		currentDepth--;
-		MonitorPoint endMP = newInstance(name, mesg, current, createMillis);
-//		current.markLastMillis(endMP.getCreateMillis());
+		MonitorPoint endMP = trackingCtx.create(current);
 		
 		current = current.getParent();
 		return endMP;

@@ -8,8 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.zmonitor.MonitorSequence;
+import org.zmonitor.TrackingContext;
 import org.zmonitor.ZMonitorManager;
-import org.zmonitor.spi.Name;
 import org.zmonitor.spi.MonitorLifecycle;
 
 /**
@@ -55,10 +55,9 @@ public class SimpleMonitorLifecycle implements MonitorLifecycle {
 	public boolean isFinished() {
 		return false;
 	}
-	public boolean shouldMonitor(Name name, Object mesg, long createMillis) {
+	public boolean shouldMonitor(TrackingContext trackingCtx) {
 		return true;// override this.
 	}
-	
 	
 	private Map<String, Object> storage = new HashMap<String, Object>();
 	public void setAttribute(String key, Object value) {

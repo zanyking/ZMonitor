@@ -62,7 +62,7 @@ public abstract class TrackingContextBase implements TrackingContext {
 	/* (non-Javadoc)
 	 * @see org.zmonitor.TrackingContext#getMonitorPointStackTraceElement()
 	 */
-	public StackTraceElement getMonitorPointStackTraceElement() {
+	public StackTraceElement getStackTraceElement() {
 		return callerSTElement;
 	}
 

@@ -1,5 +1,4 @@
 
-
 <slf4j-conf>
 	<tracker name="slf4jAdaptor">
 		<attribute name="logFile"></attribute>

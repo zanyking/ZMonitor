@@ -8,6 +8,7 @@ import java.io.IOException;
 
 import org.zmonitor.config.ConfigSource;
 import org.zmonitor.config.ConfigSources;
+import org.zmonitor.impl.CoreTrackingContext;
 import org.zmonitor.impl.MPContextImpl;
 import org.zmonitor.impl.StringName;
 import org.zmonitor.impl.ThreadLocalMonitorLifecycleManager;
@@ -154,17 +155,21 @@ public final class ZMonitor {
 	
 	private static MonitorPoint push0(Name name, Object mesg, boolean traceCallerStack){
 		long nanosec = System.nanoTime();
-		long createMillis = System.currentTimeMillis();
-		MonitorLifecycle lc = getLifecycle();
+		
+		CoreTrackingContext ctx = new CoreTrackingContext("default");
+		ctx.setCreateMillis(System.currentTimeMillis());
+		MonitorLifecycle lc = ctx.getLifeCycle();
 		if(lc==null){
 			throw new IllegalStateException("Not able to retrieve a MonitorLifecycle. " +
 				"please take a look at the implementation of MonitorLifecycleManager, it must always returned a value instead of null.");
 		}
-		if(!lc.shouldMonitor(name, mesg, createMillis)) {
+		if(!lc.shouldMonitor(ctx)) {
 			return null;
 		}
+		ctx.setCallerSTElement(getOuterCallerInfo(traceCallerStack, 3));
+		
 		MPContextImpl mpCtx = new MPContextImpl(
-				getOuterCallerInfo(traceCallerStack, 3), START, name, mesg, createMillis);
+				, START, name, mesg, createMillis);
 		
 		name = (mpCtx.getName()==null) ? 
 				new StringName(START): mpCtx.getName();
@@ -209,11 +214,16 @@ public final class ZMonitor {
 	
 	private static MonitorPoint record0(Name name, Object mesg, boolean traceCallerStack){
 		long nanosec = System.nanoTime();
-		long createMillis = System.currentTimeMillis();
-		MonitorLifecycle lc = getLifecycle();
-		
-		if(lc==null || !lc.shouldMonitor(name, mesg, createMillis))return null;
-		
+		CoreTrackingContext ctx = new CoreTrackingContext("default");
+		ctx.setCreateMillis(System.currentTimeMillis());
+		MonitorLifecycle lc = ctx.getLifeCycle();
+		if(lc==null){
+			throw new IllegalStateException("Not able to retrieve a MonitorLifecycle. " +
+				"please take a look at the implementation of MonitorLifecycleManager, it must always returned a value instead of null.");
+		}
+		if(!lc.shouldMonitor(ctx)) {
+			return null;
+		}
 		boolean started = lc.isMonitorStarted();
 		
 		MPContextImpl mpCtx = new MPContextImpl(getOuterCallerInfo(traceCallerStack, 3), 
@@ -254,14 +264,20 @@ public final class ZMonitor {
 	}
 	private static MonitorPoint end0(Name name, Object message, boolean traceCallerStack){
 		long nanosec = System.nanoTime();
-		MonitorLifecycle lc = getLifecycle();
-		
+		CoreTrackingContext ctx = new CoreTrackingContext("default");
+		ctx.setCreateMillis(System.currentTimeMillis());
+		MonitorLifecycle lc = ctx.getLifeCycle();
 		if(lc==null || !lc.isMonitorStarted()){
 			return null;
 //			throw new IllegalStateException("You need to start a {@link Timeline} before end any level of it!");
 		}
-		long createMillis = System.currentTimeMillis();	
-		if(!lc.shouldMonitor(name, message, createMillis))return null;
+		if(lc==null){
+			throw new IllegalStateException("Not able to retrieve a MonitorLifecycle. " +
+				"please take a look at the implementation of MonitorLifecycleManager, it must always returned a value instead of null.");
+		}
+		if(!lc.shouldMonitor(ctx)) {
+			return null;
+		}
 		MPContextImpl mpCtx = new MPContextImpl(getOuterCallerInfo(traceCallerStack, 3), 
 				END, name, message, createMillis);
 		MonitorSequence tl = lc.getMonitorSequence();

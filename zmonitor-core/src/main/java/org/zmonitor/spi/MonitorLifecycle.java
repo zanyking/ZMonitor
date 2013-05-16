@@ -5,6 +5,7 @@
 package org.zmonitor.spi;
 
 import org.zmonitor.MonitorSequence;
+import org.zmonitor.TrackingContext;
 
 
 /**
@@ -78,6 +79,6 @@ public interface MonitorLifecycle {
 	 * @param createMillis
 	 * @return
 	 */
-	public boolean shouldMonitor(Name name, Object mesg, long createMillis);
+	public boolean shouldMonitor(TrackingContext trackingCtx);
 
 }

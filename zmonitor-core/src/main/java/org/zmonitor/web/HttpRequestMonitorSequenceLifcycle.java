@@ -4,10 +4,10 @@
  */
 package org.zmonitor.web;
 
+import org.zmonitor.TrackingContext;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.impl.SimpleMonitorLifecycle;
 import org.zmonitor.spi.MonitorLifecycle;
-import org.zmonitor.spi.Name;
 
 /**
  * A HttpRequest life long {@link MonitorLifecycle}.
@@ -32,7 +32,7 @@ public class HttpRequestMonitorSequenceLifcycle extends SimpleMonitorLifecycle {
 			urlAccepted = webConf.shouldAccept(oriReqUrl);
 	}
 	
-	public boolean shouldMonitor(Name name, Object mesg, long createMillis) {
+	public boolean shouldMonitor(TrackingContext trackingCtx) {
 		if(urlAccepted){
 			return true;
 			//TODO: should we check other conditions to get fine grained control?
