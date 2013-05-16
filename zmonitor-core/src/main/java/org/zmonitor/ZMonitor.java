@@ -130,34 +130,6 @@ public final class ZMonitor {
 		return null;
 	}
 	/**
-	 * <ul>
-	 * 	 <li>If the current {@link MonitorSequence} has never started before, this call will start it.</li>
-	 *   <li>If the current {@link MonitorSequence} already started, this method will push a new {@link MonitorPoint} stack level,
-	 *    and any newly added {@link MonitorPoint} will use this as it's parent.</li>
-	 *   <li>To end up the current level(pop out the current {@link MonitorPoint}), you need to invoke {@link #pop()}.</li>
-	 *   <li>You need to guarantee that one of the corresponding {@link #pop()} methods will be called if you call Start, 
-	 *   if you failed to do so, the measur result of this {@link MonitorSequence} will be corrupted and might throw exception.</li>
-	 * </ul>
-	 *   
-	 * @param name the identifier of this {@link MonitorPoint}.
-	 * @param mesg the message of this {@link MonitorPoint}.
-	 * @param traceCallerStack
-	 * @return
-	 * @see #push(Object)
-	 */
-	public static MonitorPoint push(Name name, Object mesg, boolean traceCallerStack) {
-		return push0(name, mesg, traceCallerStack);
-	}
-	/**
-	 * traceCallerStack is default false.
-	 * @param name
-	 * @param mesg
-	 * @return
-	 */
-	public static MonitorPoint push(Name name, Object mesg){
-		return push0(name, mesg, false);
-	}
-	/**
 	 * If you want to start a {@link MonitorPoint} in your Java code manually, use this method.<br>
 	 * <p>
 	 * This method will collect the caller's {@link StackTraceElement} information by retrieving current thread's programming stack.<br>
@@ -184,8 +156,11 @@ public final class ZMonitor {
 		long nanosec = System.nanoTime();
 		long createMillis = System.currentTimeMillis();
 		MonitorLifecycle lc = getLifecycle();
-		
-		if(lc==null || !lc.shouldMonitor(name, mesg, createMillis)) {
+		if(lc==null){
+			throw new IllegalStateException("Not able to retrieve a MonitorLifecycle. " +
+				"please take a look at the implementation of MonitorLifecycleManager, it must always returned a value instead of null.");
+		}
+		if(!lc.shouldMonitor(name, mesg, createMillis)) {
 			return null;
 		}
 		MPContextImpl mpCtx = new MPContextImpl(
@@ -231,28 +206,7 @@ public final class ZMonitor {
 	public static MonitorPoint record(String mesg){
 		return record0(null, mesg, false);
 	}
-	/**
-	 * recording using a customized {@link Name} to the result monitor point.<br>
-	 * The Profiler will use the monitor point's name as an identifier, 
-	 * so you need to make sure {@link Name#hashCode()} and {@link Name#equals(Object)} are implemented properly. 
-	 * 
-	 * @param name the identifier that you want to use while recording. 
-	 * @param mesg the message that you want to record.
-	 * @return a monitor Point with a custom name.
-	 */
-	public static MonitorPoint record(Name name, String mesg, boolean traceCallerStack){
-		return record0(name, mesg, traceCallerStack);
-	}
-	/**
-	 * traceCallerStack is default false.
-	 * 
-	 * @param name
-	 * @param mesg
-	 * @return
-	 */
-	public static MonitorPoint record(Name name, Object mesg){
-		return record0(name, mesg, false);
-	}
+	
 	private static MonitorPoint record0(Name name, Object mesg, boolean traceCallerStack){
 		long nanosec = System.nanoTime();
 		long createMillis = System.currentTimeMillis();
@@ -274,25 +228,6 @@ public final class ZMonitor {
 		return mp;
 	}
 	
-	/**
-	 * This method will end the current level of the {@link MonitorSequence}, if the level is 0( it's the root level of {@link MonitorSequence}), 
-	 * the {@link MonitorLifecycle#finish()} will be called to end this {@link MonitorSequence}'s life-cycle.<br>
-	 * The caller of this method need to guarantee the corresponding {@link #push(Name, String)} has been called before,
-	 * otherwise the profiling result will be corrupted.<br>
-	 * 
-	 * @throws IllegalStateException if {@link MonitorLifecycle#isMonitorStarted()} is false, 
-	 * which means you didn't initialize or started a {@link MonitorSequence} before. 
-	 * @return null if timeline already reach the root. 
-	 */
-	public static MonitorPoint pop(Name name, Object message, boolean traceCallerStack){
-		return end0(name, message, traceCallerStack);
-	}
-	/**
-	 * traceCallerStack is default false.
-	 */
-	public static MonitorPoint pop(Name name, Object message ){
-		return end0(name, message, false);
-	}
 	/**
 	 * traceCallerStack is default false.
 	 */
@@ -330,7 +265,8 @@ public final class ZMonitor {
 		MPContextImpl mpCtx = new MPContextImpl(getOuterCallerInfo(traceCallerStack, 3), 
 				END, name, message, createMillis);
 		MonitorSequence tl = lc.getMonitorSequence();
-		MonitorPoint mp = tl.end(mpCtx.getName(), mpCtx.getMesg());
+		MonitorPoint mp = tl.end(mpCtx.getName(), mpCtx.getMesg(), 
+				System.currentTimeMillis());
 		
 		tl.accumulateSelfSpendNanos(System.nanoTime()- nanosec);
 		if(tl.isFinished()){

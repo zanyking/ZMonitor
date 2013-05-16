@@ -88,8 +88,11 @@ public class MonitorSequence implements Serializable{
 	}
 
 	
-	private MonitorPoint newInstance(Name name, Object mesg, MonitorPoint parent, boolean isLeaf, long createMillis){
-		return new MonitorPoint(name, mesg, parent, isLeaf, this, createMillis);
+	private MonitorPoint newInstance(Name name, Object mesg, MonitorPoint parent, long createMillis){
+		MonitorPoint mp = new MonitorPoint(name, mesg, this, createMillis);
+		if(parent!=null)
+			mp.setParent(parent);
+		return mp;
 	}
 	
 	/**
@@ -99,14 +102,17 @@ public class MonitorSequence implements Serializable{
 	 */
 	public MonitorPoint start(Name name, Object mesg, long createMillis){
 		if(root==null){
-			current = root = newInstance(name, mesg, null, false, createMillis);
+			current = root = newInstance(name, mesg, null, createMillis);
 		}else{
-			current = newInstance(name, mesg, current, false, createMillis);
+			current = newInstance(name, mesg, current, createMillis);
 		}
 		currentDepth++;
 		return current;
 	}
 
+	
+	
+	
 	/**
 	 * if {@link MonitorSequence} has not started before, start it, otherwise, add a simple leaf {@link MonitorPoint} as current stack level's child.   
 	 * @param name the name of the new {@link MonitorPoint}
@@ -114,27 +120,16 @@ public class MonitorSequence implements Serializable{
 	 * @return the new {@link MonitorPoint}
 	 */
 	public MonitorPoint record(Name name, Object mesg, long createMillis){
-		MonitorPoint rec = newInstance(name, mesg, current, true, createMillis);
+		MonitorPoint rec = newInstance(name, mesg, current, createMillis);
 		return rec;
 	}
 	/**
-	 * Using a {@link MonitorPoint} as an end of current ms-mp-stack, 
-	 * a pop operation will be performed immediately after tracking. 
-	 * 
-	 * @param name the name of the new {@link MonitorPoint}
-	 * @param mesg the message of the new {@link MonitorPoint}
-	 * @return the end {@link MonitorPoint}
-	 * @throws IllegalStateException if {@link MonitorSequence}) is already ended.
-	 */
-	public MonitorPoint end(Name name, Object mesg){
-		return end(name, mesg, System.currentTimeMillis());
-	}
-	/**
+	 * <pre>
 	 * 	|-mp		-> START (createMillis)
 	 * 		|-mp
 	 *		|-mp				
 	 *		|-mp	-> END (createMillis)
-	 *
+	 *</pre>
 	 * @param name
 	 * @param mesg
 	 * @param createMillis
@@ -149,7 +144,7 @@ public class MonitorSequence implements Serializable{
 			throw new IllegalArgumentException("try to tag a monitor point which create time is smaller than start stack.");
 		}
 		currentDepth--;
-		MonitorPoint endMP = newInstance(name, mesg, current, true, createMillis);
+		MonitorPoint endMP = newInstance(name, mesg, current, createMillis);
 //		current.markLastMillis(endMP.getCreateMillis());
 		
 		current = current.getParent();

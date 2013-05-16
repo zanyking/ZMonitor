@@ -42,11 +42,10 @@ public class MonitorPoint implements Serializable{
 	 * @param parent
 	 * @param mesg
 	 */
-	public MonitorPoint(Name name, Object mesg, MonitorPoint parent, 
-			boolean isLeaf, 
+	public MonitorPoint(Name name, 
+			Object mesg, 
 			MonitorSequence mSequence, 
 			long createMillis) {
-		
 		
 		this.mSequence = mSequence;
 		this.mSequence.increament();
@@ -54,32 +53,37 @@ public class MonitorPoint implements Serializable{
 		this.createMillis = createMillis;
 		this.name = name;
 		this.message = mesg;//TODO: has potential to be an object...
-		this.parent = parent;
 		
-		if(parent!=null){
-			index = parent.size(); 
-			parent.appendChild(this);//TODO move this method outside of constructor.
-		}else{// this is the root mp.
-			index = 0;
+		
+		
+	}
+	
+	public void setParent(MonitorPoint parent){
+		if(parent==null)
+			throw new IllegalStateException("parent cannot be null!");
+		
+		this.parent = parent;
+		if(!parent.getLastChild().equals(this)){
+			parent.appendChild(this);
 		}
 	}
 	
 	
-	
 	public void appendChild(MonitorPoint newChild){
-		if(this.firstChild==null){
+		if(this.firstChild==null){// this mp has no child recently.
 			this.firstChild = this.lastChild = newChild;
 			return;
 		}
-		
+		if(getChildren().contains(newChild))
+			throw new IllegalStateException("already contains this child: "+newChild);
 		if(this.lastChild.nextSibling!=null)
 			throw new IllegalStateException("the lastChild's nextSibling is supposed to be null !!!");
-		if(newChild.equals(this.lastChild))
-			throw new IllegalStateException("try to append lastChild twice!");
 		
+		int newIdx = this.size();
 		this.lastChild.nextSibling = newChild;//reference: old -> new 
 		newChild.previousSibling = this.lastChild;//reference: old <- new
 		this.lastChild = newChild;
+		this.lastChild.setIndex(newIdx);
 	}
 	/**
 	 * 
@@ -93,9 +97,11 @@ public class MonitorPoint implements Serializable{
 	public int getIndex() {
 		return index;
 	}
-	public void setName(Name name) {
-		this.name = name;
+	
+	public void setIndex(int idx){
+		index = idx;
 	}
+
 	public Name getName() {
 		return name;
 	}

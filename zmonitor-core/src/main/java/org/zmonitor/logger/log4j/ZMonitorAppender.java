@@ -358,7 +358,7 @@ public class ZMonitorAppender extends AppenderSkeleton {
 		NdcObj last = ndcCtxt.getNdcObj();
 		
 		StringBuffer sb = new StringBuffer();
-		Strings.append(sb, "dnc[",last.depth,"|",
+		Strings.append(sb, "ndc[",last.depth,"|",
 				(last==null? 0 : last.ndcStr),
 				"], recursive Ending...");
 		

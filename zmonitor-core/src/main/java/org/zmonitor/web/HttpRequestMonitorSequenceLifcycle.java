@@ -32,8 +32,7 @@ public class HttpRequestMonitorSequenceLifcycle extends SimpleMonitorLifecycle {
 			urlAccepted = webConf.shouldAccept(oriReqUrl);
 	}
 	
-	
-	public boolean shouldMeasure(Name name, String mesg, long createMillis) {
+	public boolean shouldMonitor(Name name, Object mesg, long createMillis) {
 		if(urlAccepted){
 			return true;
 			//TODO: should we check other conditions to get fine grained control?

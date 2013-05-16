@@ -28,7 +28,7 @@ public class ZMonitorLogger extends MarkerIgnoringBase {
 
 	
 	/** The current log level */
-	protected int currentLogLevel = LOG_LEVEL_INFO;
+	protected int currentLogLevel = LOG_LEVEL_DEBUG;
 
 	private String name;
 	ZMonitorLogger(String name) {
@@ -42,7 +42,11 @@ public class ZMonitorLogger extends MarkerIgnoringBase {
 		    //TODO: zmonitor slf4j logging...
 		    // more than dozens of properties can be used at this place.
 		    // 
-		    
+		    if(t==null){
+		    	System.out.println("zmonitor.slf4j: "+ message);	
+		    }else{
+		    	t.printStackTrace();
+		    }
 	 }
 	 
 	 /**
