@@ -36,12 +36,17 @@ public interface TrackingContext {
 	 * 
 	 * @return
 	 */
-	StackTraceElement getStackTraceElement();
+	MonitorLifecycle getLifeCycle();
 	/**
 	 * 
 	 * @return
 	 */
-	MonitorLifecycle getLifeCycle();
+	CallerInfo getCallerInfo();
+	/**
+	 * 
+	 * @return
+	 */
+	Marker getMarker();
 	/**
 	 * 
 	 * @return

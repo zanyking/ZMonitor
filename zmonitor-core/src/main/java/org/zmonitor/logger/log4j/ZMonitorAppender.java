@@ -11,13 +11,16 @@ import org.apache.log4j.NDC;
 import org.apache.log4j.spi.LocationInfo;
 import org.apache.log4j.spi.LoggingEvent;
 import org.zmonitor.AlreadyStartedException;
+import org.zmonitor.CallerInfo;
 import org.zmonitor.IgnitionFailureException;
 import org.zmonitor.MonitorSequence;
+import org.zmonitor.TrackingContext;
 import org.zmonitor.ZMonitor;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.config.ConfigSource;
 import org.zmonitor.config.ConfigSources;
 import org.zmonitor.impl.JavaName;
+import org.zmonitor.impl.SimpleCallerInfo;
 import org.zmonitor.impl.StringName;
 import org.zmonitor.impl.ThreadLocalMonitorLifecycleManager;
 import org.zmonitor.impl.ZMLog;
@@ -248,7 +251,7 @@ public class ZMonitorAppender extends AppenderSkeleton {
 		NdcContext ndcCtxt = getNdcContext(lfc);
 		if(ndcCtxt.getNdcObj()!=null)
 			throw new IllegalStateException("ZMonitor Log4j stack Operation Logic Error or forget to cleanup the state.");
-		ndcCtxt.doStart(createName(event, null), event.getRenderedMessage(), ndcStr, depth);
+		ndcCtxt.doStart(newTrackingContext(event, ndcStr), ndcStr, depth);
 	}
 
 	/**
@@ -306,30 +309,26 @@ public class ZMonitorAppender extends AppenderSkeleton {
 //		}
 		
 		
-		String mesg = event.getRenderedMessage();
 		if(last==null){
-			ndcCtxt.doRecord(createName(event, null), 
-					mesg, ndcDepth);
+			ndcCtxt.doRecord(newTrackingContext(event, null), ndcDepth);
 			return;
 		}
 		
 		if(ndcDepth > last.depth){
-			ndcCtxt.doStart(createName(event, null), mesg, ndcStr, ndcDepth);
+			ndcCtxt.doStart(newTrackingContext(event, null), ndcStr, ndcDepth);
 			
 		}else if(ndcDepth == last.depth){
-			ndcCtxt.doRecord(createName(event, null), mesg, ndcDepth);
+			ndcCtxt.doRecord(newTrackingContext(event, null), ndcDepth);
 			
 		}else{//if( ndcDepth < last.depth )
 			if(ndcDepth == last.previous.depth){
-				ndcCtxt.doEnd(createName(event, "L4J_END"), 
-						mesg);
+				ndcCtxt.doEnd(newTrackingContext(event, "L4J_END"));
 				
 			}else if(ndcDepth > last.previous.depth){
-				ndcCtxt.doRecord(createName(event, null), 
-						mesg, ndcDepth);
+				ndcCtxt.doRecord(newTrackingContext(event, null), ndcDepth);
 				
 			}else{// if(ndcDepth < last.previous.depth)
-				autoEnd(ndcCtxt);
+				autoEnd(ndcCtxt, event);
 				record(event, ndcDepth, lfc, ndcStr);//recursive call...
 				return;
 			}
@@ -342,19 +341,19 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	 * @param finalMesg
 	 */
 	private void complete(LoggingEvent event, String finalMesg, MonitorLifecycle lfc){
-		Name jName = createName(event, "END");
 		
 		NdcContext ndcCtxt = getNdcContext(lfc);
 		
 		int currentTlDepth = getCurrentTlDepth(lfc);
 		while(currentTlDepth>1){
-			autoEnd(ndcCtxt);
+			autoEnd(ndcCtxt, event);
 			currentTlDepth = getCurrentTlDepth(lfc);
 		}
-		ndcCtxt.doEnd(jName, finalMesg);
+		TrackingContext jName = newTrackingContext(event, "END");
+		ndcCtxt.doEnd(jName);
 	}
 	
-	private static void autoEnd(NdcContext ndcCtxt ){
+	private void autoEnd(NdcContext ndcCtxt, LoggingEvent event){
 		NdcObj last = ndcCtxt.getNdcObj();
 		
 		StringBuffer sb = new StringBuffer();
@@ -362,7 +361,8 @@ public class ZMonitorAppender extends AppenderSkeleton {
 				(last==null? 0 : last.ndcStr),
 				"], recursive Ending...");
 		
-		ndcCtxt.doEnd(new StringName("L4J_FORCE_END"), sb.toString());
+		ndcCtxt.doEnd(newTrackingContext(event, "L4J_FORCE_END", 
+				sb.toString()));
 	}
 	
 	
@@ -398,6 +398,46 @@ public class ZMonitorAppender extends AppenderSkeleton {
 			jName.setClassName(event.getLoggerName());
 		}
 		return jName;
+	}
+	
+	/**
+	 * 
+	 * @param event
+	 * @param name
+	 * @param message
+	 * @return
+	 */
+	protected TrackingContext newTrackingContext(LoggingEvent event, String name, String message){
+		Log4jTrackingContext ctx = new Log4jTrackingContext(name==null ? mpNameType : name);
+		ctx.setMessage(message);
+		if (javaSourceLocationInfo) {
+			LocationInfo locInfo = event.getLocationInformation();
+			
+			
+			int lineNum = -1;
+			try {
+				lineNum = Integer.parseInt(locInfo.getLineNumber());
+			} catch (Exception e) {
+			}// line number is not applicable, ignore it.
+			
+			SimpleCallerInfo cInfo = new SimpleCallerInfo(
+					locInfo.getClassName(), locInfo.getMethodName(), lineNum, null);
+			ctx.setCallerInfo(cInfo);
+		} else {
+			SimpleCallerInfo cInfo = new SimpleCallerInfo();
+			cInfo.setClassName(event.getLoggerName());
+			ctx.setCallerInfo(cInfo);
+		}
+		return ctx;
+	}
+	/**
+	 * 
+	 * @param event
+	 * @param name
+	 * @return
+	 */
+	protected TrackingContext newTrackingContext(LoggingEvent event, String name) {
+		return newTrackingContext(event, name, event.getRenderedMessage());
 	}
 	
 	/**

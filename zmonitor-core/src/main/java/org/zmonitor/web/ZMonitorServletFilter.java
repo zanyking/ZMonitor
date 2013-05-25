@@ -15,11 +15,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.zmonitor.AlreadyStartedException;
+import org.zmonitor.MarkerFactory;
+import org.zmonitor.TrackingContext;
 import org.zmonitor.ZMonitor;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.config.ConfigSource;
 import org.zmonitor.config.ConfigSources;
-import org.zmonitor.impl.StringName;
+import org.zmonitor.impl.SimpleCallerInfo;
+import org.zmonitor.impl.TrackingContextBase;
 import org.zmonitor.impl.ZMLog;
 
 /**
@@ -76,32 +79,46 @@ public class ZMonitorServletFilter implements Filter {
 		}
 	}
 	
-	public void doFilter(ServletRequest req, ServletResponse res, FilterChain filterChain) 
+	public void doFilter(ServletRequest request, ServletResponse res, FilterChain filterChain) 
 	throws IOException, ServletException {
-		
+		HttpServletRequest req = (HttpServletRequest) request;
 		if(isIgnitBySelf){
 			HttpRequestContexts.init(new StantardHttpRequestContext(), 
-					(HttpServletRequest)req, (HttpServletResponse)res);
-			hReqMSLfManager.initLifeCycle((HttpServletRequest) req);	
+					req, (HttpServletResponse)res);
+			hReqMSLfManager.initLifeCycle( req);	
 		}
 		
 		try{
-			ZMonitor.push(new StringName("REQUEST", 
-					((HttpServletRequest)req).getRequestURI()), 
-					getQueryURI((HttpServletRequest) req));
+			ZMonitor.push(newTrackingContext("REQUEST_START", "-> "+getQueryURI(req), req));
 			
 			filterChain.doFilter(req, res);
 		}
 		finally{
 			try{
-				ZMonitor.pop("end of request", false);	
+				ZMonitor.pop(newTrackingContext("REQUEST_END", "<- END", req));	
 			}finally{
-				if(isIgnitBySelf){
+				if(isIgnitBySelf){// force end...
 					hReqMSLfManager.disposeLifeCycle((HttpServletRequest) req);
 					HttpRequestContexts.dispose();	
 				}
 			}
 		}
+	}
+	
+	private static TrackingContext newTrackingContext(String markerName, String mesg, HttpServletRequest req){
+		TrackingContextBase webCtx = new TrackingContextBase("REQUEST");
+		webCtx.setCallerInfo(new WebCallerInfo());
+		webCtx.setMarker(MarkerFactory.getMarker(markerName));
+		webCtx.setMessage(mesg);//
+		return webCtx;
+	}
+	
+	/**
+	 * @author Ian YT Tsai(Zanyking)
+	 */
+	public static class WebCallerInfo extends SimpleCallerInfo{
+		private static final long serialVersionUID = 7285893125167926262L;
+		
 	}
 	
 	private static String getQueryURI(HttpServletRequest req) {

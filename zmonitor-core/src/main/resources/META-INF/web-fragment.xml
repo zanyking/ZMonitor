@@ -1,0 +1,35 @@
+<web-fragment xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+        http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-fragment_3_0.xsd"
+	version="3.0"
+	metadata-complete="true">
+
+	<name>zmonitor_web</name>
+
+	<ordering>
+		<before>
+			<others/>
+		</before>
+	</ordering>
+	
+	<!-- 
+		Elements that may be declared any number of times, 
+		if specified in the web.xml overrides the values 
+		specified in the web-fragments with the same name.
+	
+		To override zmonitor's filter setting, 
+		please declare your own "ZMonitorFilter" filter 
+		in web.xml.
+	 -->
+	<filter>
+		<filter-name>ZMonitorFilter</filter-name>
+		<filter-class>org.zmonitor.web.ZMonitorServletFilter</filter-class>
+	</filter>
+	
+	<filter-mapping>
+    <filter-name>ZMonitorFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+</filter-mapping>
+
+</web-fragment>

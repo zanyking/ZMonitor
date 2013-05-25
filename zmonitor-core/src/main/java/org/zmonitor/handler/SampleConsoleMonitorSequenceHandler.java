@@ -5,7 +5,6 @@
 package org.zmonitor.handler;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import org.zmonitor.CustomConfigurable;
 import org.zmonitor.MonitorPoint;
@@ -34,12 +33,16 @@ public class SampleConsoleMonitorSequenceHandler extends ZMBeanBase implements M
 		String totalElipsd = Strings.alignedMillisStr(retrieveMillisToVeryEnd(tl.getRoot()));
 		StringBuffer sb = new StringBuffer();
 		
-		Strings.appendln(sb, "[ ",getHHmmssSSS_yyyy_MM_dd().format(new Date())," ] ",tl.getName()," -> TIMELINE DUMP BEGIN");
+//		Strings.appendln(sb, "[ ",getHHmmssSSS_yyyy_MM_dd().format(new Date())," ] ",
+//				tl.getName()," -> TIMELINE DUMP BEGIN");
+		
 		Strings.appendln(sb, "[",totalElipsd,"]ms Elipsed - ZMonitor Measure Points:",tl.getRecordAmount(),
 				", self spend Nanosec: ", Strings.toNumericString(tl.getSelfSpendNanos(),","));
 		Strings.appendln(sb, indent,"[ pre~ | ~next ]ms");
 		writeRoot(sb, tl.getRoot(), indent, indent);
-		Strings.append(sb, tl.getName()," <- TIMELINE DUMP END, toStringTLHandler spent nanosecond: ");
+		
+//		Strings.append(sb, tl.getName()," <- TIMELINE DUMP END, toStringTLHandler spent nanosecond: ");
+		
 		Strings.appendln(sb, Strings.toNumericString(System.nanoTime() - nano, ","));
 		Strings.appendln(sb, "\n");
 		toString(sb.toString());
@@ -50,7 +53,7 @@ public class SampleConsoleMonitorSequenceHandler extends ZMBeanBase implements M
 	}
 	private void writeRoot(StringBuffer sb, MonitorPoint root, String prefix, String indent){
 		String mesgPfx = Strings.append(prefix, "[",Strings.alignedMillisStr(0),
-				"|",Strings.alignedMillisStr(retrieveMillisToVeryEnd(root)),"]ms [",root.getName(),"]");
+				"|",Strings.alignedMillisStr(retrieveMillisToVeryEnd(root)),"]ms [",root.getCallerInfo(),"]");
 //				"|",Strings.alignedMillisStr(record.getSelfPeriod()),"]ms [",record.name,"]");
 		
 		Strings.appendln(sb, mesgPfx , " children:",root.size(), " - ",root.getMessage());
@@ -65,7 +68,7 @@ public class SampleConsoleMonitorSequenceHandler extends ZMBeanBase implements M
 		if(mp==null)return;
 		String mesgPfx = Strings.append(prefix, "[",
 				Strings.alignedMillisStr(retrieveMillisFromPrevious(mp)),
-				"|",Strings.alignedMillisStr(retrieveMillisToNext(mp)),"]ms [",mp.getName(),"]");
+				"|",Strings.alignedMillisStr(retrieveMillisToNext(mp)),"]ms [",mp.getCallerInfo(),"]");
 //				"|",Strings.alignedMillisStr(record.getSelfPeriod()),"]ms [",record.name,"]");
 		
 		if(mp.isLeaf()){

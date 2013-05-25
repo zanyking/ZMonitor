@@ -45,6 +45,10 @@ public class HttpRequestMonitorLifecycleManager  implements MonitorLifecycleMana
 	}
 	
 	public void disposeLifeCycle(HttpServletRequest req){
+		MonitorLifecycle lfcycle = (MonitorLifecycle) req.getAttribute(KEY_REQ_MSL);
+		if(lfcycle!=null && !lfcycle.isFinished()){
+			lfcycle.finish();
+		}
 		req.removeAttribute(KEY_REQ_MSL);
 	}
 

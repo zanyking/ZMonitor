@@ -49,14 +49,18 @@ public class SimpleMonitorLifecycle implements MonitorLifecycle {
 	public void finish() {
 		if(finished)
 			throw new IllegalStateException("this life-cycle was already finished, should never be reused.");
-		ZMonitorManager.getInstance().handle(mSquence);
-		mSquence = null;
+		try{
+			ZMonitorManager.getInstance().handle(mSquence);
+		}finally{
+			mSquence = null;
+			finished = true;	
+		}
 	}
 	public boolean isFinished() {
-		return false;
+		return finished;
 	}
 	public boolean shouldMonitor(TrackingContext trackingCtx) {
-		return true;// override this.
+		return true;// sub class can override this.
 	}
 	
 	private Map<String, Object> storage = new HashMap<String, Object>();

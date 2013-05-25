@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.zmonitor.spi.Name;
+import org.zmonitor.CallerInfo;
 
 /**
  * @author Ian YT Tsai(Zanyking)
@@ -19,7 +19,7 @@ public class VersionNode extends AbstractNode{
 	private final List<VersionNodeChildren> childrens;
 	private final int stack;
 	private final int index;
-	private final Name name;
+	private final CallerInfo name;
 	private VersionNodeChildren parent;
 
 	/**
@@ -31,7 +31,7 @@ public class VersionNode extends AbstractNode{
 	 * @param mesg
 	 * @param mergeOperator 
 	 */
-	public VersionNode( int stack, int index, Name name) {
+	public VersionNode( int stack, int index, CallerInfo name) {
 		super();
 		this.stack = stack;
 		this.index = index;
@@ -41,7 +41,7 @@ public class VersionNode extends AbstractNode{
 	
 
 	
-	public Name getName(){
+	public CallerInfo getName(){
 		return name;
 	}
 	

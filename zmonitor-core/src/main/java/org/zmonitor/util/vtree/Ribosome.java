@@ -58,7 +58,8 @@ public class Ribosome {
 		VersionNode reqVNode = null;
 		for(VersionNodeChildren cildren : rootVNode.getChildrens()){
 			reqVNode = cildren.getAll().get(0);
-			if(reqVNode.getName().equals(root.getName())){
+			// identification
+			if(isSimilar(reqVNode, root) ){
 				writeRec2Measurable(root, cildren);
 				return reqVNode;
 			}
@@ -66,7 +67,7 @@ public class Ribosome {
 		VersionNodeChildren vChildren = new VersionNodeChildren();
 		rootVNode.addChildren(vChildren);
 		writeRec2Measurable(root, vChildren);
-		vChildren.add(reqVNode = new VersionNode(0, 0, root.getName()));
+		vChildren.add(reqVNode = new VersionNode(0, 0, root.getCallerInfo()));
 		return reqVNode;
 	}
 	
@@ -92,7 +93,7 @@ public class Ribosome {
 				writeRec2Measurable(record, vChildren);
 				VersionNode newVNode;
 				for(MonitorPoint rec : record.getChildren()){
-					newVNode = new VersionNode(target.getStack()+1, idx++, rec.getName());			
+					newVNode = new VersionNode(target.getStack()+1, idx++, rec.getCallerInfo());			
 					vChildren.add(newVNode);
 					vNodeStack.add(new WriteNodeCtx(rec, newVNode));
 				}	
@@ -106,6 +107,11 @@ public class Ribosome {
 				}});
 		}
 	}
+	
+	
+	private static boolean isSimilar( VersionNode vn, MonitorPoint mp){
+		throw new UnsupportedOperationException("not impl yet");//TODO not impl yet.
+	}	
 	
 	
 	// might has customization in the future.
@@ -127,7 +133,7 @@ public class Ribosome {
 		final boolean[] flag = new boolean[]{true};
 		zipping(records, children, new Operator(){
 			public boolean operate(MonitorPoint record, VersionNode vNode) {
-				if(!record.getName().equals(vNode.getName())){
+				if(!isSimilar(vNode, record)){
 					flag[0] = false;	
 				}
 				return flag[0];

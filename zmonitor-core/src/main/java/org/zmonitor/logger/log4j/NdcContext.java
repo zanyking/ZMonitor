@@ -5,6 +5,7 @@
 package org.zmonitor.logger.log4j;
 
 import org.zmonitor.MonitorSequence;
+import org.zmonitor.TrackingContext;
 import org.zmonitor.ZMonitor;
 import org.zmonitor.spi.Name;
 import org.zmonitor.spi.MonitorLifecycle;
@@ -28,23 +29,19 @@ import org.zmonitor.spi.MonitorLifecycle;
 	
 	
 	
-	public void doEnd(Name name, String mesg){
-		ZMonitor.pop(name, mesg, false);
+	public void doEnd(TrackingContext ctx){
+		ZMonitor.pop(ctx);
 		fNdcStack.pop();
 	}
 	
-	public void doEnd(String mesg){
-		ZMonitor.pop(mesg, false);
-		fNdcStack.pop();
-	}
 	
-	public void doRecord(Name name, String mesg, int depth){
-		ZMonitor.record(name, mesg, false);
+	public void doRecord(TrackingContext ctx, int depth){
+		ZMonitor.record(ctx);
 //		fNdcStack.push(ndcStr, depth, getCurrentTlDepth());
 	}
  
-	public void doStart(Name name,String mesg, String ndcStr, int depth){
-		ZMonitor.push(name, mesg, false);
+	public void doStart(TrackingContext ctx, String ndcStr, int depth){
+		ZMonitor.push(ctx);
 		fNdcStack.push(ndcStr, depth, getCurrentTlDepth());
 	}
 	

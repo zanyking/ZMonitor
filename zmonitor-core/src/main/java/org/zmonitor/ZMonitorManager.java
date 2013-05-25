@@ -273,8 +273,7 @@ class NOOPZMBeanRepository implements ZMBeanRepository{
  */
 class NOOPMonitorLifecycleManager implements MonitorLifecycleManager{
 	MonitorLifecycle noop = new MonitorLifecycle(){
-		public boolean shouldMonitor(Name name, Object mesg,
-				long createMillis) {
+		public boolean shouldMonitor(TrackingContext trackingCtx) {
 			return false;// this should take care the rest of all...
 		}
 		public MonitorSequence getInstance() {
@@ -298,7 +297,8 @@ class NOOPMonitorLifecycleManager implements MonitorLifecycleManager{
 		}
 		public <T> T getAttribute(String key) {
 			return null;
-		}};
+		}
+		};
 	public MonitorLifecycle getLifecycle() {
 		return noop;
 	}

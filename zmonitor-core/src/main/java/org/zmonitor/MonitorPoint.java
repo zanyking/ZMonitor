@@ -10,11 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.zmonitor.spi.Name;
-
-
-
-
 /**
  * 
  * 
@@ -33,9 +28,10 @@ public class MonitorPoint implements Serializable{
 	private MonitorSequence mSequence;
 	
 	// Context info
-	private Name name;
-	private long createMillis;
+	private Marker marker;
 	private CallerInfo callerInfo;
+	
+	private long createMillis;
 	private Object message;
 	
 	/**
@@ -43,12 +39,12 @@ public class MonitorPoint implements Serializable{
 	 * @param parent
 	 * @param mesg
 	 */
-	public MonitorPoint(Name name, 
+	public MonitorPoint(Marker marker, 
 			CallerInfo callerInfo,
 			Object mesg, 
 			MonitorSequence mSequence, 
 			long createMillis) {
-		this.name = name;
+		this.marker = marker;
 		this.callerInfo = callerInfo;
 		this.message = mesg;
 		this.mSequence = mSequence;
@@ -68,7 +64,9 @@ public class MonitorPoint implements Serializable{
 		}
 	}
 	
-	
+	public CallerInfo getCallerInfo(){
+		return callerInfo;
+	}
 	public void appendChild(MonitorPoint newChild){
 		if(this.firstChild==null){// this mp has no child recently.
 			this.firstChild = this.lastChild = newChild;
@@ -102,8 +100,8 @@ public class MonitorPoint implements Serializable{
 		index = idx;
 	}
 
-	public Name getName() {
-		return name;
+	public Marker getMarker() {
+		return marker;
 	}
 	
 	
@@ -163,7 +161,22 @@ public class MonitorPoint implements Serializable{
 	public List<MonitorPoint> getChildren(){
 		return new KidList();
 	}
-
+	/**
+	 * 
+	 * @param mp
+	 * @return
+	 */
+	public boolean isSimilar(MonitorPoint mp){
+		CallerInfo cInfo = mp.getCallerInfo();
+		if(this.callerInfo==null){
+			if(cInfo!=null)return false;
+			//both are null.
+		} else if(!this.callerInfo.equals(cInfo)){
+			return false;
+		}
+		
+		return this.getIndex() == mp.getIndex();
+	}
 	
 	/**
 	 * @author Ian YT Tsai(Zanyking)

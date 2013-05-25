@@ -4,8 +4,8 @@
 package org.zmonitor.impl;
 
 import org.zmonitor.CallerInfo;
+import org.zmonitor.Marker;
 import org.zmonitor.MonitorPoint;
-import org.zmonitor.spi.Name;
 
 /**
  * @author Ian YT Tsai(Zanyking)
@@ -13,18 +13,20 @@ import org.zmonitor.spi.Name;
  */
 public class CoreTrackingContext extends TrackingContextBase {
 
+	
+
 	/**
 	 * @param trackerName
 	 */
-	public CoreTrackingContext(String trackerName) {
+	public CoreTrackingContext(String trackerName, Marker marker) {
 		super(trackerName);
-		// TODO Auto-generated constructor stub
+		this.marker = marker;
 	}
 
 	public MonitorPoint create(MonitorPoint parent) {
-		MonitorPoint mp = new MonitorPoint(this.retrieveName(), 
-				getCallerInfo(),
-				retrieveMessage(), 
+		MonitorPoint mp = new MonitorPoint(this.getMarker(), 
+				this.getCallerInfo(),
+				this.retrieveMessage(), 
 				this.getMonitorSequence(), 
 				this.getCreateMillis()
 				);
@@ -34,16 +36,6 @@ public class CoreTrackingContext extends TrackingContextBase {
 		return  mp;
 	}
 
-	
-	private CallerInfo getCallerInfo(){
-		StackTraceElement stEle = this.getStackTraceElement();
-		return stEle==null? null :
-				new CallerInfo( stEle);
-	}
-	
-	private Name retrieveName() {
-		return new StringName("default");
-	}
 	
 	private Object retrieveMessage() {
 		Object mesg = this.getMessage();

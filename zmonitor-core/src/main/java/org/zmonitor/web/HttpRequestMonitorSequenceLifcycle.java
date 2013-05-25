@@ -26,8 +26,6 @@ public class HttpRequestMonitorSequenceLifcycle extends SimpleMonitorLifecycle {
 		WebConfigurator webConf = 
 			ZMonitorManager.getInstance().getBeanIfAny(
 					WebConfigurator.class);
-		
-		
 		if(webConf != null)
 			urlAccepted = webConf.shouldAccept(oriReqUrl);
 	}

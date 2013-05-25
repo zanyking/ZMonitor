@@ -6,8 +6,7 @@ package org.zmonitor.util.vtree;
 
 import org.zmonitor.MonitorPoint;
 import org.zmonitor.MonitorSequence;
-import org.zmonitor.impl.StringName;
-import org.zmonitor.spi.Name;
+import org.zmonitor.impl.SimpleCallerInfo;
 
 /**
  * @author Ian YT Tsai(Zanyking)
@@ -17,24 +16,13 @@ public class VersionTree{
 	
 	boolean hasHandledBefore;
 	private VersionNode rootVNode;
-	private Name psendoRootName = new StringName( "Application Requests", "");
-	
-	
-	
-	public Name getPsendoRootName() {
-		return psendoRootName;
-	}
-	
-	public void setPsendoRootName(Name psendoRootName) {
-		this.psendoRootName = psendoRootName;
-	}
 	/**
 	 * 
 	 * @return
 	 */
 	VersionNode getRootVNode() {
 		if(rootVNode==null){
-			rootVNode = new VersionNode( 0, 0, psendoRootName);	
+			rootVNode = new VersionNode( 0, 0,  new SimpleCallerInfo());	
 		}
 		return rootVNode;
 	}

@@ -3,6 +3,9 @@
  */
 package org.zmonitor.impl;
 
+import org.zmonitor.CallerInfo;
+import org.zmonitor.Marker;
+import org.zmonitor.MonitorPoint;
 import org.zmonitor.MonitorSequence;
 import org.zmonitor.TrackingContext;
 import org.zmonitor.ZMonitorManager;
@@ -12,15 +15,17 @@ import org.zmonitor.spi.MonitorLifecycle;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public abstract class TrackingContextBase implements TrackingContext {
+public class TrackingContextBase implements TrackingContext {
 
 	protected Object message;
 	
 	protected final String trackerName;
 	
-	protected StackTraceElement callerSTElement;
+	protected CallerInfo callerInfo;
 	
-	protected long createMillis;
+	protected Marker marker;
+	
+	protected long createMillis = System.currentTimeMillis();
 	
 	
 	/**
@@ -40,7 +45,14 @@ public abstract class TrackingContextBase implements TrackingContext {
 		this.message = message;
 	}
 
+	public Marker getMarker() {
+		return marker;
+	}
 
+	public void setMarker(Marker marker) {
+		this.marker = marker;
+	}
+	
 	public long getCreateMillis() {
 		return createMillis;
 	}
@@ -55,15 +67,12 @@ public abstract class TrackingContextBase implements TrackingContext {
 		return trackerName;
 	}
 
-	public void setCallerSTElement(StackTraceElement callerSTElement) {
-		this.callerSTElement = callerSTElement;
+	public void setCallerInfo(CallerInfo cInfo) {
+		callerInfo = cInfo;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.zmonitor.TrackingContext#getMonitorPointStackTraceElement()
-	 */
-	public StackTraceElement getStackTraceElement() {
-		return callerSTElement;
+	
+	public CallerInfo getCallerInfo(){
+		return callerInfo;
 	}
 
 	/**
@@ -80,4 +89,13 @@ public abstract class TrackingContextBase implements TrackingContext {
 		return getLifeCycle().getInstance();
 	}
 
+	public MonitorPoint create(MonitorPoint parent) {
+		MonitorPoint mp = new MonitorPoint(this.getMarker(), 
+				this.getCallerInfo(),
+				this.getMessage(), 
+				this.getMonitorSequence(), 
+				this.getCreateMillis()
+				);
+		return mp;
+	}
 }

@@ -1,0 +1,104 @@
+
+
+JVMPI: 
+	It is intended for tools vendors to develop profilers that work in conjunction with Sun's Java virtual machine* implementation.
+
+
+JVMTI:
+	Already become a standard to JVM implementation (more like an optional functions of JVM)
+
+
+	Basically a C programming interface based on Agent concept for tool vendor to implement. its VM specific, no quarentee every VM has well-implemented.
+	PROs:
+		You get everything you can get.
+		No interference to application logic (except performance and execution sequence).
+		No interference to your application's source code.
+	CONs:
+		you have to implement the agent in C programming language.
+		VM specific, some environment might not implement it.
+		You have to filter the input by yourself 
+			(its foreseeable that there will be tons of data you don't want and has to be filtered.).
+		The data is not presented and orgenized in the application perspective.
+	CONCLUTION:
+		If you are a JVM tool vendor, JVM TI is what you have to work with, and you might be even further to identify different VM for precise support.
+		But if you are a application developer then JVMTI is not for you. Instead, you should use the product manufactured by JVM tool vendor which means you have to write specific code based on the soluition you pick.
+
+
+Java Instrumentation:
+	As an alternative solution of JVMTI, Java Instrumentation technology provides you an API based on Java for Java developer to monitor and profile their application. The implementation has to be packed as a jar library and configured in application parameter to make it preloaded while JVM startup
+
+
+	PROs: 
+		Based on Java programming language.
+	CONs:
+		Higher performence impack than JVMTI.
+		You still have to filter uninterested data by yourself.
+
+
+Logging Solutions:
+	current logging solutions:
+		Log4j
+		Slf4j
+		Java.util.logging
+		Apache Common logging
+
+	PROs: 
+		Based on Java.
+		Is a part of the program (Developer is suppose to do this part well).
+		direct controled by application developer.
+		Application awareness.
+		Has Level concept for different stage of application development (debug, info, warn, error).
+
+	CONs:
+		Will be very difficult to trace issues which consist different libs(jars) with different logging systems.
+		No task concept(logging system is more like a Flight Status Recorder)
+			Without knowing task start and task end, developer can only group the logs through thread ID, and this approach might easily messed up if your application depends on thread pool which might recycle threads. 
+				for example: a thread managed by application server might be allocated by Servlet container to execute a request, then be used by MQ to handle a subscribtion.
+			No direct Nested Diagnostic support.
+				Through log4j founded this concept, but due to logging system's nature, user have to use NDC.push() and NDC.pop() to operate the stack instead of a proper API designed in Logger.
+
+		Context-awareness info retrival is difficult.
+			for example: 
+				Get the elipse time between two logs.
+				In a multithread environment, you want to verify the state of a conversation before and after a trasaction(or serialization).
+				you want to trace a specific varible during a request lifetime.
+
+
+	CONCLUSION:
+		If we want to monitor an application through logs, a tool which is able to concentrate the information from logging system is required.
+		Such tool need to satisfy these requirements: 
+			Resorting the log structure and providing developer a better interface for data manipulation.
+
+			Able to retrieve context-awareness info from log entry (wherea the customization of log output format).
+			provide proper interface for developer to query and filter log entries.
+			Real time feedback while development.
+			Useful in every stage of application developement (plus).
+ZMonitor:
+	Conditional Notification Interface:
+		CONCEPT: WHILE query HAPPENED, DO MySubscriber.onHandle(MS, MP);
+			Filtering MP through Query.
+			Notify MP subscriber.
+
+
+	ZMonitor JUnit Web Testing Suite:
+		REALTIME DEV NOTIFICATION SCENARIO:
+			ZMonitor only
+			Developer can use ConsoleHandler to get rough idea about application monitored result(Monitor Sequence).
+			Developer analysis the monitored result(Monitor Sequence), to define a proper query(Selector) which is looking for a specific monitoring point.
+			Implement a Condition by using Utility API for Assertion.
+				1. Monitor Point filtering
+				2. Notification when hit
+					output to console
+					notify IDE through predifined port
+			Declare the CustomCondition in zmonitor.xml
+
+		JUNIT TEST SCENARIO:
+			ZMonitor + JMeter + JUnit
+			Extends a ZMonitor JUnit Testcase super class.
+			While @Test, developer can shoot a request(with specific req_uuid) through MockBrowser API.
+			In Testcase, application wait for response.
+			Retrieve Monitor Sequence through req_uuid.
+			Developer manipulate the MonitorSequence through Utilities, or through prebuild Condition.
+			Output: through JUnit Assertion to verify if test case passed or failed.
+
+		

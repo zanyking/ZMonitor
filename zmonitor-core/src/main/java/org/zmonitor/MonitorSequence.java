@@ -5,8 +5,6 @@ package org.zmonitor;
 
 import java.io.Serializable;
 
-import org.zmonitor.spi.Name;
-
 
 /**
  * Monitor Sequence is a data object which collect MeasurePoints during an execution.<br>
@@ -66,9 +64,6 @@ public class MonitorSequence implements Serializable{
 		return current == null;
 	}
 	
-	public Name getName() {
-		return root==null? null : root.getName();
-	}
 	
 	public MonitorPoint getCurrent() {
 		return current;
