@@ -3,8 +3,7 @@
  */
 package org.zmonitor.impl;
 
-import org.zmonitor.CallerInfo;
-import org.zmonitor.Marker;
+import org.zmonitor.MonitorMeta;
 import org.zmonitor.MonitorPoint;
 
 /**
@@ -18,14 +17,13 @@ public class CoreTrackingContext extends TrackingContextBase {
 	/**
 	 * @param trackerName
 	 */
-	public CoreTrackingContext(String trackerName, Marker marker) {
+	public CoreTrackingContext(String trackerName) {
 		super(trackerName);
-		this.marker = marker;
 	}
 
 	public MonitorPoint create(MonitorPoint parent) {
-		MonitorPoint mp = new MonitorPoint(this.getMarker(), 
-				this.getCallerInfo(),
+		MonitorPoint mp = new MonitorPoint(
+				this.getMonitorMeta(),
 				this.retrieveMessage(), 
 				this.getMonitorSequence(), 
 				this.getCreateMillis()
@@ -40,7 +38,7 @@ public class CoreTrackingContext extends TrackingContextBase {
 	private Object retrieveMessage() {
 		Object mesg = this.getMessage();
 		if(mesg==null){
-			CallerInfo cInfo = getCallerInfo();
+			MonitorMeta cInfo = getMonitorMeta();
 			if(cInfo!=null){
 				return cInfo.toString();
 			}

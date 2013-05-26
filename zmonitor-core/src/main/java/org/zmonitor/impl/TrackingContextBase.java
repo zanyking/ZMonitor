@@ -3,7 +3,7 @@
  */
 package org.zmonitor.impl;
 
-import org.zmonitor.CallerInfo;
+import org.zmonitor.MonitorMeta;
 import org.zmonitor.Marker;
 import org.zmonitor.MonitorPoint;
 import org.zmonitor.MonitorSequence;
@@ -21,9 +21,7 @@ public class TrackingContextBase implements TrackingContext {
 	
 	protected final String trackerName;
 	
-	protected CallerInfo callerInfo;
-	
-	protected Marker marker;
+	protected MonitorMeta monitorMeta;
 	
 	protected long createMillis = System.currentTimeMillis();
 	
@@ -44,14 +42,6 @@ public class TrackingContextBase implements TrackingContext {
 	public void setMessage(Object message) {
 		this.message = message;
 	}
-
-	public Marker getMarker() {
-		return marker;
-	}
-
-	public void setMarker(Marker marker) {
-		this.marker = marker;
-	}
 	
 	public long getCreateMillis() {
 		return createMillis;
@@ -67,12 +57,12 @@ public class TrackingContextBase implements TrackingContext {
 		return trackerName;
 	}
 
-	public void setCallerInfo(CallerInfo cInfo) {
-		callerInfo = cInfo;
+	public void setMonitorMeta(MonitorMeta cInfo) {
+		monitorMeta = cInfo;
 	}
 	
-	public CallerInfo getCallerInfo(){
-		return callerInfo;
+	public MonitorMeta getMonitorMeta(){
+		return monitorMeta;
 	}
 
 	/**
@@ -90,8 +80,8 @@ public class TrackingContextBase implements TrackingContext {
 	}
 
 	public MonitorPoint create(MonitorPoint parent) {
-		MonitorPoint mp = new MonitorPoint(this.getMarker(), 
-				this.getCallerInfo(),
+		MonitorPoint mp = new MonitorPoint(
+				this.getMonitorMeta(),
 				this.getMessage(), 
 				this.getMonitorSequence(), 
 				this.getCreateMillis()

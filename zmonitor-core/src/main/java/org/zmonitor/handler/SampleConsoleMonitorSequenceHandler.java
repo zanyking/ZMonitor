@@ -53,7 +53,7 @@ public class SampleConsoleMonitorSequenceHandler extends ZMBeanBase implements M
 	}
 	private void writeRoot(StringBuffer sb, MonitorPoint root, String prefix, String indent){
 		String mesgPfx = Strings.append(prefix, "[",Strings.alignedMillisStr(0),
-				"|",Strings.alignedMillisStr(retrieveMillisToVeryEnd(root)),"]ms [",root.getCallerInfo(),"]");
+				"|",Strings.alignedMillisStr(retrieveMillisToVeryEnd(root)),"]ms [",root.getMonitorMeta(),"]");
 //				"|",Strings.alignedMillisStr(record.getSelfPeriod()),"]ms [",record.name,"]");
 		
 		Strings.appendln(sb, mesgPfx , " children:",root.size(), " - ",root.getMessage());
@@ -68,7 +68,7 @@ public class SampleConsoleMonitorSequenceHandler extends ZMBeanBase implements M
 		if(mp==null)return;
 		String mesgPfx = Strings.append(prefix, "[",
 				Strings.alignedMillisStr(retrieveMillisFromPrevious(mp)),
-				"|",Strings.alignedMillisStr(retrieveMillisToNext(mp)),"]ms [",mp.getCallerInfo(),"]");
+				"|",Strings.alignedMillisStr(retrieveMillisToNext(mp)),"]ms [",mp.getMonitorMeta(),"]");
 //				"|",Strings.alignedMillisStr(record.getSelfPeriod()),"]ms [",record.name,"]");
 		
 		if(mp.isLeaf()){

@@ -11,22 +11,20 @@ import org.apache.log4j.NDC;
 import org.apache.log4j.spi.LocationInfo;
 import org.apache.log4j.spi.LoggingEvent;
 import org.zmonitor.AlreadyStartedException;
-import org.zmonitor.CallerInfo;
 import org.zmonitor.IgnitionFailureException;
+import org.zmonitor.Marker;
+import org.zmonitor.MarkerFactory;
 import org.zmonitor.MonitorSequence;
 import org.zmonitor.TrackingContext;
 import org.zmonitor.ZMonitor;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.config.ConfigSource;
 import org.zmonitor.config.ConfigSources;
-import org.zmonitor.impl.JavaName;
-import org.zmonitor.impl.SimpleCallerInfo;
-import org.zmonitor.impl.StringName;
+import org.zmonitor.impl.SimpleMonitorMeta;
 import org.zmonitor.impl.ThreadLocalMonitorLifecycleManager;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.logger.log4j.NdcContext.NdcObj;
 import org.zmonitor.spi.MonitorLifecycle;
-import org.zmonitor.spi.Name;
 import org.zmonitor.util.Strings;
 
 /**
@@ -376,39 +374,39 @@ public class ZMonitorAppender extends AppenderSkeleton {
 		return (tl==null)? -1 : tl.getCurrentDepth();
 	}
 	
-	/**
-	 * 
-	 * @param event
-	 * @return
-	 */
-	protected Name createName(LoggingEvent event, String name) {
-		JavaName jName = new JavaName(name==null ? mpNameType : name);
-		if (javaSourceLocationInfo) {
-			LocationInfo locInfo = event.getLocationInformation();
-			jName.setClassName(locInfo.getClassName());
-			jName.setMethodName(locInfo.getMethodName());
-			Integer lineNum = null;
-			try {
-				lineNum = Integer.parseInt(locInfo.getLineNumber());
-			} catch (Exception e) {
-			}// line number is not applicable, ignore it.
-			if (lineNum != null)
-				jName.setLineNumber(lineNum);
-		} else {
-			jName.setClassName(event.getLoggerName());
-		}
-		return jName;
-	}
+//	/**
+//	 * 
+//	 * @param event
+//	 * @return
+//	 */
+//	protected Name createName(LoggingEvent event, String name) {
+//		JavaName jName = new JavaName(name==null ? mpNameType : name);
+//		if (javaSourceLocationInfo) {
+//			LocationInfo locInfo = event.getLocationInformation();
+//			jName.setClassName(locInfo.getClassName());
+//			jName.setMethodName(locInfo.getMethodName());
+//			Integer lineNum = null;
+//			try {
+//				lineNum = Integer.parseInt(locInfo.getLineNumber());
+//			} catch (Exception e) {
+//			}// line number is not applicable, ignore it.
+//			if (lineNum != null)
+//				jName.setLineNumber(lineNum);
+//		} else {
+//			jName.setClassName(event.getLoggerName());
+//		}
+//		return jName;
+//	}
 	
 	/**
 	 * 
 	 * @param event
-	 * @param name
+	 * @param markerName
 	 * @param message
 	 * @return
 	 */
-	protected TrackingContext newTrackingContext(LoggingEvent event, String name, String message){
-		Log4jTrackingContext ctx = new Log4jTrackingContext(name==null ? mpNameType : name);
+	protected TrackingContext newTrackingContext(LoggingEvent event, String markerName, String message){
+		Log4jTrackingContext ctx = new Log4jTrackingContext("log4j");
 		ctx.setMessage(message);
 		if (javaSourceLocationInfo) {
 			LocationInfo locInfo = event.getLocationInformation();
@@ -419,14 +417,16 @@ public class ZMonitorAppender extends AppenderSkeleton {
 				lineNum = Integer.parseInt(locInfo.getLineNumber());
 			} catch (Exception e) {
 			}// line number is not applicable, ignore it.
+			Marker marker = markerName==null? 
+					null:MarkerFactory.getMarker(markerName);
 			
-			SimpleCallerInfo cInfo = new SimpleCallerInfo(
+			SimpleMonitorMeta cInfo = new SimpleMonitorMeta(marker,
 					locInfo.getClassName(), locInfo.getMethodName(), lineNum, null);
-			ctx.setCallerInfo(cInfo);
+			ctx.setMonitorMeta(cInfo);
 		} else {
-			SimpleCallerInfo cInfo = new SimpleCallerInfo();
+			SimpleMonitorMeta cInfo = new SimpleMonitorMeta();
 			cInfo.setClassName(event.getLoggerName());
-			ctx.setCallerInfo(cInfo);
+			ctx.setMonitorMeta(cInfo);
 		}
 		return ctx;
 	}

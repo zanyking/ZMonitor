@@ -9,7 +9,7 @@ import java.io.IOException;
 import org.zmonitor.config.ConfigSource;
 import org.zmonitor.config.ConfigSources;
 import org.zmonitor.impl.CoreTrackingContext;
-import org.zmonitor.impl.SimpleCallerInfo;
+import org.zmonitor.impl.SimpleMonitorMeta;
 import org.zmonitor.impl.ThreadLocalMonitorLifecycleManager;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.spi.MonitorLifecycle;
@@ -128,9 +128,9 @@ public final class ZMonitor {
 	 * @return
 	 */
 	public static MonitorPoint push(Marker marker, Object mesg, boolean traceCallerStack){
-		CoreTrackingContext ctx = new CoreTrackingContext(DEFAULT_TRACKER_NAME, marker);
+		CoreTrackingContext ctx = new CoreTrackingContext(DEFAULT_TRACKER_NAME);
 		ctx.setCreateMillis(System.currentTimeMillis());
-		ctx.setCallerInfo(getOuterCallerInfo(traceCallerStack, 3));
+		ctx.setMonitorMeta(newMonitorMeta(marker, traceCallerStack, 3));
 		return push(ctx);
 	}
 	/**
@@ -156,7 +156,7 @@ public final class ZMonitor {
 	
 	
 	
-	private static CallerInfo getOuterCallerInfo(boolean shouldDo, int callerLevel){
+	private static MonitorMeta newMonitorMeta(Marker marker, boolean shouldDo, int callerLevel){
 		if(!shouldDo)return null;
 		StackTraceElement[] stackElemts = Thread.currentThread().getStackTrace();
 		callerLevel += 1;
@@ -165,7 +165,7 @@ public final class ZMonitor {
 			throw new Error("How could method has no caller?");
 		}
 		StackTraceElement sElemt = stackElemts[callerLevel];
-		return new SimpleCallerInfo(sElemt);
+		return new SimpleMonitorMeta(marker, sElemt);
 	}
 	
 	/**
@@ -195,9 +195,9 @@ public final class ZMonitor {
 	 * @return
 	 */
 	public static MonitorPoint record(Marker marker, Object mesg, boolean traceCallerStack){
-		CoreTrackingContext ctx = new CoreTrackingContext(DEFAULT_TRACKER_NAME, marker);
+		CoreTrackingContext ctx = new CoreTrackingContext(DEFAULT_TRACKER_NAME);
 		ctx.setCreateMillis(System.currentTimeMillis());
-		ctx.setCallerInfo(getOuterCallerInfo(traceCallerStack, 3));
+		ctx.setMonitorMeta(newMonitorMeta(marker, traceCallerStack, 3));
 		return record(ctx);
 	}
 	/**
@@ -257,9 +257,9 @@ public final class ZMonitor {
 	 * @return
 	 */
 	public static MonitorPoint pop(Marker marker, Object message, boolean traceCallerStack){
-		CoreTrackingContext ctx = new CoreTrackingContext(DEFAULT_TRACKER_NAME, marker);
+		CoreTrackingContext ctx = new CoreTrackingContext(DEFAULT_TRACKER_NAME);
 		ctx.setCreateMillis(System.currentTimeMillis());
-		ctx.setCallerInfo(getOuterCallerInfo(traceCallerStack, 3));
+		ctx.setMonitorMeta(newMonitorMeta(marker, traceCallerStack, 3));
 		return pop(ctx);
 	}
 	/**
@@ -288,28 +288,4 @@ public final class ZMonitor {
 		}
 		return mp;
 	}
-	
-//	/**
-//	 * 
-//	 * @param mCtx
-//	 * @return
-//	 */
-//	private static MonitorPoint finish(TrackingContext mCtx){
-//		//TODO: not done yet....
-//		return null;
-//	}
-	//TODO: not done yet....
-	
-//	private static void finish(){
-//		if(!getLifecycle().isStarted()){
-//			return;//nothing need to do...
-//		}
-//		Timeline tl = getLifecycle().getTimeline();
-//		long createMillis = tl.getVeryEndCreateTime();
-//		MPContext mpCtx;
-//		while(!tl.isFinished()){
-//			mpCtx = new MPContext(null, END, null, null, createMillis);
-//			tl.end(mpCtx.getName(), mpCtx.getMesg());
-//		}
-//	}
 }

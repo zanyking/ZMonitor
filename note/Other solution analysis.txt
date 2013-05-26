@@ -73,18 +73,45 @@ Logging Solutions:
 			provide proper interface for developer to query and filter log entries.
 			Real time feedback while development.
 			Useful in every stage of application developement (plus).
+
 ZMonitor:
 	Conditional Notification Interface:
-		CONCEPT: WHILE query HAPPENED, DO MySubscriber.onHandle(MS, MP);
-			Filtering MP through Query.
+		CONCEPT: while any predefined query(SELECTOR) has result (a matched MP founded), do MySubscriber.onHandle(MS, List<MP>);
+			Filtering MS through Query(SELECTOR).
 			Notify MP subscriber.
-
 
 	ZMonitor JUnit Web Testing Suite:
 		REALTIME DEV NOTIFICATION SCENARIO:
 			ZMonitor only
-			Developer can use ConsoleHandler to get rough idea about application monitored result(Monitor Sequence).
-			Developer analysis the monitored result(Monitor Sequence), to define a proper query(Selector) which is looking for a specific monitoring point.
+			Developer can use ConsoleHandler to get some rough ideas about application's Monitor Sequences.
+			Developer extract the pattern of intersted Monitor Sequence to define a proper query(Selector) in zmonitor.xml.
+				<monitor-sequence-handler class="">
+					<!-- <matcher></matcher> -->
+					<matcher><!-- for login -->
+						<pattern><![CDATA[
+							web[servletPath='/login'] slf4j.START[className='demo.service.LoginService', message$='login is successfull!']
+						]]></pattern>
+						<assert class="a.b.C" method="checkUserDetail" />
+						<assert class="a.b.C" method="testIfUserIsInSession" />
+						<assert class="a.b.C" method="checkPrincipleIsGranted" />
+					</matcher>
+					<matcher><!-- for buy -->
+						<pattern><![CDATA[
+							web[servletPath='/buy'] log4j.LOG4J_START[message$='world!']
+						]]></pattern>
+						<assert class="a.b.C" method="testIfPurchaseSuccessfull" />
+						<assert class="a.b.C" method="checkOrderStatus" />
+					</matcher>
+					
+					<notifier class="ConsoleNotifier">
+					</notifier>
+					<notifier class="ZMonitorEclipsePluginNotifier">
+						<!-- notify Eclipse Plugin: ZMonitor -->
+					</notifier>
+				</monitor-sequence-handler>
+
+			While any monitor sequence contains matched mp, to further notification, .
+			declare 
 			Implement a Condition by using Utility API for Assertion.
 				1. Monitor Point filtering
 				2. Notification when hit

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<zmonitor uuid="manual_web_client_01">
+	
+	<servlet-container-conf>
+		<url-filer rule="not" mode="or">
+			<condition match="endWith" pattern=".dsp" />
+			<condition match="contains" pattern="/images/" />
+			<condition match="endWith" pattern=".css" />
+			<condition match="endWith" pattern=".wcs" />
+			<condition match="endWith" pattern=".wpd" />
+			<condition match="endWith" pattern=".html" />
+			<condition match="endWith" pattern=".htm" />
+			<condition match="endWith" pattern=".js" />
+			<condition match="endWith" pattern=".png" />
+			<condition match="endWith" pattern=".jpg" />
+			<condition match="endWith" pattern=".gif" />
+			<condition match="endWith" pattern=".txt" />
+		</url-filer>
+	</servlet-container-conf>
+
+	<zk-interceptor-conf>
+		<property name="renderURIIntercepter" value="true"/>
+		<property name="renderExecutionInit" value="true"/>
+		<property name="renderBeforeSendEvent" value="true"/>
+		<property name="renderBeforePostEvent" value="true"/>
+		<property name="renderProcessEvent" value="true"/>
+		<property name="renderMonitorAsyncUpdate" value="true"/>
+	</zk-interceptor-conf>
+
+
+	  	
+	<timeline-handler name="console" 
+		class="org.zkoss.monitor.handler.ToStringTimelineHandler"/>
+ 	
+
+</zmonitor>

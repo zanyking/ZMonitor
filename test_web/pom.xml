@@ -2,22 +2,20 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.zmonitor</groupId>
-	<artifactId>zmonitor-core</artifactId>
-	<version>0.6.0</version>
-	<packaging>jar</packaging>
-	<name>zmonitor</name>
-	<description>a development tool for developer to monitor his program.</description>
-	
+	<artifactId>test-web</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>war</packaging>
+	<description>for ZMonitor Web Testing</description>
 
 	<properties>
+		<zmonitor.version>0.6.0</zmonitor.version>
 		<slf4j.version>1.7.5</slf4j.version>
-		<logback-classic.version>1.0.11</logback-classic.version>
 		<servlet.version>2.4</servlet.version>
-		<packname>-${maven.build.timestamp}</packname>
+		<logback-classic.version>1.0.11</logback-classic.version>
 		<log4j.version>1.2.17</log4j.version>
+		<packname>-${maven.build.timestamp}</packname>
 	</properties>
-
-
+	
 	<licenses>
 		<license>
 			<name>GNU LESSER GENERAL PUBLIC LICENSE, Version 3</name>
@@ -25,7 +23,8 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
-
+	
+	
 	<repositories>
 		<repository>
 			<id>Java Net Repo</id>
@@ -36,8 +35,8 @@
 			<url>https://repository.jboss.org/nexus/content/groups/public</url>
 		</repository>
 	</repositories>
-
-		
+	
+	
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -56,20 +55,17 @@
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>${log4j.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>${slf4j.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 			<version>${logback-classic.version}</version>
-			<scope>provided</scope>
 		</dependency>
-		
-	</dependencies>	
+	</dependencies>
+
 </project>

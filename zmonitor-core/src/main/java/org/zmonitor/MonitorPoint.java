@@ -28,8 +28,7 @@ public class MonitorPoint implements Serializable{
 	private MonitorSequence mSequence;
 	
 	// Context info
-	private Marker marker;
-	private CallerInfo callerInfo;
+	private MonitorMeta monitorMeta;
 	
 	private long createMillis;
 	private Object message;
@@ -39,13 +38,11 @@ public class MonitorPoint implements Serializable{
 	 * @param parent
 	 * @param mesg
 	 */
-	public MonitorPoint(Marker marker, 
-			CallerInfo callerInfo,
+	public MonitorPoint( MonitorMeta mm,
 			Object mesg, 
 			MonitorSequence mSequence, 
 			long createMillis) {
-		this.marker = marker;
-		this.callerInfo = callerInfo;
+		this.monitorMeta = mm;
 		this.message = mesg;
 		this.mSequence = mSequence;
 		this.mSequence.increament();
@@ -64,8 +61,8 @@ public class MonitorPoint implements Serializable{
 		}
 	}
 	
-	public CallerInfo getCallerInfo(){
-		return callerInfo;
+	public MonitorMeta getMonitorMeta(){
+		return monitorMeta;
 	}
 	public void appendChild(MonitorPoint newChild){
 		if(this.firstChild==null){// this mp has no child recently.
@@ -100,10 +97,6 @@ public class MonitorPoint implements Serializable{
 		index = idx;
 	}
 
-	public Marker getMarker() {
-		return marker;
-	}
-	
 	
 	public void setMessage(Object message) {
 		this.message = message;
@@ -167,11 +160,11 @@ public class MonitorPoint implements Serializable{
 	 * @return
 	 */
 	public boolean isSimilar(MonitorPoint mp){
-		CallerInfo cInfo = mp.getCallerInfo();
-		if(this.callerInfo==null){
+		MonitorMeta cInfo = mp.getMonitorMeta();
+		if(this.monitorMeta==null){
 			if(cInfo!=null)return false;
 			//both are null.
-		} else if(!this.callerInfo.equals(cInfo)){
+		} else if(!this.monitorMeta.equals(cInfo)){
 			return false;
 		}
 		

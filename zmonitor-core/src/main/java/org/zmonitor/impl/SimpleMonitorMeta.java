@@ -3,7 +3,9 @@
  */
 package org.zmonitor.impl;
 
-import org.zmonitor.CallerInfo;
+import java.util.regex.Matcher;
+
+import org.zmonitor.MonitorMeta;
 import org.zmonitor.Marker;
 import org.zmonitor.util.Strings;
 
@@ -11,7 +13,7 @@ import org.zmonitor.util.Strings;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class SimpleCallerInfo implements CallerInfo{
+public class SimpleMonitorMeta implements MonitorMeta{
 	private static final long serialVersionUID = -2036093624490603264L;
 
 	protected String className; 
@@ -21,29 +23,38 @@ public class SimpleCallerInfo implements CallerInfo{
 	protected Marker marker;
 	protected String trackerName;
 	
-	public SimpleCallerInfo(){};
+	public SimpleMonitorMeta(){};
+	/**
+	 * @param marker
+	 */
+	public SimpleMonitorMeta(Marker marker){
+		this.marker = marker;
+	};
+	/**
+	 * @param stEle
+	 */
+	public SimpleMonitorMeta(Marker marker, StackTraceElement stEle) {
+		this(marker);
+		Matcher sl;
+		className = stEle.getClassName();
+		methodName = stEle.getMethodName();
+		lineNumber = stEle.getLineNumber();
+		fileName = stEle.getFileName();
+	}
 	/**
 	 * 
 	 * @param className
 	 * @param methodName
 	 * @param lineNumber
 	 */
-	public SimpleCallerInfo(String className, String methodName, int lineNumber, String fileName) {
+	public SimpleMonitorMeta(Marker marker, String className, String methodName, int lineNumber, String fileName) {
+		this(marker);
 		this.className = className;
 		this.methodName = methodName;
 		this.lineNumber = lineNumber;
 		this.fileName = fileName;
 	}
-	/**
-	 * 
-	 * @param stEle
-	 */
-	public SimpleCallerInfo(StackTraceElement stEle) {
-		className = stEle.getClassName();
-		methodName = stEle.getMethodName();
-		lineNumber = stEle.getLineNumber();
-		fileName = stEle.getFileName();
-	}
+
 	
 	/**
 	 * @return 
@@ -129,7 +140,7 @@ public class SimpleCallerInfo implements CallerInfo{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		SimpleCallerInfo other = (SimpleCallerInfo) obj;
+		SimpleMonitorMeta other = (SimpleMonitorMeta) obj;
 		if (className == null) {
 			if (other.className != null)
 				return false;
@@ -158,6 +169,20 @@ public class SimpleCallerInfo implements CallerInfo{
 		} else if (!trackerName.equals(other.trackerName))
 			return false;
 		return true;
+	}
+	
+	protected SimpleMonitorMeta clone(){
+		SimpleMonitorMeta clone = new SimpleMonitorMeta();
+		clone.className = this.className;
+		clone.fileName = this.fileName;
+		clone.lineNumber = this.lineNumber;
+		clone.marker = this.marker;
+		clone.methodName = this.methodName;
+		clone.trackerName = this.trackerName;
+		return clone;
+	}
+	public boolean isSimilar(MonitorMeta mMeta) {
+		return equals(mMeta);
 	}
 	
 

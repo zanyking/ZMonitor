@@ -67,7 +67,7 @@ public class Ribosome {
 		VersionNodeChildren vChildren = new VersionNodeChildren();
 		rootVNode.addChildren(vChildren);
 		writeRec2Measurable(root, vChildren);
-		vChildren.add(reqVNode = new VersionNode(0, 0, root.getCallerInfo()));
+		vChildren.add(reqVNode = new VersionNode(0, 0, root.getMonitorMeta()));
 		return reqVNode;
 	}
 	
@@ -93,7 +93,7 @@ public class Ribosome {
 				writeRec2Measurable(record, vChildren);
 				VersionNode newVNode;
 				for(MonitorPoint rec : record.getChildren()){
-					newVNode = new VersionNode(target.getStack()+1, idx++, rec.getCallerInfo());			
+					newVNode = new VersionNode(target.getStack()+1, idx++, rec.getMonitorMeta());			
 					vChildren.add(newVNode);
 					vNodeStack.add(new WriteNodeCtx(rec, newVNode));
 				}	

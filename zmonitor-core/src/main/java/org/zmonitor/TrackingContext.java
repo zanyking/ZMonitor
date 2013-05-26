@@ -41,12 +41,7 @@ public interface TrackingContext {
 	 * 
 	 * @return
 	 */
-	CallerInfo getCallerInfo();
-	/**
-	 * 
-	 * @return
-	 */
-	Marker getMarker();
+	MonitorMeta getMonitorMeta();
 	/**
 	 * 
 	 * @return
