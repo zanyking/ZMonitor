@@ -86,6 +86,7 @@ public class TrackingContextBase implements TrackingContext {
 				this.getMonitorSequence(), 
 				this.getCreateMillis()
 				);
+		if(parent!=null) mp.setParent(parent);
 		return mp;
 	}
 }

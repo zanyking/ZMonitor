@@ -11,6 +11,7 @@ import org.zmonitor.MonitorSequence;
 import org.zmonitor.TrackingContext;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.spi.MonitorLifecycle;
+import org.zmonitor.spi.MonitorLifecycleManager;
 
 /**
  * 
@@ -22,7 +23,14 @@ public class SimpleMonitorLifecycle implements MonitorLifecycle {
 	protected MonitorSequence mSquence;
 	protected boolean finished;
 	
-	
+	protected MonitorLifecycleManager lfcManager;
+	/**
+	 * 
+	 * @param lfcManager
+	 */
+	public SimpleMonitorLifecycle( MonitorLifecycleManager lfcManager) {
+		this.lfcManager = lfcManager;
+	}
 	public MonitorSequence getInstance() {
 		if(finished)
 			throw new IllegalStateException("this life-cycle was already finished, should never be reused.");
@@ -51,6 +59,7 @@ public class SimpleMonitorLifecycle implements MonitorLifecycle {
 			throw new IllegalStateException("this life-cycle was already finished, should never be reused.");
 		try{
 			ZMonitorManager.getInstance().handle(mSquence);
+			lfcManager.disposeLifecycle(this);
 		}finally{
 			mSquence = null;
 			finished = true;	

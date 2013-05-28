@@ -7,7 +7,6 @@ package org.zmonitor.logger.log4j;
 import org.zmonitor.MonitorSequence;
 import org.zmonitor.TrackingContext;
 import org.zmonitor.ZMonitor;
-import org.zmonitor.spi.Name;
 import org.zmonitor.spi.MonitorLifecycle;
 
 /**
@@ -27,14 +26,6 @@ import org.zmonitor.spi.MonitorLifecycle;
 	
 	private NdcStack fNdcStack = new NdcStack(); 
 	
-	
-	
-	public void doEnd(TrackingContext ctx){
-		ZMonitor.pop(ctx);
-		fNdcStack.pop();
-	}
-	
-	
 	public void doRecord(TrackingContext ctx, int depth){
 		ZMonitor.record(ctx);
 //		fNdcStack.push(ndcStr, depth, getCurrentTlDepth());
@@ -44,11 +35,14 @@ import org.zmonitor.spi.MonitorLifecycle;
 		ZMonitor.push(ctx);
 		fNdcStack.push(ndcStr, depth, getCurrentTlDepth());
 	}
+	public void doEnd(TrackingContext ctx){
+		fNdcStack.pop();
+		ZMonitor.pop(ctx);
+	}
 	
 	public NdcObj getNdcObj(){
 		return fNdcStack.peek();
 	}
-	
 	
 	private int getCurrentTlDepth(){
 		MonitorSequence tl = lfc.getMonitorSequence();
@@ -66,6 +60,8 @@ import org.zmonitor.spi.MonitorLifecycle;
 		 * @param currentTlDepth
 		 */
 		public void push(String ndcStr, int depth, int currentTlDepth) {
+//			System.out.printf("NdcStack::push() ndcStr=%1$2s,depth=%2$2s, currentTlDepth=%3$2s \n" ,
+//					ndcStr,depth,currentTlDepth);
 			NdcObj ndcObj = new NdcObj(ndcStr, depth, currentTlDepth, current);
 			current = ndcObj;
 		}
@@ -83,6 +79,8 @@ import org.zmonitor.spi.MonitorLifecycle;
 		public NdcObj pop() {
 			NdcObj temp = current;
 			current = current.previous;
+//			System.out.printf("NdcStack::poped() old=%1$2s,  new=%2$2s \n" ,
+//					temp, current);
 			return temp;
 		}
 	}//end of class...

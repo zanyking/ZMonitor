@@ -302,4 +302,7 @@ class NOOPMonitorLifecycleManager implements MonitorLifecycleManager{
 	public MonitorLifecycle getLifecycle() {
 		return noop;
 	}
+	public void disposeLifecycle(MonitorLifecycle lfc) {
+		//nothing todo with noop lfc...
+	}
 }//end of class

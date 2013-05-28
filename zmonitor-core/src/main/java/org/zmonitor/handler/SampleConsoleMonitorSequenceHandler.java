@@ -19,7 +19,9 @@ import static org.zmonitor.util.MPTrees.*;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class SampleConsoleMonitorSequenceHandler extends ZMBeanBase implements MonitorSequenceHandler, CustomConfigurable {
+public class SampleConsoleMonitorSequenceHandler extends ZMBeanBase 
+	implements MonitorSequenceHandler, CustomConfigurable {
+	
 	
 	private static SimpleDateFormat getHHmmssSSS_yyyy_MM_dd(){
 		return new SimpleDateFormat("HH:mm:ss:SSS yyyy/MM/dd");

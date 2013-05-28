@@ -8,6 +8,7 @@ import org.zmonitor.TrackingContext;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.impl.SimpleMonitorLifecycle;
 import org.zmonitor.spi.MonitorLifecycle;
+import org.zmonitor.spi.MonitorLifecycleManager;
 
 /**
  * A HttpRequest life long {@link MonitorLifecycle}.
@@ -20,8 +21,8 @@ public class HttpRequestMonitorSequenceLifcycle extends SimpleMonitorLifecycle {
 	 * The lifetime of this {@link MonitorLifecycle} is as long as a request.
 	 * @param requestCtx
 	 */
-	public HttpRequestMonitorSequenceLifcycle(String oriReqUrl) {
-		super();
+	public HttpRequestMonitorSequenceLifcycle(MonitorLifecycleManager lfcManager, String oriReqUrl) {
+		super(lfcManager);
 		
 		WebConfigurator webConf = 
 			ZMonitorManager.getInstance().getBeanIfAny(

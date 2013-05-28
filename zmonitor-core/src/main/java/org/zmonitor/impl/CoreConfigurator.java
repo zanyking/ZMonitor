@@ -46,6 +46,7 @@ public class CoreConfigurator  implements Configurator {
 		ConfigContext msPipeCtx = monitorMgmt.toNode(REL_MONITOR_SEQUENCE_PIPE);
 		if(msPipeCtx.getNode()==null){
 			MSPipe pipe = MSPipeProvider.getPipe(Mode.SYNC);
+			Configs.initCustomConfigurable(msPipeCtx, pipe, false);
 			monitorMgmt.getManager().setMSPipe(pipe);
 			return;//use default...
 		}

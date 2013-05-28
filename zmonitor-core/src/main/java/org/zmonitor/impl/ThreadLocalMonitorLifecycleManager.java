@@ -12,15 +12,19 @@ import org.zmonitor.spi.MonitorLifecycleManager;
  */
 public class ThreadLocalMonitorLifecycleManager implements
 		MonitorLifecycleManager {
-	private static final ThreadLocal<MonitorLifecycle> LIFECYCLE_REF = new ThreadLocal<MonitorLifecycle>();
+	private static final ThreadLocal<MonitorLifecycle> LIFECYCLE_REF = 
+			new InheritableThreadLocal<MonitorLifecycle>();
 
 	public MonitorLifecycle getLifecycle() {
 		MonitorLifecycle lifecycle = LIFECYCLE_REF.get(); 
 		if(lifecycle==null){
-			LIFECYCLE_REF.set(lifecycle = new SimpleMonitorLifecycle());
+			LIFECYCLE_REF.set(lifecycle = new SimpleMonitorLifecycle(this));
 		}
-		
 		return lifecycle;
+	}
+
+	public void disposeLifecycle(MonitorLifecycle lfc) {
+		LIFECYCLE_REF.remove();
 	}
 
 }

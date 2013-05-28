@@ -30,7 +30,6 @@ public class CoreTrackingContext extends TrackingContextBase {
 				);
 		if(parent!=null)
 			mp.setParent(parent);
-		
 		return  mp;
 	}
 

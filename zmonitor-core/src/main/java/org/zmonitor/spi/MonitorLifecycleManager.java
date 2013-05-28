@@ -31,5 +31,10 @@ public interface MonitorLifecycleManager {
 	 * @return
 	 */
 	public MonitorLifecycle getLifecycle();
+	/**
+	 * 
+	 * @param lfc
+	 */
+	public void disposeLifecycle(MonitorLifecycle lfc);
 	
 }

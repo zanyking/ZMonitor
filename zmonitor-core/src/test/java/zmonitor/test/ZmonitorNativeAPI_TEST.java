@@ -13,8 +13,14 @@ import org.zmonitor.test.TestBase;
  */
 public class ZmonitorNativeAPI_TEST extends TestBase {
 
+	public ZmonitorNativeAPI_TEST() {
+		super(true);
+	}
+
 	@Test
 	public void simpleTestWithSubRoutine() throws Exception{
+		
+		
 		ZMonitor.push("this is a test mesg!", true);
 		{
 			ZMonitor.push("second stack", true);
@@ -27,6 +33,9 @@ public class ZmonitorNativeAPI_TEST extends TestBase {
 		ZMonitor.pop("< method 1", true);	
 		
 		ZMonitor.pop(true);
+		
+		this.getResult();
+		
 	}
 	
 	private static void method1() throws Exception{

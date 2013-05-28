@@ -56,9 +56,8 @@ public class MonitorPoint implements Serializable{
 			throw new IllegalStateException("parent cannot be null!");
 		
 		this.parent = parent;
-		if(!parent.getLastChild().equals(this)){
-			parent.appendChild(this);
-		}
+		
+		parent.appendChild(this);
 	}
 	
 	public MonitorMeta getMonitorMeta(){

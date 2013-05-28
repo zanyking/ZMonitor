@@ -17,6 +17,11 @@ import org.zmonitor.test.Log4JTestBase;
  */
 public class CustomStackOP_TEST extends Log4JTestBase {
 
+	public CustomStackOP_TEST(boolean useInternalHandler) {
+		super(true);
+	}
+
+
 	@Before
 	public void doZMonitorConfig(){
 		ZMonitorManager zm = ZMonitorManager.getInstance();

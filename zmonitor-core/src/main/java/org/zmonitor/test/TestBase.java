@@ -7,9 +7,7 @@ package org.zmonitor.test;
 import java.net.URL;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.zmonitor.IgnitionFailureException;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.config.ConfigSource;
@@ -23,21 +21,20 @@ import org.zmonitor.util.Loader;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class TestBase {
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
+public abstract class TestBase {
 	
+	protected InternalTestMonitorSequenceHandler internalMSHandler;
+	
+	public TestBase(){
+		this(true);
 	}
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-		
+	public TestBase(boolean useInternalHandler){
+		if(useInternalHandler){
+			internalMSHandler = 
+				new InternalTestMonitorSequenceHandler();
+		}
 	}
+	
 	/**
 	 * @throws java.lang.Exception
 	 */
@@ -63,6 +60,9 @@ public class TestBase {
 		
 		aZMonitorManager.setLifecycleManager(lifecycleMgmt);
 		
+		if(internalMSHandler!=null)
+			aZMonitorManager.addMonitorSequenceHandler(internalMSHandler);
+		
 		ZMonitorManager.init(aZMonitorManager);
 		ZMLog.info(">> Ignit ZMonitor in: ",this.getClass().getCanonicalName());	
 	}
@@ -75,7 +75,6 @@ public class TestBase {
 	 * @param packagePath must be "a/b/c", not "a.b.c"
 	 */
 	private static URL findSettingFromPackagePath(String packagePath){
-
 		URL url = Loader.getResource(packagePath+"/"+ConfigSource.ZMONITOR_XML);
 		if(url!=null)return url;
 		
@@ -88,14 +87,25 @@ public class TestBase {
 		return (url==null)? findSettingFromPackagePath(parent) :
 			url;
 	}
-	
-	
 
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@After
 	public void tearDown() throws Exception {
-		//Ignitor.destroy();
+		if(internalMSHandler!=null)
+			internalMSHandler.clearThreadLocal();
 	}
+	
+	
+	/*==================Bellow========================== */
+	public MonitorResult getResult(){
+		if(internalMSHandler==null){
+			throw new IllegalStateException( "this test case's useInternalHandler " +
+					"arg is not enabled, class:"+this.getClass());
+		}
+		return internalMSHandler.getResult();
+	}
+	
+	
 }

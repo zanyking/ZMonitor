@@ -17,6 +17,10 @@ import org.zmonitor.test.Log4JTestBase;
  */
 public class NDCStackOperation_TEST extends Log4JTestBase {
 
+	public NDCStackOperation_TEST(boolean useInternalHandler) {
+		super(true);
+	}
+
 	protected static Logger getLogger(){ 
 		return Logger.getLogger(NDCStackOperation_TEST.class);
 	}
@@ -39,6 +43,22 @@ public class NDCStackOperation_TEST extends Log4JTestBase {
 			e.printStackTrace();
 		}
 		logger.info("ndc["+NDC.getDepth()+"] After Sleep...");
+		NDC.remove();
+		logger.info("ndc["+NDC.getDepth()+"] after NDC remove...");
+	}
+	
+	
+	@Test
+	public void testSimple() throws IOException{
+		Logger logger = getLogger();
+		
+		NDC.push("start new Stack!");
+		logger.info("ndc["+NDC.getDepth()+"]");
+		try {
+			Thread.sleep(1234);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		NDC.remove();
 		logger.info("ndc["+NDC.getDepth()+"] after NDC remove...");
 		

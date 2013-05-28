@@ -87,7 +87,7 @@ public class ZMonitorServletFilter implements Filter {
 		if(isIgnitBySelf){
 			HttpRequestContexts.init(new StantardHttpRequestContext(), 
 					req, (HttpServletResponse)res);
-			hReqMSLfManager.initLifeCycle( req);	
+			hReqMSLfManager.initRequest( req);	
 		}
 		
 		try{
@@ -105,7 +105,7 @@ public class ZMonitorServletFilter implements Filter {
 							MarkerFactory.getMarker("REQUEST_END"))));	
 			}finally{
 				if(isIgnitBySelf){// force end...
-					hReqMSLfManager.disposeLifeCycle((HttpServletRequest) req);
+					hReqMSLfManager.finishRequest((HttpServletRequest) req);
 					HttpRequestContexts.dispose();	
 				}
 			}

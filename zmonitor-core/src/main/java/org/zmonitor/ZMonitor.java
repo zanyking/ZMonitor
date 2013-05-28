@@ -35,8 +35,6 @@ import org.zmonitor.spi.MonitorLifecycle;
  */
 public final class ZMonitor {
 	
-	
-	
 	private static final Marker NATIVE_MARKER = MarkerFactory.getMarker("native"); 
 	private static final String DEFAULT_TRACKER_NAME = "default";
 	

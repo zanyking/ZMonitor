@@ -124,7 +124,7 @@ public class ZMonitorAppender extends AppenderSkeleton {
 		if(ZMonitorManager.isInitialized() || isEmbedded())return;
 		try {
 			ZMonitorManager aZMonitorManager = new ZMonitorManager();
-			//TODO create configuration Source...
+			//create configuration Source...
 			final ConfigSource configSrc = ConfigSources.loadForSimpleJavaProgram();
 			if(configSrc!=null){
 				aZMonitorManager.performConfiguration(configSrc);
@@ -195,7 +195,9 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	    	 */
 	    	MonitorLifecycle lfc = ZMonitorManager.getInstance().getMonitorLifecycle();
 	    	
-			
+//	    	System.out.printf("ZMonitorAppender::append() depth=%1$2s ,isControlledBySelf=%2$b, isMonitorStarted=%3$b, ZMonitor.isMonitoring()=%4$b \n" ,
+//	    			depth, isControlledBySelf(lfc), lfc.isMonitorStarted(), ZMonitor.isMonitoring());
+	    	
 	    	if(depth==0){
 	    		if(ZMonitor.isMonitoring()){
 	    			if(isControlledBySelf(lfc)){
@@ -205,7 +207,7 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	    			}
 				}
 	    		// do nothing...
-	    		//tl.start must satisfy (depth > 0), otherwise there's no way for appender to know when to complete timeline.
+	    		//tl.start must satisfy (depth > 0), otherwise there's no way for appender to know when to complete MonitorSequence.
 	    	}else if(depth>0){
 	    		if(ZMonitor.isMonitoring()){
 	    			record(event, depth, lfc, ndcStr);
@@ -216,10 +218,12 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	    			setControlledBySelf(lfc);
 	    		}
 	    	}
+	    	
 	    }
 	}
 	
 	private static final String KEY_CONTROLLED_BY_SELF = "KEY_CONTROLLED_BY_SELF";
+	
 	private static boolean isControlledBySelf(MonitorLifecycle lfc){
 		return lfc.getAttribute(KEY_CONTROLLED_BY_SELF)!=null;
 	}
@@ -247,9 +251,16 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	private void start(LoggingEvent event, int depth, MonitorLifecycle lfc,
 			String ndcStr) {
 		NdcContext ndcCtxt = getNdcContext(lfc);
-		if(ndcCtxt.getNdcObj()!=null)
-			throw new IllegalStateException("ZMonitor Log4j stack Operation Logic Error or forget to cleanup the state.");
+		
+//		if(ndcCtxt.getNdcObj()!=null){
+//			NdcObj obj = ndcCtxt.getNdcObj();
+//			throw new IllegalStateException(
+//				"ZMonitor Log4j stack Operation Logic Error or forget to cleanup the state.");			
+//		}
+
 		ndcCtxt.doStart(newTrackingContext(event, ndcStr), ndcStr, depth);
+//		System.out.printf("ZMonitorAppender::start() ndcStr=%1$2s ,NdcObj=%2$2s, isMonitorStarted=%3$b\n" ,
+//				ndcStr, ndcCtxt.getNdcObj(), lfc.isMonitorStarted());
 	}
 
 	/**
@@ -259,7 +270,7 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	 *  ASSUMPTION: 
 	 *  	user wont use ZMonitor directly while using log4j NDC, 
 	 *  	the current tl.depth will always match to the last NDC state
-	 *  	we may consider the direct operation of timeline in the future.
+	 *  	we may consider the direct operation of MonitorSequence in the future.
 	 *  
 	 *  Base on this concept:
 	 *  
@@ -292,20 +303,21 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	 */
 	private void record(LoggingEvent event, int ndcDepth, MonitorLifecycle lfc, String ndcStr){
 		
-		//TODO: how to figure out this part?
-		// condition 1. Timeline already started.
+		// condition 1. MonitorSequence already started.
 		
 		
 		NdcContext ndcCtxt = getNdcContext(lfc);
 		NdcObj last = ndcCtxt.getNdcObj();
 		
 //		if(last.tlDepth != getCurrentTlDepth(lfc)){
-//			//TODO:Timeline is operated between two LOG4J log commands, the stack information might be fucked up!   
+//			//TODO:MonitorSequence is operated between two LOG4J log commands, the stack information might be fucked up!   
 //			/*
 //			 * Should I allow user to mix log4j with native ZMonitor API?  
 //			 */
 //		}
 		
+//		System.out.printf("ZMonitorAppender::record() ndcStr=%1$2s ,NdcObj=%2$2s \n" ,
+//				ndcStr, last);
 		
 		if(last==null){
 			ndcCtxt.doRecord(newTrackingContext(event, null), ndcDepth);
@@ -320,7 +332,7 @@ public class ZMonitorAppender extends AppenderSkeleton {
 			
 		}else{//if( ndcDepth < last.depth )
 			if(ndcDepth == last.previous.depth){
-				ndcCtxt.doEnd(newTrackingContext(event, "L4J_END"));
+				ndcCtxt.doEnd(newTrackingContext(event, "LOG4J_END"));
 				
 			}else if(ndcDepth > last.previous.depth){
 				ndcCtxt.doRecord(newTrackingContext(event, null), ndcDepth);
@@ -339,10 +351,14 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	 * @param finalMesg
 	 */
 	private void complete(LoggingEvent event, String finalMesg, MonitorLifecycle lfc){
-		
+
 		NdcContext ndcCtxt = getNdcContext(lfc);
 		
 		int currentTlDepth = getCurrentTlDepth(lfc);
+		
+//		System.out.printf("ZMonitorAppender::complete() currentTlDepth=%1$2s ,NdcObj=%2$2s \n" ,
+//				currentTlDepth, ndcCtxt.getNdcObj());
+		
 		while(currentTlDepth>1){
 			autoEnd(ndcCtxt, event);
 			currentTlDepth = getCurrentTlDepth(lfc);
@@ -366,37 +382,13 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	
 	/**
 	 * 
-	 * @return -1 if timeline is not initialized,  
+	 * @return -1 if MonitorSequence is not initialized,  
 	 */
 	protected static int getCurrentTlDepth(MonitorLifecycle lfc){
 		
 		MonitorSequence tl = lfc.getMonitorSequence();
 		return (tl==null)? -1 : tl.getCurrentDepth();
 	}
-	
-//	/**
-//	 * 
-//	 * @param event
-//	 * @return
-//	 */
-//	protected Name createName(LoggingEvent event, String name) {
-//		JavaName jName = new JavaName(name==null ? mpNameType : name);
-//		if (javaSourceLocationInfo) {
-//			LocationInfo locInfo = event.getLocationInformation();
-//			jName.setClassName(locInfo.getClassName());
-//			jName.setMethodName(locInfo.getMethodName());
-//			Integer lineNum = null;
-//			try {
-//				lineNum = Integer.parseInt(locInfo.getLineNumber());
-//			} catch (Exception e) {
-//			}// line number is not applicable, ignore it.
-//			if (lineNum != null)
-//				jName.setLineNumber(lineNum);
-//		} else {
-//			jName.setClassName(event.getLoggerName());
-//		}
-//		return jName;
-//	}
 	
 	/**
 	 * 
@@ -433,11 +425,11 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	/**
 	 * 
 	 * @param event
-	 * @param name
+	 * @param markerName
 	 * @return
 	 */
-	protected TrackingContext newTrackingContext(LoggingEvent event, String name) {
-		return newTrackingContext(event, name, event.getRenderedMessage());
+	protected TrackingContext newTrackingContext(LoggingEvent event, String markerName) {
+		return newTrackingContext(event, markerName, event.getRenderedMessage());
 	}
 	
 	/**

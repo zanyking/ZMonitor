@@ -11,7 +11,7 @@ import org.zmonitor.selector.impl.EntryIterator;
 
 /**
  * A collection of selector related utilities. 
- * @author simonpai
+ * @author simonpai, Ian YT Tsai(Zanyking)
  */
 public class Selectors {
 	
@@ -83,7 +83,9 @@ public class Selectors {
 	
 	private static <T> List<T> toList(Iterator<T> iterator){
 		List<T> result = new ArrayList<T>();
-		while(iterator.hasNext()) result.add(iterator.next());
+		while(iterator.hasNext()) 
+			result.add(iterator.next());
+		
 		return result;
 	}
 	private static <T> T getIthItem(Iterator<T> iter, int index){

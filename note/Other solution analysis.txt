@@ -119,13 +119,25 @@ ZMonitor:
 					notify IDE through predifined port
 			Declare the CustomCondition in zmonitor.xml
 
-		JUNIT TEST SCENARIO:
-			ZMonitor + JMeter + JUnit
+		APP JUNIT TEST SCENARIO:
+			ZMonitor + JUnit
 			Extends a ZMonitor JUnit Testcase super class.
+			While @Test, developer can perform Application's business operation.
+			retrieve MonitorSequence using testcase's methods.
+			Manipulate the MonitorSequence through Utilities, or through prebuild Condition.
+			Output: through JUnit Assertion to verify if test case passed or failed.
+
+		WEB APP JUNIT TEST SCENARIO:
+			ZMonitor + JMeter + JUnit
+			Extends a ZMonitor-web JUnit Testcase super class.
 			While @Test, developer can shoot a request(with specific req_uuid) through MockBrowser API.
 			In Testcase, application wait for response.
 			Retrieve Monitor Sequence through req_uuid.
 			Developer manipulate the MonitorSequence through Utilities, or through prebuild Condition.
 			Output: through JUnit Assertion to verify if test case passed or failed.
 
-		
+			MULTI-THREAD WEB JUNIT TEST SCENARIO:
+			in web testing environment, Developer might meed to perform functions of every part of the app multiple times to get precise information of 
+			//TODO: survey JUnit test Suite, Multithread secenario.
+			//TODO: survey JMeter integration.
+			//TODO: 

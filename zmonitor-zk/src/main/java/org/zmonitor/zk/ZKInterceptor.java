@@ -136,7 +136,7 @@ public class ZKInterceptor implements WebAppInit, WebAppCleanup,
 				HttpRequestContexts.init(new ZkHttpRequestContext(httpReqCtx), 
 						(HttpServletRequest)req, (HttpServletResponse)res);
 			}
-			getLifeCycleManager(sess.getWebApp()).initLifeCycle((HttpServletRequest)req);
+			getLifeCycleManager(sess.getWebApp()).initRequest((HttpServletRequest)req);
 		}
 	}
 	private static HttpRequestContext getContext(){

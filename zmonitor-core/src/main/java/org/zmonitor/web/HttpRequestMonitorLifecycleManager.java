@@ -37,14 +37,22 @@ public class HttpRequestMonitorLifecycleManager  implements MonitorLifecycleMana
 		
 		return lfcycle;
 	}
-	
-	public void initLifeCycle(HttpServletRequest req){
+	public void disposeLifecycle(MonitorLifecycle lfc) {
+		HttpRequestContext ctx = HttpRequestContexts.get();
+		if(ctx==null){
+			thlTManager.disposeLifecycle(lfc);
+		}else{
+			ctx.getRequest().removeAttribute(KEY_REQ_MSL);
+		}
+	}
+
+	public void initRequest(HttpServletRequest req){
 		req.setAttribute(KEY_REQ_MSL, 
 			new HttpRequestMonitorSequenceLifcycle(
-					req.getRequestURL().toString()));
+					this, req.getRequestURL().toString()));
 	}
 	
-	public void disposeLifeCycle(HttpServletRequest req){
+	public void finishRequest(HttpServletRequest req){
 		MonitorLifecycle lfcycle = (MonitorLifecycle) req.getAttribute(KEY_REQ_MSL);
 		if(lfcycle!=null && !lfcycle.isFinished()){
 			lfcycle.finish();
