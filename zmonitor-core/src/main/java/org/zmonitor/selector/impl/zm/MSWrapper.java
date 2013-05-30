@@ -28,7 +28,7 @@ public class MSWrapper implements EntryContainer{
 	public MSWrapper(MonitorSequence ms, MCache mCache) {
 		this.ms = ms;
 		if(mCache==null){
-			this.mCache = new MCache(ms);
+			this.mCache = new MCache(this);
 		}else{
 			this.mCache = mCache;	
 		}

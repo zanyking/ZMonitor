@@ -15,12 +15,15 @@ import org.zmonitor.selector.Entry;
  *
  */
 public class MCache {
-	final MSWrapper ms;
-	final Map<MonitorPoint, MPWrapper> mps;
+	final MSWrapper msw;
+	final Map<MonitorPoint, MPWrapper> mps =
+			new HashMap<MonitorPoint, MPWrapper>();
 	
+	public MCache(MSWrapper msw) {
+		this.msw = msw;
+	}
 	public MCache(MonitorSequence monitorSequence) {
-		ms = new MSWrapper(monitorSequence);
-		mps = new HashMap<MonitorPoint, MPWrapper>();
+		msw = new MSWrapper(monitorSequence);
 	}
 	/**
 	 * 

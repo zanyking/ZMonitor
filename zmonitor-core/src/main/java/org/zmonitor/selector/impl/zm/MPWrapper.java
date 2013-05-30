@@ -29,7 +29,7 @@ public class MPWrapper implements Entry<MonitorPoint>{
 	}
 
 	public EntryContainer getEntryContainer() {
-		return mCache.ms;
+		return mCache.msw;
 	}
 
 	public Entry<MonitorPoint> getParent() {

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.zmonitor.util;
+package org.zmonitor.selector;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -9,10 +9,11 @@ import java.util.List;
 
 import org.zmonitor.MonitorPoint;
 import org.zmonitor.MonitorSequence;
-import org.zmonitor.selector.Entry;
 import org.zmonitor.selector.impl.EntryIterator;
 import org.zmonitor.selector.impl.zm.MPWrapper;
 import org.zmonitor.selector.impl.zm.MSWrapper;
+import org.zmonitor.util.AbstractIterator;
+import org.zmonitor.util.Predicate;
 
 /**
  * @author Ian YT Tsai(Zanyking)
@@ -170,7 +171,7 @@ public class Iterators {
 	 */
 	public static Iterator<Entry<MonitorPoint>> toIterator(MonitorSequence ms, String selector){
 		return new EntryIterator(
-				new MSWrapper(ms, null), selector);
+				new MSWrapper(ms), selector);
 	}
 	/**
 	 * 
