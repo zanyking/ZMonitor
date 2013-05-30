@@ -50,6 +50,9 @@ public class MonitorPoint implements Serializable{
 		this.createMillis = createMillis;
 	}
 	
+	public MonitorSequence getMonitorSequence(){
+		return mSequence;
+	}
 	
 	public void setParent(MonitorPoint parent){
 		if(parent==null)

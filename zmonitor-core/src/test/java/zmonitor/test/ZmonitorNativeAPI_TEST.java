@@ -3,9 +3,14 @@
  */
 package zmonitor.test;
 
+import java.util.List;
+
 import org.junit.Test;
+import org.zmonitor.MonitorSequence;
 import org.zmonitor.ZMonitor;
-import org.zmonitor.test.TestBase;
+import org.zmonitor.selector.MonitorPointSelection;
+import org.zmonitor.test.junit.MonitoredResult;
+import org.zmonitor.test.junit.TestBase;
 
 /**
  * @author ian
@@ -20,7 +25,6 @@ public class ZmonitorNativeAPI_TEST extends TestBase {
 	@Test
 	public void simpleTestWithSubRoutine() throws Exception{
 		
-		
 		ZMonitor.push("this is a test mesg!", true);
 		{
 			ZMonitor.push("second stack", true);
@@ -31,10 +35,18 @@ public class ZmonitorNativeAPI_TEST extends TestBase {
 		ZMonitor.push("> method 1", true);
 		method1();
 		ZMonitor.pop("< method 1", true);	
-		
 		ZMonitor.pop(true);
 		
-		this.getResult();
+		MonitoredResult result = this.getMonitoredResult();
+
+		//TWO approaches...
+		
+		//1. get all monitored sequence, and handled it by yourself
+		List<MonitorSequence> list = result.getAll();
+		
+		//2. use Selector  
+		MonitorPointSelection selection = result.asSelection();
+		selection.select("");
 		
 	}
 	

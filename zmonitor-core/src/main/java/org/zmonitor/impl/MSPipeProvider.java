@@ -5,16 +5,18 @@ package org.zmonitor.impl;
 
 import java.util.List;
 
-import org.zmonitor.CustomConfigurable;
 import org.zmonitor.MonitorSequence;
 import org.zmonitor.ZMonitorManager;
-import org.zmonitor.bean.ZMBean;
 import org.zmonitor.bean.ZMBeanBase;
 import org.zmonitor.config.ConfigContext;
+import org.zmonitor.impl.MSPipe.Mode;
 import org.zmonitor.spi.MonitorSequenceHandler;
 import org.zmonitor.util.concurrent.AsyncGroupingPipe;
 
 /**
+ * 
+ * Temporary implementation of Pipe concept.
+ * 
  * @author Ian YT Tsai(Zanyking)
  *
  */
@@ -22,32 +24,9 @@ public class MSPipeProvider {
 	/**
 	 * @author Ian YT Tsai(Zanyking)
 	 */
-	public enum Mode{
-		SYNC,ASYNC
-	}
-	/**
-	 * 
-	 * @author Ian YT Tsai(Zanyking)
-	 *
-	 */
-	public interface MSPipe extends ZMBean, CustomConfigurable{
-		/**
-		 * 
-		 * @param ms
-		 */
-		public void pipe(MonitorSequence ms);  
-	}//end of class...
-	
 	
 	public static MSPipe getPipe(String modeStr){
-		Mode mode = null;
-		if("sync".equalsIgnoreCase(modeStr))mode = Mode.SYNC;
-		else if("async".equalsIgnoreCase(modeStr))mode = Mode.ASYNC;
-		else{
-			throw new IllegalArgumentException("must be \"SYNC\" or \"ASYNC\" mode:"+modeStr);
-		}
-		return getPipe(mode);
-		
+		return getPipe(Mode.getMode(modeStr));
 	}
 	
 	/**
@@ -86,6 +65,10 @@ public class MSPipeProvider {
 		public void configure(ConfigContext configCtx) {
 			zMonitorManager = configCtx.getManager();
 		}
+
+		public Mode getMode() {
+			return Mode.SYNC;
+		}
 		
 	}
 	/**
@@ -98,6 +81,9 @@ public class MSPipeProvider {
 		protected int threshold = 0;//no threshold
 		protected AsyncGroupingPipe<MonitorSequence> asyncGroupPipe;
 		
+		public Mode getMode() {
+			return Mode.ASYNC;
+		}
 		@Override
 		protected void doStop() {
 			asyncGroupPipe.flush();

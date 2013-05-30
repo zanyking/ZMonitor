@@ -15,22 +15,23 @@ import org.zmonitor.selector.impl.model.Selector;
 import org.zmonitor.selector.impl.model.Selector.Combinator;
 
 /**
- * An implementation of Iterator&lt;Component> that realizes the selector matching
+ * An implementation of Iterator&lt;Entry> that realizes the selector matching
  * algorithm. The iteration is lazily evaluated. i.e. The iterator will not
  * perform extra computation until .next() is called.
- * @author simonpai
+ * 
+ * @author simonpai, Ian YT Tsai(Zanyking)
  */
-public class EntryIterator implements Iterator<Entry> {
+public class EntryIterator<E> implements Iterator<Entry<E>> {
 	
-	private Entry root;
+	private Entry<E> root;
 	private EntryContainer container;
 	private List<Selector> selectorList;
 	private Map<String, PseudoClassDef> localDefs;
 	
-	private MatchCtx currCtx;
+	
 	
 	/**
-	 * Create an iterator which selects from all the components in the page.
+	 * Create an iterator which selects from all the Entrys in the page.
 	 * @param container the reference page for selector
 	 * @param selector the selector string
 	 */
@@ -40,15 +41,15 @@ public class EntryIterator implements Iterator<Entry> {
 	
 	/**
 	 * Create an iterator which selects from all the descendants of a given
-	 * component, including itself.
-	 * @param root the reference component for selector
+	 * Entry, including itself.
+	 * @param root the reference Entry for selector
 	 * @param selector the selector string
 	 */
-	public EntryIterator(Entry root, String selector){
+	public EntryIterator(Entry<E> root, String selector){
 		this(null, root, selector);
 	}
 	
-	private EntryIterator(EntryContainer container, Entry root, String selector){
+	private EntryIterator(EntryContainer container, Entry<E> root, String selector){
 		if((container == null && root == null) || 
 				selector == null || 
 				selector.isEmpty()){
@@ -90,25 +91,32 @@ public class EntryIterator implements Iterator<Entry> {
 	
 	
 	// iterator //
-	private boolean _ready = false;
-	private Entry _next;
+	private boolean _fetched = false;
+	private Entry<E> _next;
 	private int _index = -1;
+	private MatchCtx currCtx;
+	
 	
 	/**
-	 * Return true if it has next component.
+	 * Return true if it has next Entry.
 	 */
 	public boolean hasNext() {
 		loadNext();
 		return _next != null;
 	}
-	
+	// helper //
+	private void loadNext(){
+		if(_fetched) return;
+		_next = seekNext();
+		_fetched = true;
+	}
 	/**
-	 * Return the next matched component. A NoSuchElementException will be 
-	 * throw if next component is not available.
+	 * Return the next matched Entry. A NoSuchElementException will be 
+	 * throw if next Entry is not available.
 	 */
-	public Entry next() {
+	public Entry<E> next() {
 		if(!hasNext()) throw new NoSuchElementException();
-		_ready = false;
+		_fetched = false;
 		return _next;
 	}
 	
@@ -120,31 +128,24 @@ public class EntryIterator implements Iterator<Entry> {
 	}
 	
 	/**
-	 * Return the next matched component, but the iteration is not proceeded.
+	 * Return the next matched Entry, but the iteration is not proceeded.
 	 */
-	public Entry peek() {
+	public Entry<E> peek() {
 		if(!hasNext()) throw new NoSuchElementException();
 		return _next;
 	}
 	
 	/**
-	 * Return the index of the next component.
+	 * Return the index of the next Entry.
 	 */
 	public int nextIndex() {
-		return _ready ? _index : _index+1;
+		return _fetched ? _index : _index+1;
 	}
 	
 	
-	
-	// helper //
-	private void loadNext(){
-		if(_ready) return;
-		_next = seekNext();
-		_ready = true;
-	}
-	
-	private Entry seekNext() {
-		currCtx = _index < 0 ? buildRootCtx() : buildNextCtx();
+	private Entry<E> seekNext() {
+		currCtx = _index < 0 ? //if start from root? 
+			buildRootCtx() : buildNextCtx();
 		
 		while(currCtx != null && !currCtx.isMatched()) {
 			currCtx = buildNextCtx();
@@ -158,7 +159,7 @@ public class EntryIterator implements Iterator<Entry> {
 	}
 	
 	private MatchCtx buildRootCtx(){
-		Entry rt = (root == null) ? 
+		Entry<E> rt = (root == null) ? 
 				container.getFirstRoot(): root;
 				
 		MatchCtx ctx = new MatchCtxImpl(rt, selectorList);
@@ -166,24 +167,28 @@ public class EntryIterator implements Iterator<Entry> {
 		return ctx;
 	}
 	
-	private MatchCtx buildNextCtx(){
+	private MatchCtx buildNextCtx(){//DFS
 		
+		// if there's first kid, do first kid.
 		if(currCtx.getEntry().getFirstChild() != null) 
 			return buildFirstChildCtx(currCtx);
 		
+		//search next sibling
 		while(currCtx.getEntry().getNextSibling() == null) {
+			//no next sibling, search any ancestor's next sibling.
 			currCtx = currCtx.getParent();
 			if(currCtx == null || currCtx.getEntry() == root) 
 				return null; // reached root
 		}
 		
+		// if 
 		return buildNextSiblingCtx(currCtx);
 	}
 	
-	private MatchCtx buildFirstChildCtx(MatchCtx parent){
+	private MatchCtx buildFirstChildCtx(MatchCtx parentCtx){
 		
 		MatchCtx ctx = new MatchCtxImpl(
-				parent.getEntry().getFirstChild(), parent);
+				parentCtx.getEntry().getFirstChild(), parentCtx);
 		MatchCtxCtrl ctrl = (MatchCtxCtrl) ctx;
 		
 		matchLevel0(selectorList, ctx);
@@ -194,10 +199,12 @@ public class EntryIterator implements Iterator<Entry> {
 			for(int j=0; j < selector.size()-1; j++){
 				switch(selector.getCombinator(j)){
 				case DESCENDANT:
-					if(parent.isQualified(i, j)) ctrl.setQualified(i, j);
+					if(parentCtx.isQualified(i, j)) 
+						ctrl.setQualified(i, j);
 					// no break
 				case CHILD:
-					if(parent.isQualified(i, j) && match(selector, ctx, j+1)) 
+					if(parentCtx.isQualified(i, j) && 
+							match(selector, ctx, j+1)) 
 						ctrl.setQualified(i, j+1);
 					break;
 				}
@@ -212,6 +219,7 @@ public class EntryIterator implements Iterator<Entry> {
 		
 		for(Selector selector : selectorList) {
 			int i = selector.getSelectorIndex();
+			
 			ctrl.setQualified(i, selector.size()-1, 
 					match(selector, ctx, selector.size()-1));
 			
@@ -223,13 +231,15 @@ public class EntryIterator implements Iterator<Entry> {
 				case DESCENDANT:
 				case CHILD:
 					if(parent != null && parent.isQualified(i, j) && 
-							match(selector, ctx, j+1))
+							match(selector, ctx, j+1)){
 						ctrl.setQualified(i, j+1);
+					}
 					break;
 				case GENERAL_SIBLING:
-					if(ctx.isQualified(i, j)) 
+					if(ctx.isQualified(i, j)){
 						ctrl.setQualified(i, j+1, 
 								match(selector, ctx, j+1));
+					}
 					break;
 				case ADJACENT_SIBLING:
 					ctrl.setQualified(i, j+1, ctx.isQualified(i, j) && 
@@ -242,7 +252,11 @@ public class EntryIterator implements Iterator<Entry> {
 		matchLevel0(selectorList, ctx);
 		return ctx;
 	}
-	
+	/**
+	 * update the qualified matrix of MatchCtx by given Selectors.
+	 * @param list
+	 * @param ctx
+	 */
 	private void matchLevel0(List<Selector> list, MatchCtx ctx) {
 		MatchCtxCtrl ctrl = (MatchCtxCtrl) ctx;
 		for(Selector selector : list)
@@ -258,7 +272,7 @@ public class EntryIterator implements Iterator<Entry> {
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
-		sb.append("ComponentIterator: \n* index: ").append(_index);
+		sb.append("EntryIterator: \n* index: ").append(_index);
 		for(MatchCtx c = currCtx; c != null; c = c.getParent())
 			sb.append("\n").append(c);
 		return sb.append("\n\n").toString();

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.zmonitor.test;
+package org.zmonitor.test.junit;
 
 import java.net.URL;
 
@@ -29,10 +29,5 @@ public class Log4JTestBase extends TestBase {
 		 new DOMConfigurator().doConfigure(url, 
 			      LogManager.getLoggerRepository());
 	}
-	
-	
-	
-	
-	
 	
 }

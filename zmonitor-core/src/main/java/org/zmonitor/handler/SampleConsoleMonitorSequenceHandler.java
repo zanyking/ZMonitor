@@ -69,7 +69,7 @@ public class SampleConsoleMonitorSequenceHandler extends ZMBeanBase
 	private void write(StringBuffer sb, MonitorPoint mp, String prefix, String indent){
 		if(mp==null)return;
 		String mesgPfx = Strings.append(prefix, "[",
-				Strings.alignedMillisStr(retrieveMillisFromPrevious(mp)),
+				Strings.alignedMillisStr(retrieveMillisToPrevious(mp)),
 				"|",Strings.alignedMillisStr(retrieveMillisToNext(mp)),"]ms [",mp.getMonitorMeta(),"]");
 //				"|",Strings.alignedMillisStr(record.getSelfPeriod()),"]ms [",record.name,"]");
 		

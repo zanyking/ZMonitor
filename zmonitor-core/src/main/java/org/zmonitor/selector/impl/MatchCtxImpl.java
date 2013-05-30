@@ -14,10 +14,10 @@ import org.zmonitor.selector.impl.model.SimpleSelectorSequence;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class MatchCtxImpl implements MatchCtx, MatchCtxCtrl{
+public class MatchCtxImpl<E> implements MatchCtx, MatchCtxCtrl{
 
 	private MatchCtx parent;
-	private Entry entry;
+	private Entry<E> entry;
 	
 	// qualified positions
 	private boolean[][] qualifiedArr;
@@ -29,7 +29,7 @@ public class MatchCtxImpl implements MatchCtx, MatchCtxCtrl{
 		return qualifiedArr;
 	}
 	
-	/*package*/ MatchCtxImpl(Entry entry, List<Selector> selectorList){
+	/*package*/ MatchCtxImpl(Entry<E> entry, List<Selector> selectorList){
 		this.entry = entry;
 		qualifiedArr = new boolean[selectorList.size()][];
 		
@@ -39,11 +39,11 @@ public class MatchCtxImpl implements MatchCtx, MatchCtxCtrl{
 		_entryChildIndex = this.entry.getIndex();
 	}
 	
-	/*package*/ MatchCtxImpl(Entry entry, MatchCtx parent){
+	/*package*/ MatchCtxImpl(Entry<E> entry, MatchCtx parent){
 		this.entry = entry;
 		
-		MatchCtxCtrl ctrl = (MatchCtxCtrl) parent;
-		boolean[][] parentQualified = ctrl.getQualified();
+		boolean[][] parentQualified = 
+				((MatchCtxCtrl) parent).getQualified();
 		
 		int selectorListSize = parentQualified.length;
 		qualifiedArr = new boolean[selectorListSize][];
@@ -74,7 +74,7 @@ public class MatchCtxImpl implements MatchCtx, MatchCtxCtrl{
 	/**
 	 * Return the component.
 	 */
-	public Entry getEntry(){
+	public Entry<E> getEntry(){
 		return entry;
 	}
 	
@@ -84,7 +84,7 @@ public class MatchCtxImpl implements MatchCtx, MatchCtxCtrl{
 	 */
 	public int getChildIndex(){
 		if(_entryChildIndex > -1) return _entryChildIndex;
-		Entry parent = entry.getParent();
+		Entry<E> parent = entry.getParent();
 		return parent == null ? -1 : entry.getIndex();
 	}
 	
@@ -93,7 +93,7 @@ public class MatchCtxImpl implements MatchCtx, MatchCtxCtrl{
 	 * @return
 	 */
 	public int getSiblingSize(){
-		Entry parent = entry.getParent();
+		Entry<E> parent = entry.getParent();
 		return parent == null ? 
 				entry.getEntryContainer().size() : 
 					parent.size();
@@ -144,7 +144,6 @@ public class MatchCtxImpl implements MatchCtx, MatchCtxCtrl{
 	}
 	
 	
-	
 	// match local property //
 	/**
 	 * Return true if the component qualifies the local properties of a given
@@ -155,6 +154,7 @@ public class MatchCtxImpl implements MatchCtx, MatchCtxCtrl{
 	 */
 	public boolean match(SimpleSelectorSequence seq, 
 			Map<String, PseudoClassDef> defs){
+		
 		return EntryLocalProperties.match(this, seq, defs);
 	}
 	

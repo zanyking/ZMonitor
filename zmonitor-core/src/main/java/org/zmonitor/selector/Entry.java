@@ -9,7 +9,7 @@ import java.util.Set;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public interface Entry {
+public interface Entry<E> {
 	/**
 	 * 
 	 * @return
@@ -19,7 +19,7 @@ public interface Entry {
 	 * 
 	 * @return
 	 */
-	Entry getParent();
+	Entry<E> getParent();
 	/**
 	 * 
 	 * @return
@@ -39,22 +39,22 @@ public interface Entry {
 	 * 
 	 * @return
 	 */
-	Entry getNextSibling();
+	Entry<E> getNextSibling();
 	/**
 	 * 
 	 * @return
 	 */
-	Entry getPreviousSibling();
+	Entry<E> getPreviousSibling();
 	/**
 	 * 
 	 * @return
 	 */
-	Entry getFirstChild();
+	Entry<E> getFirstChild();
 	/**
 	 * 
 	 * @return
 	 */
-	Object getObject();
+	E getObject();
 	/**
 	 * 
 	 * @return

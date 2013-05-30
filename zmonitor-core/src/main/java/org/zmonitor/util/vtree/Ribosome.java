@@ -122,7 +122,7 @@ public class Ribosome {
 			aNode.setRecordSummary(summary = new RecordSummary<Object>(1));
 		}
 		summary.append(rec.getMessage());
-		summary.accumulate(retrieveMillisFromPrevious(rec), 
+		summary.accumulate(retrieveMillisToPrevious(rec), 
 				retrieveMillisToNext(rec));
 	}
 	

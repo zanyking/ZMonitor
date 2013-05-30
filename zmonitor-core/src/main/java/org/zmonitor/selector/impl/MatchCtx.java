@@ -15,8 +15,6 @@ import org.zmonitor.selector.impl.model.SimpleSelectorSequence;
 public interface MatchCtx {
 	
 	
-	
-	
 	// getter //
 	/**
 	 * Return the parent context

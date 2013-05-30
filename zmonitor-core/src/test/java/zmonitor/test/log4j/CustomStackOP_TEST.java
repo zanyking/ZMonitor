@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.logger.LoggerAdapter;
-import org.zmonitor.test.Log4JTestBase;
+import org.zmonitor.test.junit.Log4JTestBase;
 
 /**
  * @author Ian YT Tsai(Zanyking)

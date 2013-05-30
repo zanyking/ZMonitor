@@ -9,7 +9,7 @@ import java.io.IOException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.junit.Test;
-import org.zmonitor.test.Log4JTestBase;
+import org.zmonitor.test.junit.Log4JTestBase;
 
 /**
  * @author Ian YT Tsai(Zanyking)

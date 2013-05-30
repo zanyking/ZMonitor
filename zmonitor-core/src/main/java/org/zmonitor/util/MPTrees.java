@@ -108,7 +108,7 @@ public class MPTrees {
 	 * @param current
 	 * @return the elapsed time in milliseconds
 	 */
-	public static long retrieveMillisFromPrevious(MonitorPoint current){
+	public static long retrieveMillisToPrevious(MonitorPoint current){
 		MonitorPoint pre = getPrevious(current); 
 		if(pre==null)return 0;
 		return current.getCreateMillis() - pre.getCreateMillis();

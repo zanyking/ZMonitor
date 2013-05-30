@@ -43,10 +43,15 @@ public class Selector extends ArrayList<SimpleSelectorSequence> {
 	public Combinator getCombinator(int index){
 		return get(index).getCombinator();
 	}
-	
+	/**
+	 * Represent the Combinator of selector.
+	 *  @author simonpai
+	 */
 	public enum Combinator {
-		DESCENDANT(" "), CHILD(" > "), 
-		ADJACENT_SIBLING(" + "), GENERAL_SIBLING(" ~ ");
+		DESCENDANT(" "), 
+		CHILD(" > "), 
+		ADJACENT_SIBLING(" + "), 
+		GENERAL_SIBLING(" ~ ");
 		
 		private final String _str;
 		Combinator(String str){ _str = str; }

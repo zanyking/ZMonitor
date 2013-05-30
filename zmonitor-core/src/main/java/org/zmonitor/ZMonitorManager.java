@@ -13,13 +13,12 @@ import org.zmonitor.bean.ZMBeanRepositoryBase;
 import org.zmonitor.config.ConfigSource;
 import org.zmonitor.impl.ConfiguratorRepository;
 import org.zmonitor.impl.DefaultMeasurePointInfoFactory;
-import org.zmonitor.impl.MSPipeProvider.MSPipe;
+import org.zmonitor.impl.MSPipe;
 import org.zmonitor.impl.ZMLog;
-import org.zmonitor.spi.MonitorPointInfoFactory;
-import org.zmonitor.spi.MonitorSequenceHandler;
 import org.zmonitor.spi.MonitorLifecycle;
 import org.zmonitor.spi.MonitorLifecycleManager;
-import org.zmonitor.spi.Name;
+import org.zmonitor.spi.MonitorPointInfoFactory;
+import org.zmonitor.spi.MonitorSequenceHandler;
 
 
 /**
@@ -89,6 +88,7 @@ public final class ZMonitorManager {
 		msPipe = pipe;
 		fZMBeanRepository.add(msPipe);
 	}
+	
 	public MSPipe getMSPipe(){
 		return msPipe;
 	}
