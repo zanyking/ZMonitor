@@ -12,19 +12,22 @@ import org.zmonitor.selector.impl.model.SimpleSelectorSequence;
  * A wrapper of Entry, providing a context for selector matching algorithm.
  * @author simonpai, Ian YT Tsai(Zanyking)
  */
-public interface MatchCtx {
+public interface MatchCtx<E>{
 	
 	
 	// getter //
 	/**
 	 * Return the parent context
 	 */
-	public MatchCtx getParent();
+	public MatchCtx<E> getParent();
 	
 	/**
 	 * Return the Entry.
 	 */
-	public Entry getEntry();
+	public Entry<E> getEntry();
+	
+	
+	public MatchCtx<E> toNext();
 
 	/**
 	 * Return the child index of the Entry. If the Entry is one of the 

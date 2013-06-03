@@ -5,23 +5,20 @@
 package org.zmonitor.test.junit;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
 import org.zmonitor.IgnitionFailureException;
-import org.zmonitor.MonitorSequence;
+import org.zmonitor.MonitorPoint;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.config.ConfigSource;
 import org.zmonitor.config.URLConfigSource;
 import org.zmonitor.impl.MSPipe.Mode;
 import org.zmonitor.impl.ThreadLocalMonitorLifecycleManager;
 import org.zmonitor.impl.ZMLog;
-import org.zmonitor.selector.MonitorPointSelection;
-import org.zmonitor.selector.impl.zm.MSWrapper;
 import org.zmonitor.util.Loader;
+import org.zmonitor.util.MPUtils;
+import org.zmonitor.util.Predicate;
 
 
 /**
@@ -119,6 +116,72 @@ public abstract class TestBase {
 		}
 		return internalMSHandler.getThreadLocalRepo();
 	}
+	
+	
+	//==========================================
+	
+	
+
+	/**
+	 * 
+	 * @author Ian YT Tsai(Zanyking)
+	 */
+	static public enum Operation{
+		GREATER{
+			public boolean operate(MonitorPoint mp, MonitorPoint period, long millies){
+				return Math.abs(period.getCreateMillis() - mp.getCreateMillis())
+						>= millies;
+			}
+		}, 
+		SMALLER{
+			public boolean operate(MonitorPoint mp, MonitorPoint period, long millies){
+				return Math.abs(period.getCreateMillis() - mp.getCreateMillis())
+						< millies;
+			}
+		};
+		public boolean operate(MonitorPoint mp, MonitorPoint period, long millies){
+			return false;
+		}
+	}
+	/**
+	 * 
+	 * @author Ian YT Tsai(Zanyking)
+	 */
+	static public enum Period{
+		END{
+			public MonitorPoint retrieve(MonitorPoint mp){
+				return MPUtils.getEnd(mp);
+			}
+		},
+		NEXT{
+			public MonitorPoint retrieve(MonitorPoint mp){
+				return MPUtils.getNext(mp);
+			}
+		},
+		PREVIOUS{
+			public MonitorPoint retrieve(MonitorPoint mp){
+				return MPUtils.getPrevious(mp);
+			}
+		};
+		
+		public MonitorPoint retrieve(MonitorPoint mp){
+			return null;
+		}
+	}
+
+	
+	
+	public static Predicate<MonitorPoint> ellipse(
+			final Period period, 
+			final Operation operation, 
+			final long millies){
+		return new Predicate<MonitorPoint>(){
+			public boolean apply(MonitorPoint mp) {
+				return operation.operate(mp, period.retrieve(mp), millies);
+			}
+		};
+	}
+	
 	
 	
 }

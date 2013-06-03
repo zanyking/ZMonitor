@@ -24,7 +24,8 @@ import org.zmonitor.selector.impl.model.Selector.Combinator;
 public class EntryIterator<E> implements Iterator<Entry<E>> {
 	
 	private Entry<E> root;
-	private EntryContainer container;
+	private EntryContainer<E> container;
+	
 	private List<Selector> selectorList;
 	private Map<String, PseudoClassDef> localDefs;
 	
@@ -35,7 +36,7 @@ public class EntryIterator<E> implements Iterator<Entry<E>> {
 	 * @param container the reference page for selector
 	 * @param selector the selector string
 	 */
-	public EntryIterator(EntryContainer container, String selector){
+	public EntryIterator(EntryContainer<E> container, String selector){
 		this(container, null, selector);
 	}
 	
@@ -49,7 +50,7 @@ public class EntryIterator<E> implements Iterator<Entry<E>> {
 		this(null, root, selector);
 	}
 	
-	private EntryIterator(EntryContainer container, Entry<E> root, String selector){
+	private EntryIterator(EntryContainer<E> container, Entry<E> root, String selector){
 		if((container == null && root == null) || 
 				selector == null || 
 				selector.isEmpty()){
@@ -91,10 +92,10 @@ public class EntryIterator<E> implements Iterator<Entry<E>> {
 	
 	
 	// iterator //
-	private boolean _fetched = false;
-	private Entry<E> _next;
-	private int _index = -1;
-	private MatchCtx currCtx;
+	private boolean fetched = false;
+	private Entry<E> next;
+	private int index = -1;
+	private MatchCtx<E> currCtx;
 	
 	
 	/**
@@ -102,13 +103,13 @@ public class EntryIterator<E> implements Iterator<Entry<E>> {
 	 */
 	public boolean hasNext() {
 		loadNext();
-		return _next != null;
+		return next != null;
 	}
 	// helper //
 	private void loadNext(){
-		if(_fetched) return;
-		_next = seekNext();
-		_fetched = true;
+		if(fetched) return;
+		next = seekNext();
+		fetched = true;
 	}
 	/**
 	 * Return the next matched Entry. A NoSuchElementException will be 
@@ -116,8 +117,8 @@ public class EntryIterator<E> implements Iterator<Entry<E>> {
 	 */
 	public Entry<E> next() {
 		if(!hasNext()) throw new NoSuchElementException();
-		_fetched = false;
-		return _next;
+		fetched = false;
+		return next;
 	}
 	
 	/**
@@ -132,62 +133,73 @@ public class EntryIterator<E> implements Iterator<Entry<E>> {
 	 */
 	public Entry<E> peek() {
 		if(!hasNext()) throw new NoSuchElementException();
-		return _next;
+		return next;
 	}
 	
 	/**
 	 * Return the index of the next Entry.
 	 */
 	public int nextIndex() {
-		return _fetched ? _index : _index+1;
+		return fetched ? index : index+1;
 	}
 	
-	
+	/*
+	 * 
+	 *
+	 */
 	private Entry<E> seekNext() {
-		currCtx = _index < 0 ? //if start from root? 
-			buildRootCtx() : buildNextCtx();
+		currCtx = index < 0 ? //if start from root? 
+			initRootCtx() : toNextCtx(currCtx);
 		
+		//look up the next matched entry.
 		while(currCtx != null && !currCtx.isMatched()) {
-			currCtx = buildNextCtx();
+			currCtx = toNextCtx(currCtx);
 		}
 
 		if(currCtx != null) {
-			_index++;
+			index++;
 			return currCtx.getEntry();
 		}
 		return null; 
 	}
 	
-	private MatchCtx buildRootCtx(){
+	private MatchCtx<E> initRootCtx(){
 		Entry<E> rt = (root == null) ? 
 				container.getFirstRoot(): root;
 				
-		MatchCtx ctx = new MatchCtxImpl(rt, selectorList);
+		MatchCtx<E> ctx = new MatchCtxImpl<E>(rt, selectorList);
 		matchLevel0(selectorList, ctx);
 		return ctx;
 	}
-	
-	private MatchCtx buildNextCtx(){//DFS
+	/*
+	 * DFS look up for "next" entry.
+	 * 1. if this entry has child, return child.
+	 * 2. if this entry has next sibling, return next sibling.
+	 * 3. otherwise, backward to parent node, and 
+	 */
+	private MatchCtx<E> toNextCtx(MatchCtx<E> mCtx){//DFS
 		
 		// if there's first kid, do first kid.
-		if(currCtx.getEntry().getFirstChild() != null) 
-			return buildFirstChildCtx(currCtx);
+		if(mCtx.getEntry().getFirstChild() != null) 
+			return buildFirstChildCtx(mCtx);
 		
 		//search next sibling
-		while(currCtx.getEntry().getNextSibling() == null) {
+		while(mCtx.getEntry().getNextSibling() == null) {
 			//no next sibling, search any ancestor's next sibling.
-			currCtx = currCtx.getParent();
-			if(currCtx == null || currCtx.getEntry() == root) 
+			mCtx = mCtx.getParent();
+			if(mCtx == null || mCtx.getEntry() == root) 
 				return null; // reached root
 		}
 		
-		// if 
-		return buildNextSiblingCtx(currCtx);
+		//mCtx.toNext() definitely has value.
+		mCtx = initNextCtx(mCtx.toNext());
+		
+		return mCtx; 
 	}
 	
-	private MatchCtx buildFirstChildCtx(MatchCtx parentCtx){
+	private MatchCtx<E> buildFirstChildCtx(MatchCtx<E> parentCtx){
 		
-		MatchCtx ctx = new MatchCtxImpl(
+		MatchCtx<E> ctx = new MatchCtxImpl<E>(
 				parentCtx.getEntry().getFirstChild(), parentCtx);
 		MatchCtxCtrl ctrl = (MatchCtxCtrl) ctx;
 		
@@ -213,9 +225,10 @@ public class EntryIterator<E> implements Iterator<Entry<E>> {
 		return ctx;
 	}
 	
-	private MatchCtx buildNextSiblingCtx(MatchCtx ctx){
+	private MatchCtx<E> initNextCtx(MatchCtx<E> ctx){
 		MatchCtxCtrl ctrl = (MatchCtxCtrl) ctx;
-		ctrl.moveToNextSibling();
+		
+//		ctrl.moveToNextSibling();
 		
 		for(Selector selector : selectorList) {
 			int i = selector.getSelectorIndex();
@@ -225,7 +238,7 @@ public class EntryIterator<E> implements Iterator<Entry<E>> {
 			
 			for(int j = selector.size() - 2; j > -1; j--){
 				Combinator cb = selector.getCombinator(j);
-				MatchCtx parent = ctx.getParent();
+				MatchCtx<E> parent = ctx.getParent();
 				
 				switch(cb){
 				case DESCENDANT:
@@ -257,14 +270,14 @@ public class EntryIterator<E> implements Iterator<Entry<E>> {
 	 * @param list
 	 * @param ctx
 	 */
-	private void matchLevel0(List<Selector> list, MatchCtx ctx) {
+	private void matchLevel0(List<Selector> list, MatchCtx<E> ctx) {
 		MatchCtxCtrl ctrl = (MatchCtxCtrl) ctx;
 		for(Selector selector : list)
 			if(match(selector, ctx, 0)) 
 				ctrl.setQualified(selector.getSelectorIndex(), 0);
 	}
 	
-	private boolean match(Selector selector, MatchCtx ctx, int index) {
+	private boolean match(Selector selector, MatchCtx<E> ctx, int index) {
 		return ctx.match(selector.get(index), localDefs);
 	}
 	
@@ -272,8 +285,8 @@ public class EntryIterator<E> implements Iterator<Entry<E>> {
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
-		sb.append("EntryIterator: \n* index: ").append(_index);
-		for(MatchCtx c = currCtx; c != null; c = c.getParent())
+		sb.append("EntryIterator: \n* index: ").append(index);
+		for(MatchCtx<E> c = currCtx; c != null; c = c.getParent())
 			sb.append("\n").append(c);
 		return sb.append("\n\n").toString();
 	}

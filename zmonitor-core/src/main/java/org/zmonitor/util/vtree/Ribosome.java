@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Stack;
 
 import org.zmonitor.MonitorPoint;
-import static org.zmonitor.util.MPTrees.*;
+import static org.zmonitor.util.MPUtils.*;
 
 /**
  * @author Ian YT Tsai(Zanyking)

@@ -13,7 +13,7 @@ import org.zmonitor.bean.ZMBeanBase;
 import org.zmonitor.config.ConfigContext;
 import org.zmonitor.spi.MonitorSequenceHandler;
 import org.zmonitor.util.Strings;
-import static org.zmonitor.util.MPTrees.*;
+import static org.zmonitor.util.MPUtils.*;
 
 /**
  * @author Ian YT Tsai(Zanyking)
@@ -32,7 +32,7 @@ public class SampleConsoleMonitorSequenceHandler extends ZMBeanBase
 		//dump Records from Black Box
 		long nano = System.nanoTime();
 		String indent = "    ";
-		String totalElipsd = Strings.alignedMillisStr(retrieveMillisToVeryEnd(tl.getRoot()));
+		String totalElipsd = Strings.alignedMillisStr(retrieveMillisToEnd(tl.getRoot()));
 		StringBuffer sb = new StringBuffer();
 		
 //		Strings.appendln(sb, "[ ",getHHmmssSSS_yyyy_MM_dd().format(new Date())," ] ",
@@ -55,7 +55,7 @@ public class SampleConsoleMonitorSequenceHandler extends ZMBeanBase
 	}
 	private void writeRoot(StringBuffer sb, MonitorPoint root, String prefix, String indent){
 		String mesgPfx = Strings.append(prefix, "[",Strings.alignedMillisStr(0),
-				"|",Strings.alignedMillisStr(retrieveMillisToVeryEnd(root)),"]ms [",root.getMonitorMeta(),"]");
+				"|",Strings.alignedMillisStr(retrieveMillisToEnd(root)),"]ms [",root.getMonitorMeta(),"]");
 //				"|",Strings.alignedMillisStr(record.getSelfPeriod()),"]ms [",record.name,"]");
 		
 		Strings.appendln(sb, mesgPfx , " children:",root.size(), " - ",root.getMessage());

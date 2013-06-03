@@ -9,7 +9,6 @@ import java.util.Set;
 
 import org.zmonitor.Marker;
 import org.zmonitor.MonitorPoint;
-import org.zmonitor.MonitorSequence;
 import org.zmonitor.selector.Entry;
 import org.zmonitor.selector.EntryContainer;
 
@@ -28,7 +27,7 @@ public class MPWrapper implements Entry<MonitorPoint>{
 		this.mCache = mCache;
 	}
 
-	public EntryContainer getEntryContainer() {
+	public EntryContainer<MonitorPoint> getEntryContainer() {
 		return mCache.msw;
 	}
 
@@ -60,7 +59,7 @@ public class MPWrapper implements Entry<MonitorPoint>{
 		return mCache.toEntry(mp.getFirstChild());
 	}
 
-	public MonitorPoint getObject() {
+	public MonitorPoint getValue() {
 		return mp;
 	}
 

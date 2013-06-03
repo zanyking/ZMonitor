@@ -12,7 +12,7 @@ import org.zmonitor.selector.EntryContainer;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class MSWrapper implements EntryContainer{
+public class MSWrapper implements EntryContainer<MonitorPoint>{
 	private final MonitorSequence ms;
 	private MCache mCache;
 	/**
@@ -41,7 +41,7 @@ public class MSWrapper implements EntryContainer{
 	public int size() {
 		return 1;
 	}
-	public MonitorSequence getObject() {
+	public MonitorSequence getValue() {
 		return ms;
 	}
 }

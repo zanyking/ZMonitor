@@ -8,6 +8,7 @@ package org.zmonitor.selector;
  *
  */
 public class SelectorEvalException extends RuntimeException {
+	private static final long serialVersionUID = -313564439015273596L;
 
 	/**
 	 * 

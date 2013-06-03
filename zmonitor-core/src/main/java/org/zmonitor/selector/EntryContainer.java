@@ -10,19 +10,14 @@ package org.zmonitor.selector;
  * @param <E> Type of Entry's object
  * @param <C> Type of EntryContainer's object
  */
-public interface EntryContainer {
+public interface EntryContainer<E> {
 
 	/**
 	 * 
 	 * @return
 	 */
-	Entry getFirstRoot();
+	Entry<E> getFirstRoot();
 	
-	/**
-	 * 
-	 * @return
-	 */
-	Object getObject();
 	/**
 	 * 
 	 * @return

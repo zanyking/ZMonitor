@@ -23,8 +23,8 @@ public class Selectors {
 	 * @param selector the selector string
 	 * @return an Iterator of Component
 	 */
-	public static Iterator<Entry> iterator(EntryContainer container, String selector) {
-		return new EntryIterator(container, selector);
+	public static<T> Iterator<Entry<T>> iterator(EntryContainer<T> container, String selector) {
+		return new EntryIterator<T>(container, selector);
 	}
 	
 	/**
@@ -34,8 +34,8 @@ public class Selectors {
 	 * @param selector the selector string
 	 * @return an Iterator of Entry
 	 */
-	public static Iterator<Entry> iterator(Entry root, String selector){
-		return new EntryIterator(root, selector);
+	public static<T> Iterator<Entry<T>> iterator(Entry<T> root, String selector){
+		return new EntryIterator<T>(root, selector);
 	}
 	
 	/**
@@ -44,7 +44,7 @@ public class Selectors {
 	 * @param selector the selector string
 	 * @return a List of Entry
 	 */
-	public static List<Entry> find(EntryContainer container, String selector) {
+	public static<T> List<Entry<T>> find(EntryContainer<T> container, String selector) {
 		return toList(iterator(container, selector));
 	}
 	
@@ -54,7 +54,7 @@ public class Selectors {
 	 * @param selector the selector string
 	 * @return a List of Entry
 	 */
-	public static List<Entry> find(Entry root, String selector) {
+	public static<T> List<Entry<T>> find(Entry<T> root, String selector) {
 		return toList(iterator(root, selector));
 	}
 	
@@ -65,8 +65,8 @@ public class Selectors {
 	 * @param index 1-based index (1 means the first Entry found)
 	 * @return Entry, null if not found
 	 */
-	public static Entry find(EntryContainer container, String selector, int index) {
-		return getIthItem(new EntryIterator(container, selector), index);
+	public static<T> Entry<T> find(EntryContainer<T> container, String selector, int index) {
+		return getIthItem(new EntryIterator<T>(container, selector), index);
 	}
 	
 	/**
@@ -76,10 +76,21 @@ public class Selectors {
 	 * @param index 1-based index (1 means the first Entry found)
 	 * @return Entry, null if not found
 	 */
-	public static Entry find(Entry root, String selector, int index) {
-		return getIthItem(new EntryIterator(root, selector), index);
+	public static<T> Entry<T> find(Entry<T> root, String selector, int index) {
+		return getIthItem(new EntryIterator<T>(root, selector), index);
 	}
-	
+	/**
+	 * 
+	 * @param iterator
+	 * @return
+	 */
+	public static<T> List<T> toValueList(Iterator<Entry<T>> iterator){
+		List<T> result = new ArrayList<T>();
+		while(iterator.hasNext()){
+			result.add((T) iterator.next().getValue());
+		}
+		return result;
+	}
 	
 	private static <T> List<T> toList(Iterator<T> iterator){
 		List<T> result = new ArrayList<T>();

@@ -6,9 +6,10 @@ package zmonitor.test;
 import java.util.List;
 
 import org.junit.Test;
+import org.zmonitor.MonitorPoint;
 import org.zmonitor.MonitorSequence;
 import org.zmonitor.ZMonitor;
-import org.zmonitor.selector.MonitorPointSelection;
+import org.zmonitor.selector.Selection;
 import org.zmonitor.test.junit.MonitoredResult;
 import org.zmonitor.test.junit.TestBase;
 
@@ -44,9 +45,16 @@ public class ZmonitorNativeAPI_TEST extends TestBase {
 		//1. get all monitored sequence, and handled it by yourself
 		List<MonitorSequence> list = result.getAll();
 		
-		//2. use Selector  
-		MonitorPointSelection selection = result.asSelection();
-		selection.select("");
+		//2. use Selection
+		
+		
+		Selection<MonitorPoint> selection = result.asSelection()
+			.select("") //Use JQuery Selector 
+			.filter(ellipse(Period.END, Operation.GREATER, 1000));
+		
+		List<MonitorPoint> mps = selection.toList();
+		
+//			.eq("attr1", 1, 123);
 		
 	}
 	

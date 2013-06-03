@@ -14,16 +14,21 @@ import org.zmonitor.selector.impl.model.SimpleSelectorSequence;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class MatchCtxImpl<E> implements MatchCtx, MatchCtxCtrl{
+public class MatchCtxImpl<E> implements MatchCtx<E>, MatchCtxCtrl{
 
-	private MatchCtx parent;
+	private MatchCtx<E> parent;
 	private Entry<E> entry;
 	
-	// qualified positions
+	// qualified positions, a Dynamic Programming matrix to keep states.
 	private boolean[][] qualifiedArr;
 	
 	// pseudo-class support
-	private int _entryChildIndex = -1;
+	private int entryIndex = -1;
+	
+	
+	
+	
+	
 	
 	public boolean[][] getQualified(){
 		return qualifiedArr;
@@ -31,15 +36,15 @@ public class MatchCtxImpl<E> implements MatchCtx, MatchCtxCtrl{
 	
 	/*package*/ MatchCtxImpl(Entry<E> entry, List<Selector> selectorList){
 		this.entry = entry;
-		qualifiedArr = new boolean[selectorList.size()][];
+		this.qualifiedArr = new boolean[selectorList.size()][];
 		
 		for(Selector selector : selectorList)
 			qualifiedArr[selector.getSelectorIndex()] = new boolean[selector.size()];
 		
-		_entryChildIndex = this.entry.getIndex();
+		this.entryIndex = this.entry.getIndex();
 	}
 	
-	/*package*/ MatchCtxImpl(Entry<E> entry, MatchCtx parent){
+	/*package*/ MatchCtxImpl(Entry<E> entry, MatchCtx<E> parent){
 		this.entry = entry;
 		
 		boolean[][] parentQualified = 
@@ -51,15 +56,24 @@ public class MatchCtxImpl<E> implements MatchCtx, MatchCtxCtrl{
 			qualifiedArr[i] = new boolean[ parentQualified[i].length];
 		}
 		this.parent = parent;
-		_entryChildIndex = 0;
+		this.entryIndex = 0;
 	}
 	
-	
-	// operation //
-	public void moveToNextSibling(){
-		entry = entry.getNextSibling();
-		_entryChildIndex++;
+	/*package*/ MatchCtxImpl(Entry<E> entry, boolean[][] qualifiedArr){
+		this.entry = entry;
+		this.qualifiedArr = qualifiedArr;
+		this.entryIndex = this.entry.getIndex();
 	}
+	
+	public MatchCtxImpl<E> toNext() {
+		return new MatchCtxImpl<E>(entry.getNextSibling(), qualifiedArr);
+	}
+//	
+//	// operation //
+//	public void moveToNextSibling(){
+//		entry = entry.getNextSibling();
+//		entryIndex++;
+//	}
 	
 	
 	
@@ -67,7 +81,7 @@ public class MatchCtxImpl<E> implements MatchCtx, MatchCtxCtrl{
 	/**
 	 * Return the parent context
 	 */
-	public MatchCtx getParent(){
+	public MatchCtx<E> getParent(){
 		return parent;
 	}
 	
@@ -83,7 +97,7 @@ public class MatchCtxImpl<E> implements MatchCtx, MatchCtxCtrl{
 	 * page roots, return -1.
 	 */
 	public int getChildIndex(){
-		if(_entryChildIndex > -1) return _entryChildIndex;
+		if(entryIndex > -1) return entryIndex;
 		Entry<E> parent = entry.getParent();
 		return parent == null ? -1 : entry.getIndex();
 	}
@@ -169,7 +183,7 @@ public class MatchCtxImpl<E> implements MatchCtx, MatchCtxCtrl{
 		}
 		return sb.append(", ").append(entry).toString();
 	}
-	
+
 	
 	
 //	// helper //

@@ -14,7 +14,7 @@ public interface Entry<E> {
 	 * 
 	 * @return
 	 */
-	EntryContainer getEntryContainer();
+	EntryContainer<E> getEntryContainer();
 	/**
 	 * 
 	 * @return
@@ -54,7 +54,7 @@ public interface Entry<E> {
 	 * 
 	 * @return
 	 */
-	E getObject();
+	E getValue();
 	/**
 	 * 
 	 * @return

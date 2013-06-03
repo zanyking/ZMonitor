@@ -31,7 +31,7 @@ public class EntryLocalProperties {
 	 * @param selector
 	 * @return
 	 */
-	public static boolean match(Entry component, String selector) {
+	public static<T> boolean match(Entry<T> component, String selector) {
 		return match(component, selector, null);
 	}
 	
@@ -43,10 +43,10 @@ public class EntryLocalProperties {
 	 * @param defs
 	 * @return
 	 */
-	public static boolean match(Entry component, String selector,
+	public static<T> boolean match(Entry<T> component, String selector,
 			Map<String, PseudoClassDef> defs) {
 		List<Selector> selectorList = new Parser().parse(selector);
-		MatchCtx ctx = new MatchCtxImpl(component, selectorList);
+		MatchCtx<T> ctx = new MatchCtxImpl<T>(component, selectorList);
 		for(Selector s : selectorList) {
 			if(s.size() > 1) continue;
 			if(match(ctx, s.get(0), defs)) return true;
@@ -54,10 +54,10 @@ public class EntryLocalProperties {
 		return false;
 	}
 	
-	/*package*/ static boolean match(MatchCtx context, 
+	/*package*/ static<T> boolean match(MatchCtx<T> context, 
 			SimpleSelectorSequence seq, 
 			Map<String, PseudoClassDef> defs){
-		Entry entry = context.getEntry();
+		Entry<T> entry = context.getEntry();
 		return matchType(entry, seq.getType()) 
 			&& matchID(entry, seq.getId()) 
 			&& matchClasses(entry, seq.getClasses()) 
@@ -65,17 +65,17 @@ public class EntryLocalProperties {
 			&& matchPseudoClasses(context, seq.getPseudoClasses(), defs);
 	}
 	
-	/*package*/ static boolean matchID(Entry component, String id){
+	/*package*/ static<T> boolean matchID(Entry<T> component, String id){
 		if(id == null) return true;
 		return id.equals(component.getId());
 	}
 	
-	/*package*/ static boolean matchType(Entry entry, String type){
+	/*package*/ static<T> boolean matchType(Entry<T> entry, String type){
 		if(type == null) return true;
 		return entry.getType().equals(type);
 	}
 	
-	/*package*/ static boolean matchClasses(Entry entry, 
+	/*package*/ static<T> boolean matchClasses(Entry<T> entry, 
 			Set<String> classes){
 		if(classes == null || classes.isEmpty()) return true;
 
@@ -100,7 +100,7 @@ public class EntryLocalProperties {
 	
 	
 	
-	/*package*/ static boolean matchAttributes(Entry entry, 
+	/*package*/ static<T> boolean matchAttributes(Entry<T> entry, 
 			List<Attribute> attributes){
 		if(attributes == null || attributes.isEmpty()) return true;
 		
@@ -111,8 +111,8 @@ public class EntryLocalProperties {
 		return true;
 	}
 	
-	/*package*/ static boolean matchPseudoClasses(
-			MatchCtx context, List<PseudoClass> pseudoClasses, 
+	/*package*/ static<T> boolean matchPseudoClasses(
+			MatchCtx<T> context, List<PseudoClass> pseudoClasses, 
 			Map<String, PseudoClassDef> defs){
 		if(pseudoClasses == null || pseudoClasses.isEmpty()) return true;
 		
@@ -135,12 +135,12 @@ public class EntryLocalProperties {
 	
 	
 	// helper //
-	private static Object getValue(Entry entry, String name){
+	private static<T> T getValue(Entry<T> entry, String name){
 		
-		Class<?> clz = entry.getObject().getClass();
+		Class<?> clz = entry.getValue().getClass();
 		
 		try {
-			return clz.getMethod(
+			return (T) clz.getMethod(
 					"get"+capitalize(name)).invoke(entry);
 		} catch (NoSuchMethodException e) {
 			// no such method
@@ -152,7 +152,7 @@ public class EntryLocalProperties {
 			// exception thrown by the getter method
 		}
 		try {
-			return clz.getMethod(
+			return (T) clz.getMethod(
 					"is"+capitalize(name)).invoke(entry);
 		} catch (NoSuchMethodException e) {
 			// no such method
@@ -163,7 +163,9 @@ public class EntryLocalProperties {
 		} catch (InvocationTargetException e) {
 			// exception thrown by the getter method
 		}
-		//TODO try dynamic attribute in ZK, but now we should throw exception
+		
+		// In ZK's internal implementation, we should search dynamic attributes 
+		// after object's attribute look up, but now we just throw exception.
 		throw new UndefinedAttributeException(clz, name);
 //		return component.getAttribute(name);
 	}

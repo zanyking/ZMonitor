@@ -9,9 +9,9 @@ import org.zmonitor.MonitorPoint;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class MPTrees {
+public class MPUtils {
 
-	private MPTrees() {}
+	private MPUtils() {}
 	
 	
 	/**
@@ -127,9 +127,9 @@ public class MPTrees {
 	 * @param current
 	 * @return
 	 */
-	public static MonitorPoint getVeryEnd(MonitorPoint current){
+	public static MonitorPoint getEnd(MonitorPoint current){
 		MonitorPoint lastChild = current.getLastChild();
-		return (lastChild==null)? current : getVeryEnd(lastChild);
+		return (lastChild==null)? current : getEnd(lastChild);
 	}
 	
 	/**
@@ -145,11 +145,11 @@ public class MPTrees {
 	 * @param current
 	 * @return
 	 */
-	public static long retrieveMillisToVeryEnd(MonitorPoint current){
+	public static long retrieveMillisToEnd(MonitorPoint current){
 		if(current.isLeaf()){//is leaf
 			return 0;
 		}
-		return getVeryEnd(current).getCreateMillis() - current.getCreateMillis();
+		return getEnd(current).getCreateMillis() - current.getCreateMillis();
 	}
 	
 	/**
@@ -165,10 +165,10 @@ public class MPTrees {
 	 * @param current
 	 * @return
 	 */
-	public static long retrieveMillisFromVeryEnd2Next(MonitorPoint current){
+	public static long retrieveMillisFromEnd2Next(MonitorPoint current){
 		long self = retrieveMillisToNext(current);
 		if(current.isLeaf()) return self;
-		return self - (getVeryEnd(current).getCreateMillis() - current.getFirstChild().getCreateMillis());
+		return self - (getEnd(current).getCreateMillis() - current.getFirstChild().getCreateMillis());
 	}
 
 }

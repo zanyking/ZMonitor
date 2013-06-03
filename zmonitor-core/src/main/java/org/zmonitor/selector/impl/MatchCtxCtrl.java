@@ -8,11 +8,6 @@ package org.zmonitor.selector.impl;
  *
  */
 public interface MatchCtxCtrl {
-	
-	/**
-	 * 
-	 */
-	void moveToNextSibling();
 	/**
 	 * 
 	 * @param selectorIndex
