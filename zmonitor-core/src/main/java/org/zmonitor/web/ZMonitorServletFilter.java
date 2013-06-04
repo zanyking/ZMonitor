@@ -15,9 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.zmonitor.AlreadyStartedException;
-import org.zmonitor.Marker;
 import org.zmonitor.MonitorMeta;
-import org.zmonitor.MarkerFactory;
 import org.zmonitor.TrackingContext;
 import org.zmonitor.ZMonitor;
 import org.zmonitor.ZMonitorManager;
@@ -26,6 +24,8 @@ import org.zmonitor.config.ConfigSources;
 import org.zmonitor.impl.SimpleMonitorMeta;
 import org.zmonitor.impl.TrackingContextBase;
 import org.zmonitor.impl.ZMLog;
+import org.zmonitor.marker.Marker;
+import org.zmonitor.marker.MarkerFactory;
 
 /**
  * 

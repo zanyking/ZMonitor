@@ -11,9 +11,7 @@ import org.apache.log4j.NDC;
 import org.apache.log4j.spi.LocationInfo;
 import org.apache.log4j.spi.LoggingEvent;
 import org.zmonitor.AlreadyStartedException;
-import org.zmonitor.IgnitionFailureException;
-import org.zmonitor.Marker;
-import org.zmonitor.MarkerFactory;
+import org.zmonitor.InitFailureException;
 import org.zmonitor.MonitorSequence;
 import org.zmonitor.TrackingContext;
 import org.zmonitor.ZMonitor;
@@ -24,6 +22,8 @@ import org.zmonitor.impl.SimpleMonitorMeta;
 import org.zmonitor.impl.ThreadLocalMonitorLifecycleManager;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.logger.log4j.NdcContext.NdcObj;
+import org.zmonitor.marker.Marker;
+import org.zmonitor.marker.MarkerFactory;
 import org.zmonitor.spi.MonitorLifecycle;
 import org.zmonitor.util.Strings;
 
@@ -134,7 +134,7 @@ public class ZMonitorAppender extends AppenderSkeleton {
 			isIgnitBySelf = true;
 			ZMLog.info(">> Ignite ZMonitor in: ",ZMonitorAppender.class.getCanonicalName());
 		} catch (IOException e) {
-			throw new IgnitionFailureException(e);
+			throw new InitFailureException(e);
 		} catch (AlreadyStartedException e) {
 			ZMLog.info("ZMonitorManager is already initialized");
 		}

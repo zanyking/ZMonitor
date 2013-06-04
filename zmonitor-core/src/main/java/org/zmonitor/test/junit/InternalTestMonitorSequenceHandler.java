@@ -19,7 +19,7 @@ implements MonitorSequenceHandler {
 	private static final ThreadLocal<MonitoredResult> RESULT_REF = 
 			new InheritableThreadLocal<MonitoredResult>();
 	
-	public MonitoredResult getThreadLocalRepo(){
+	public MonitoredResult getMonitoredResult(){
 		MonitoredResult repo = RESULT_REF.get();
 		if(repo==null){
 			RESULT_REF.set(repo = new MonitoredResult());
@@ -28,10 +28,10 @@ implements MonitorSequenceHandler {
 	}
 	
 	public void handle(MonitorSequence mSequence) {
-		getThreadLocalRepo().add(mSequence);
+		getMonitoredResult().add(mSequence);
 	}
 
-	public void clearThreadLocal(){
+	public void clear(){
 		RESULT_REF.remove();
 	}
 	

@@ -18,7 +18,7 @@ import org.zmonitor.util.Predicate;
  * 
  * @author Ian YT Tsai(Zanyking)
  */
-public class SelectionEntryBase<T> implements Selection<T>, Iterator<Entry<T>>{
+public class SelectionEntryBase<T , R extends Selection<T, R>> implements Selection<T, R>, Iterator<Entry<T>>{
 
 	protected final Iterator<Entry<T>> itor;
 	
@@ -70,15 +70,18 @@ public class SelectionEntryBase<T> implements Selection<T>, Iterator<Entry<T>>{
 		itor = entries.iterator();
 	}
 	
-	protected SelectionEntryBase<T> toSelection(Iterator<Entry<T>> itor){
-		return new SelectionEntryBase<T>( itor);
+	protected SelectionEntryBase<T, R> toSelection(Iterator<Entry<T>> itor){
+		return new SelectionEntryBase<T, R>( itor);
 	}
 	
 	public boolean hasNext() {
 		return itor.hasNext();
 	}
 	public Entry<T> next() {
-		return itor.next();
+		Entry<T> next = itor.next();
+		if(next==null)
+			System.out.println("next==null! itor class is: "+itor.getClass());
+		return next;
 	}
 	public void remove() {
 		throw new UnsupportedOperationException("this is an immutable itertator");
@@ -98,23 +101,21 @@ public class SelectionEntryBase<T> implements Selection<T>, Iterator<Entry<T>>{
 		return next().getValue();
 	}
 	
-	
-	
 	public List<T> toList(){
 		return Selectors.toValueList(itor);
 	}
 
-	public SelectionEntryBase<T> filter(
+	public R filter(
 			Predicate<T> predicate){
-		return toSelection(Iterators.filter(this, 
+		return (R) toSelection(Iterators.filter(this, 
 				new AdaptionPredicate<T>(predicate)));
 	}
 
-	public SelectionEntryBase<T> select(String selector){
-		return toSelection(
+	public R select(String selector){
+		return (R) toSelection(
 			new NestedSelectorIterator<T>(this, selector));
 	}
-
+	
 	public T find(Predicate<T> predicate){
 		Entry<T> e = Iterators.find(this, 
 				new AdaptionPredicate<T>(predicate));
@@ -137,6 +138,7 @@ public class SelectionEntryBase<T> implements Selection<T>, Iterator<Entry<T>>{
 	public int size() {
 		return Iterators.size(this);
 	}
+	
 	
 }//end of class...
 

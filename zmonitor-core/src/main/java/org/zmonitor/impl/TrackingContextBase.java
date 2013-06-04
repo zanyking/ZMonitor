@@ -4,7 +4,6 @@
 package org.zmonitor.impl;
 
 import org.zmonitor.MonitorMeta;
-import org.zmonitor.Marker;
 import org.zmonitor.MonitorPoint;
 import org.zmonitor.MonitorSequence;
 import org.zmonitor.TrackingContext;

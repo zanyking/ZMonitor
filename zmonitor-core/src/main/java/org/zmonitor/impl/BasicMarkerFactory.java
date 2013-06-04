@@ -27,8 +27,8 @@ package org.zmonitor.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.zmonitor.IMarkerFactory;
-import org.zmonitor.Marker;
+import org.zmonitor.marker.IMarkerFactory;
+import org.zmonitor.marker.Marker;
 
 
 /**

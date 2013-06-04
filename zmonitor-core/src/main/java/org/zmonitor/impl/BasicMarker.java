@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import org.zmonitor.Marker;
+import org.zmonitor.marker.Marker;
 
 /**
  * @author Ian YT Tsai(Zanyking)

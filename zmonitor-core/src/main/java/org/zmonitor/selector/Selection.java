@@ -25,7 +25,7 @@ import org.zmonitor.util.Predicate;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public interface Selection<T> {
+public interface Selection<T, R extends Selection<T, R>> {
 	/**
 	 * 
 	 * @return true if there's next element, false otherwise
@@ -46,7 +46,7 @@ public interface Selection<T> {
 	 * Returns the elements of {@code unfiltered} that satisfy a 
 	 * predicate.
 	 */
-	Selection<T> filter(Predicate<T> predicate);
+	R filter(Predicate<T> predicate);
 //	/**
 //	 * 
 //	 * @param attribute
@@ -59,7 +59,7 @@ public interface Selection<T> {
 	 * @param JQuery selector format string
 	 * @return
 	 */
-	Selection<T> select(String selector);
+	R select(String selector);
 	
 	
 	

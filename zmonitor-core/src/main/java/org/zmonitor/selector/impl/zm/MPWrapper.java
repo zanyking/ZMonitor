@@ -7,8 +7,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.zmonitor.Marker;
 import org.zmonitor.MonitorPoint;
+import org.zmonitor.marker.Marker;
 import org.zmonitor.selector.Entry;
 import org.zmonitor.selector.EntryContainer;
 

@@ -8,7 +8,7 @@ import java.net.URL;
 
 import org.junit.After;
 import org.junit.Before;
-import org.zmonitor.IgnitionFailureException;
+import org.zmonitor.InitFailureException;
 import org.zmonitor.MonitorPoint;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.config.ConfigSource;
@@ -34,11 +34,13 @@ public abstract class TestBase {
 	}
 	public TestBase(boolean useInternalHandler){
 		if(useInternalHandler){
-			internalMSHandler = 
-				new InternalTestMonitorSequenceHandler();
+			internalMSHandler = newInstance();
 		}
 	}
 	
+	protected InternalTestMonitorSequenceHandler newInstance(){
+		return new InternalTestMonitorSequenceHandler();
+	}
 	/**
 	 * @throws java.lang.Exception
 	 */
@@ -50,7 +52,7 @@ public abstract class TestBase {
 		String packagePath = this.getClass().getPackage().getName().replace('.', '/');
 		URL url =  findSettingFromPackagePath(packagePath);
 		if(url==null){
-			throw new IgnitionFailureException("cannot find Configuration:["+
+			throw new InitFailureException("cannot find Configuration:["+
 					ConfigSource.ZMONITOR_XML+
 					"] from every level of package: [" +packagePath+
 					"]. Current application context is: "+this.getClass());
@@ -75,6 +77,8 @@ public abstract class TestBase {
 		ZMonitorManager.init(aZMonitorManager);
 		ZMLog.info(">> Ignit ZMonitor in: ",this.getClass().getCanonicalName());	
 	}
+	
+
 
 	/**
 	 * a.b -> a/b/zm.xml
@@ -103,7 +107,7 @@ public abstract class TestBase {
 	@After
 	public void tearDown() throws Exception {
 		if(internalMSHandler!=null)
-			internalMSHandler.clearThreadLocal();
+			internalMSHandler.clear();
 	}
 	
 	
@@ -114,74 +118,8 @@ public abstract class TestBase {
 			throw new IllegalStateException( 
 				"this test case didn't activate internalMSHandler, class:"+this.getClass());
 		}
-		return internalMSHandler.getThreadLocalRepo();
+		return internalMSHandler.getMonitoredResult();
 	}
-	
-	
-	//==========================================
-	
-	
-
-	/**
-	 * 
-	 * @author Ian YT Tsai(Zanyking)
-	 */
-	static public enum Operation{
-		GREATER{
-			public boolean operate(MonitorPoint mp, MonitorPoint period, long millies){
-				return Math.abs(period.getCreateMillis() - mp.getCreateMillis())
-						>= millies;
-			}
-		}, 
-		SMALLER{
-			public boolean operate(MonitorPoint mp, MonitorPoint period, long millies){
-				return Math.abs(period.getCreateMillis() - mp.getCreateMillis())
-						< millies;
-			}
-		};
-		public boolean operate(MonitorPoint mp, MonitorPoint period, long millies){
-			return false;
-		}
-	}
-	/**
-	 * 
-	 * @author Ian YT Tsai(Zanyking)
-	 */
-	static public enum Period{
-		END{
-			public MonitorPoint retrieve(MonitorPoint mp){
-				return MPUtils.getEnd(mp);
-			}
-		},
-		NEXT{
-			public MonitorPoint retrieve(MonitorPoint mp){
-				return MPUtils.getNext(mp);
-			}
-		},
-		PREVIOUS{
-			public MonitorPoint retrieve(MonitorPoint mp){
-				return MPUtils.getPrevious(mp);
-			}
-		};
-		
-		public MonitorPoint retrieve(MonitorPoint mp){
-			return null;
-		}
-	}
-
-	
-	
-	public static Predicate<MonitorPoint> ellipse(
-			final Period period, 
-			final Operation operation, 
-			final long millies){
-		return new Predicate<MonitorPoint>(){
-			public boolean apply(MonitorPoint mp) {
-				return operation.operate(mp, period.retrieve(mp), millies);
-			}
-		};
-	}
-	
 	
 	
 }

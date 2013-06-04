@@ -5,6 +5,8 @@ package org.zmonitor;
 
 import java.io.Serializable;
 
+import org.zmonitor.marker.Marker;
+
 /**
  * @author Ian YT Tsai(Zanyking)
  *

@@ -3,10 +3,8 @@
  */
 package org.zmonitor.impl;
 
-import java.util.regex.Matcher;
-
 import org.zmonitor.MonitorMeta;
-import org.zmonitor.Marker;
+import org.zmonitor.marker.Marker;
 import org.zmonitor.util.Strings;
 
 /**
@@ -35,7 +33,6 @@ public class SimpleMonitorMeta implements MonitorMeta{
 	 */
 	public SimpleMonitorMeta(Marker marker, StackTraceElement stEle) {
 		this(marker);
-		Matcher sl;
 		className = stEle.getClassName();
 		methodName = stEle.getMethodName();
 		lineNumber = stEle.getLineNumber();

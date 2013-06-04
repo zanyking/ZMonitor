@@ -41,6 +41,8 @@ public class SampleConsoleMonitorSequenceHandler extends ZMBeanBase
 		Strings.appendln(sb, "[",totalElipsd,"]ms Elipsed - ZMonitor Measure Points:",tl.getRecordAmount(),
 				", self spend Nanosec: ", Strings.toNumericString(tl.getSelfSpendNanos(),","));
 		Strings.appendln(sb, indent,"[ pre~ | ~next ]ms");
+		
+		
 		writeRoot(sb, tl.getRoot(), indent, indent);
 		
 //		Strings.append(sb, tl.getName()," <- TIMELINE DUMP END, toStringTLHandler spent nanosecond: ");

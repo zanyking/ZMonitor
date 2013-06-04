@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.zmonitor;
+package org.zmonitor.marker;
 
 /**
  * @author Ian YT Tsai(Zanyking)

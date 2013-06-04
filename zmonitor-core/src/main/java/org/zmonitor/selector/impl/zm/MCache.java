@@ -33,7 +33,8 @@ public class MCache {
 	public Entry<MonitorPoint> toEntry(MonitorPoint mp){
 		MPWrapper ans = mps.get(mp);
 		if(ans==null){
-			mps.put(mp, new MPWrapper(mp, this));
+			mps.put(mp, 
+				ans = new MPWrapper(mp, this));
 		}
 		return ans;
 	}

@@ -5,6 +5,8 @@ package org.zmonitor.util;
 
 import java.util.Iterator;
 
+import org.zmonitor.selector.Selection;
+
 
 /**
  * 
@@ -26,6 +28,9 @@ public class Iterators {
 			protected T computeNext() {
 				while (unfiltered.hasNext()) {
 					T element = unfiltered.next();
+					if(element ==null)
+						System.out.println("element is NULL! unfiltered class:"+unfiltered.getClass());
+					
 					if (predicate.apply(element)) {
 						return element;
 					}
@@ -127,24 +132,40 @@ public class Iterators {
 	  }
 	
 	
-	  /**
-	   * Returns a string representation of {@code iterator}, with the format
-	   * {@code [e1, e2, ..., en]}. The iterator will be left exhausted: its
-	   * {@code hasNext()} method will return {@code false}.
-	   */
-	  public static String toString(Iterator<?> iterator) {
-	    if (!iterator.hasNext()) {
-	      return "[]";
-	    }
-	    StringBuilder builder = new StringBuilder();
-	    builder.append('[').append(iterator.next());
-	    while (iterator.hasNext()) {
-	      builder.append(", ").append(iterator.next());
-	    }
-	    return builder.append(']').toString();
-	  }
-	
-	
+	/**
+	 * Returns a string representation of {@code iterator}, with the format
+	 * {@code [e1, e2, ..., en]}. The iterator will be left exhausted: its
+	 * {@code hasNext()} method will return {@code false}.
+	 */
+	public static String toString(Iterator<?> iterator) {
+		if (!iterator.hasNext()) {
+			return "[]";
+		}
+		StringBuilder builder = new StringBuilder();
+		builder.append('[').append(iterator.next());
+		while (iterator.hasNext()) {
+			builder.append(", ").append(iterator.next());
+		}
+		return builder.append(']').toString();
+	}
+	/**
+	 *  Returns a string representation of {@code Selection}, with the format
+	 * {@code [e1, e2, ..., en]}. The Selection will be left exhausted: its 
+	 * {@code hasNext()} method will return {@code false}.
+	 * @param selection
+	 * @return
+	 */
+	public static String toString(Selection<?,?> selection) {
+		if (!selection.hasNext()) {
+			return "[]";
+		}
+		StringBuilder builder = new StringBuilder();
+		builder.append('[').append(selection.toNext());
+		while (selection.hasNext()) {
+			builder.append(", ").append(selection.toNext());
+		}
+		return builder.append(']').toString();
+	}
 	
 	
 	

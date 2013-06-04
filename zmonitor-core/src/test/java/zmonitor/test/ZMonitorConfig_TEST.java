@@ -13,7 +13,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.zmonitor.AlreadyStartedException;
-import org.zmonitor.IgnitionFailureException;
+import org.zmonitor.InitFailureException;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.config.ConfigSource;
 import org.zmonitor.config.ConfigSources;
@@ -68,7 +68,7 @@ public class ZMonitorConfig_TEST {
 				ConfigSources.loadFromClassPath(path);
 			
 			if(configSrc==null){
-				throw new IgnitionFailureException("cannot find Configuration:["+
+				throw new InitFailureException("cannot find Configuration:["+
 						ConfigSource.ZMONITOR_XML+
 						"] from current application context: "+ZMonitorConfig_TEST.class);
 			}

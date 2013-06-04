@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-import org.zmonitor.IgnitionFailureException;
+import org.zmonitor.InitFailureException;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.config.ConfigContext;
 import org.zmonitor.spi.Configurator;
@@ -45,7 +45,7 @@ public class ConfiguratorRepository {
 			ZMLog.warn(e, 
 				"error happened while loading resources from: ", CONFIG_PROPS);
 			
-			throw new IgnitionFailureException(e);
+			throw new InitFailureException(e);
 		}
 		
 		while(confUrls.hasMoreElements()){
@@ -68,7 +68,7 @@ public class ConfiguratorRepository {
 		try {
 			domRetriever = manager.getConfigSource().getDOMRetriever();
 		} catch (IOException e) {
-			throw new IgnitionFailureException(e);
+			throw new InitFailureException(e);
 		}
 		ConfigContext confCtx;
 		for (JarContext jCtx : jarCtxs) {

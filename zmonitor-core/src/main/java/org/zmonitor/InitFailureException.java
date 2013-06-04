@@ -8,7 +8,7 @@ package org.zmonitor;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class IgnitionFailureException extends RuntimeException {
+public class InitFailureException extends RuntimeException {
 
 	/**
 	 * 
@@ -18,20 +18,20 @@ public class IgnitionFailureException extends RuntimeException {
 	/**
 	 * 
 	 */
-	public IgnitionFailureException() {
+	public InitFailureException() {
 	}
 
 	/**
 	 * @param message
 	 */
-	public IgnitionFailureException(String message) {
+	public InitFailureException(String message) {
 		super(message);
 	}
 
 	/**
 	 * @param cause
 	 */
-	public IgnitionFailureException(Throwable cause) {
+	public InitFailureException(Throwable cause) {
 		super(cause);
 	}
 
@@ -39,7 +39,7 @@ public class IgnitionFailureException extends RuntimeException {
 	 * @param message
 	 * @param cause
 	 */
-	public IgnitionFailureException(String message, Throwable cause) {
+	public InitFailureException(String message, Throwable cause) {
 		super(message, cause);
 	}
 

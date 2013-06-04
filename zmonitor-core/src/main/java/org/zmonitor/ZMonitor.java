@@ -12,6 +12,8 @@ import org.zmonitor.impl.CoreTrackingContext;
 import org.zmonitor.impl.SimpleMonitorMeta;
 import org.zmonitor.impl.ThreadLocalMonitorLifecycleManager;
 import org.zmonitor.impl.ZMLog;
+import org.zmonitor.marker.Marker;
+import org.zmonitor.marker.MarkerFactory;
 import org.zmonitor.spi.MonitorLifecycle;
 
 
@@ -70,7 +72,7 @@ public final class ZMonitor {
 				}
 				
 			} catch (IOException e) {
-				throw new IgnitionFailureException(e);
+				throw new InitFailureException(e);
 			} catch (AlreadyStartedException e) {
 				// Do nothing or simply log...
 				ZMLog.info("already initialized by others");
@@ -121,13 +123,14 @@ public final class ZMonitor {
 	/**
 	 * 
 	 * @param marker
-	 * @param mesg
+	 * @param message
 	 * @param traceCallerStack
 	 * @return
 	 */
-	public static MonitorPoint push(Marker marker, Object mesg, boolean traceCallerStack){
+	public static MonitorPoint push(Marker marker, Object message, boolean traceCallerStack){
 		CoreTrackingContext ctx = new CoreTrackingContext(DEFAULT_TRACKER_NAME);
 		ctx.setCreateMillis(System.currentTimeMillis());
+		ctx.setMessage(message);
 		ctx.setMonitorMeta(newMonitorMeta(marker, traceCallerStack, 3));
 		return push(ctx);
 	}
@@ -188,13 +191,14 @@ public final class ZMonitor {
 	/**
 	 * 
 	 * @param marker
-	 * @param mesg
+	 * @param message
 	 * @param traceCallerStack
 	 * @return
 	 */
-	public static MonitorPoint record(Marker marker, Object mesg, boolean traceCallerStack){
+	public static MonitorPoint record(Marker marker, Object message, boolean traceCallerStack){
 		CoreTrackingContext ctx = new CoreTrackingContext(DEFAULT_TRACKER_NAME);
 		ctx.setCreateMillis(System.currentTimeMillis());
+		ctx.setMessage(message);
 		ctx.setMonitorMeta(newMonitorMeta(marker, traceCallerStack, 3));
 		return record(ctx);
 	}
@@ -257,6 +261,7 @@ public final class ZMonitor {
 	public static MonitorPoint pop(Marker marker, Object message, boolean traceCallerStack){
 		CoreTrackingContext ctx = new CoreTrackingContext(DEFAULT_TRACKER_NAME);
 		ctx.setCreateMillis(System.currentTimeMillis());
+		ctx.setMessage(message);
 		ctx.setMonitorMeta(newMonitorMeta(marker, traceCallerStack, 3));
 		return pop(ctx);
 	}

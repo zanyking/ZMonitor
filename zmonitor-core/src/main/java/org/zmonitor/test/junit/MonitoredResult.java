@@ -12,6 +12,8 @@ import java.util.List;
 import org.zmonitor.MonitorPoint;
 import org.zmonitor.MonitorSequence;
 import org.zmonitor.selector.Entry;
+import org.zmonitor.selector.MonitorPointSelection;
+import org.zmonitor.selector.MonitorPointSelectionBase;
 import org.zmonitor.selector.SelectionEntryBase;
 import org.zmonitor.selector.Selection;
 import org.zmonitor.selector.Selectors;
@@ -61,14 +63,14 @@ public class MonitoredResult {
 	 * 
 	 * @return
 	 */
-	public Selection<MonitorPoint> asSelection(){
+	public MonitorPointSelection asSelection(){
 		List<MonitorSequence> res = getAll();
 		if(res==null || res.isEmpty()){
-			return new SelectionEntryBase<MonitorPoint>(
+			return new MonitorPointSelectionBase(
 					Collections.EMPTY_LIST);
 		}
 		if(res.size()==1){
-			return  new SelectionEntryBase<MonitorPoint>(
+			return  new MonitorPointSelectionBase(
 					new MSWrapper(res.get(0)));
 			
 		}
@@ -77,7 +79,7 @@ public class MonitoredResult {
 		for(MonitorSequence ms : res){
 			msws.add(new MSWrapper(ms));
 		}
-		return new SelectionEntryBase<MonitorPoint>(msws);
+		return new MonitorPointSelectionBase(msws);
 	}
 	
 
