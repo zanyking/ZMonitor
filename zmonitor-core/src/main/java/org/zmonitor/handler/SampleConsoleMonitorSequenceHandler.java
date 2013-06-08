@@ -41,15 +41,17 @@ public class SampleConsoleMonitorSequenceHandler extends ZMBeanBase
 		MonitorPoint root = ms.getRoot();
 		
 		String indent = "    ";
-		String totalElipsd = align(retrieveMillisToEnd(root));
 		StringBuffer sb = new StringBuffer();
 		
 		Strings.appendln(sb, "[ ",getHHmmssSSS_yyyy_MM_dd().format(new Date())," ] ",
 				root.getMonitorMeta().getTrackerName()," -> MONITOR_SEQUENCE DUMP BEGIN");
 		
-		Strings.appendln(sb, "[",totalElipsd,"]ms Elipsed - MP amount:",ms.getRecordAmount(), 
-				", self spend Nanosec: ", Strings.toNumericString(ms.getSelfSpendNanos(),","),
-				". self spend millis: ", Strings.toNumericString(ms.getSelfSpendMillis(),","));
+		Strings.appendln(sb,"Total Elipsed Millis:\t",retrieveMillisToEnd(root));
+		Strings.appendln(sb,"Monitor Point Amount:\t",ms.getRecordAmount());
+		Strings.appendln(sb,"Self Spent Nanosec:\t",Strings.toNumericString(ms.getSelfSpendNanos(),","));
+		Strings.appendln(sb,"Self Spent millis:\t", Strings.toNumericString(ms.getSelfSpendMillis(),","));
+		
+		
 		Strings.appendln(sb, indent,"[ pre~ | ~next ]ms");
 		
 		writeRoot(sb, root, indent, indent);
@@ -71,6 +73,8 @@ public class SampleConsoleMonitorSequenceHandler extends ZMBeanBase
 	 * @param indent
 	 */
 	public void writeRoot(StringBuffer sb, MonitorPoint root, String prefix, String indent){
+		
+		
 		String mesgPfx = Strings.append(prefix, "[",align(0),
 				"|",align(retrieveMillisToEnd(root)),"]ms [",root.getMonitorMeta(),"]");
 //				"|",Strings.alignedMillisStr(record.getSelfPeriod()),"]ms [",record.name,"]");
@@ -111,16 +115,17 @@ public class SampleConsoleMonitorSequenceHandler extends ZMBeanBase
 		Set<String> mpCssClz = selAdptor.retrieveConceptualCssClasses(mp);
 		String mpType = selAdptor.retrieveType(mp);
 		
-		String mesgPfx = Strings.append(prefix, "[",
+		Strings.appendln(sb, prefix, "[",
 				align(retrieveMillisToPrevious(mp)),
 				"|",align(retrieveMillisToNext(mp)),"]ms",
-				", type=\"", mpType,"\"",
-				", class=\"", mpCssClz,"\"",
-				", id=\"", mpId,"\""
+				", ID:", mpId,
+				", TYPE:", mpType,
+				", CLASS:", mpCssClz,
+				", MESSAGE:",mp.getMessage()
 				);
 //				"|",Strings.alignedMillisStr(record.getSelfPeriod()),"]ms [",record.name,"]");
 		
-		Strings.appendln(sb, mesgPfx ," - ",mp.getMessage());
+		writeTraceElement(sb, prefix, mp.getMonitorMeta());
 	}
 	
 	
@@ -151,6 +156,18 @@ public class SampleConsoleMonitorSequenceHandler extends ZMBeanBase
 		else if(ms < 10000) prefix = " ";
 //		else if(ms < 100000) prefix = " ";
 		return prefix + ms;
+	}
+	
+	private static void writeTraceElement(StringBuffer sb, String prefix, MonitorMeta meta){
+		if(meta.isCallerNotAvailable()){
+			Strings.appendln(sb, prefix, "caller's stackTraceElement is not available.");
+			return;
+		}
+		meta.getClassName();
+		Strings.appendln(sb, prefix,"at ",
+			meta.getClassName(),".",
+			meta.getMethodName(),"(",
+			meta.getFileName(),":",meta.getLineNumber(),")");
 	}
 
 

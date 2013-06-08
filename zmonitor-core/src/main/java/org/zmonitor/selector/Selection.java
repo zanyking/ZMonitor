@@ -32,10 +32,12 @@ public interface Selection<T, R extends Selection<T, R>> {
 	 * @return true if there's next element, false otherwise
 	 */
 	boolean hasNext();
+
 	/**
 	 * 
 	 * @return iterate to the next element
-	 * @throws NoSuchElementException if there's no more elements but this method has been called.
+	 * @throws NoSuchElementException
+	 *             if there's no more elements but this method has been called.
 	 */
 	T toNext();
 	/**
@@ -48,13 +50,6 @@ public interface Selection<T, R extends Selection<T, R>> {
 	 * predicate.
 	 */
 	R filter(Predicate<T> predicate);
-//	/**
-//	 * 
-//	 * @param attribute
-//	 * @param value
-//	 * @return
-//	 */
-//	Selection<T> eq(String attribute, Class<?> type, Object value);
 	
 	/**
 	 * 
@@ -62,13 +57,32 @@ public interface Selection<T, R extends Selection<T, R>> {
 	 * @return a new Selection based on given selector.
 	 */
 	R select(String selector);
-	
+
 	/**
-	 * Create a new selection which iterate & traverse every selected element through Depth First Search algorithm.  
-	 * @param predicate determine if the incoming element is good to iterate.   
-	 * @return a new Selection which iterate both selected monitor points and their children.
+	 * Create a new selection which iterate & traverse every selected element by
+	 * Depth First Search algorithm.
+	 * 
+	 * @return a new Selection which iterate both selected monitor points and
+	 *         their children.
 	 */
-	R traverse(Predicate<T> predicate);
+	R traverse();
+
+	/**
+	 * Create a new selection which iterate & traverse every selected element by
+	 * Depth First Search algorithm.
+	 * 
+	 * @param letBy
+	 *            to determine if the iteration should let by or pass the
+	 *            incoming element, use {@code Predicate#TRUE} if you want to
+	 *            silence this part.
+	 * @param carryOnTraverse
+	 *            to determine if the traversal of the incoming element should
+	 *            continue, use {@code Predicate#TRUE} if you want to silence
+	 *            this part.
+	 * @return a new Selection which iterate both selected monitor points and
+	 *         their children.
+	 */
+	R traverse(Predicate<T> letBy, Predicate<T> carryOnTraverse);
 	/**
 	 * Returns the first element in the selection that satisfies the given
 	 * predicate. If no such element is found, null will be returned from this

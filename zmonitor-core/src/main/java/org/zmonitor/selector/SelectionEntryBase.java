@@ -7,9 +7,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.concurrent.Callable;
 
-import org.zmonitor.MonitorPoint;
 import org.zmonitor.util.Iterators;
 import org.zmonitor.util.Predicate;
 
@@ -120,10 +118,18 @@ public class SelectionEntryBase<T , R extends Selection<T, R>> implements Select
 	}
 	
 	@SuppressWarnings("unchecked")
-	public R traverse(Predicate<T> predicate) {
+	public R traverse() {
 		return (R) toSelection(
-			new DetailIterator<T>(this));
+				new DetailIterator<T>(this, Predicate.TRUE, Predicate.TRUE));
 	}
+	
+	@SuppressWarnings("unchecked")
+	public R traverse(Predicate<T> letBy, Predicate<T> carryOn) {
+		return (R) toSelection(
+			new DetailIterator<T>(this, letBy, carryOn));
+	}
+	
+	
 	
 	public T find(Predicate<T> predicate){
 		Entry<T> e = Iterators.find(this, 
@@ -147,6 +153,7 @@ public class SelectionEntryBase<T , R extends Selection<T, R>> implements Select
 	public int size() {
 		return Iterators.size(this);
 	}
+	
 	
 	
 	
@@ -175,20 +182,21 @@ class AdaptionPredicate<T> implements Predicate<Entry<T>>{
  * @param <T>
  */
 class TraverseIterator<T> implements Iterator<Entry<T>>{
-	protected final Predicate<T> predicate;
+	protected final Predicate<T> letBy; 
+	protected final Predicate<T> carryOn;
 	private boolean fetched = false;
 	private Entry<T> next;
 	private Entry<T> root;
 	
-	public TraverseIterator(Entry<T> entry, Predicate<T> predicate) {
-		this(predicate);
+	public TraverseIterator(Entry<T> entry, Predicate<T> letBy, Predicate<T> carryOn) {
+		this(letBy, carryOn);
 		this.root = entry;
 		this.next = entry;
-		
 	}
 	
-	protected TraverseIterator(Predicate<T> predicate){
-		this.predicate = predicate;
+	protected TraverseIterator(Predicate<T> letBy, Predicate<T> carryOn){
+		this.letBy = letBy;
+		this.carryOn = carryOn;
 	}
 	public void remove() {
 		throw new UnsupportedOperationException("this is an immutable itertator");
@@ -215,17 +223,27 @@ class TraverseIterator<T> implements Iterator<Entry<T>>{
 	private void loadNext(){
 		if(fetched) return;
 		next = seekNext();
+		while(next!=null && !letBy.apply(next.getValue())){
+			next = seekNext();
+		}
 		fetched = true;
 	}
+//	private Alternative<T> LET_BY_ALTERNATIVE = new Alternative<T>(){
+//		public Entry<T> get(Entry<T> current) {
+//			if(current==null) return null;
+//			return predicate(seekNext(current), letBy, LET_BY_ALTERNATIVE);
+//		}
+//	};
+	
 	protected Entry<T> seekNext(){
 		return dfs( root, next);
 	}
 	
 	private Entry<T> dfs(Entry<T> root, Entry<T> current){
-		Entry<T> next = predicate(current.getFirstChild(), CHILD_ALTERNATIVE);
+		Entry<T> next = predicate(current.getFirstChild(), carryOn, CHILD_ALTERNATIVE);
 		
 		while(next == null){//has no first child, look up next sibling...
-			next = predicate(current.getNextSibling(), NEXT_SIBLING_ALTERNATIVE);
+			next = predicate(current.getNextSibling(), carryOn, NEXT_SIBLING_ALTERNATIVE);
 			
 			if(next ==null){//current is the last child of parent, looking up parent's next sibling.
 				current = current.getParent();
@@ -237,7 +255,7 @@ class TraverseIterator<T> implements Iterator<Entry<T>>{
 		return next;
 	}
 	
-	protected Entry<T> predicate(Entry<T> entry, Alternative<T> alt){
+	protected Entry<T> predicate(Entry<T> entry, Predicate<T> predicate, Alternative<T> alt){
 		if(entry==null)return null;
 		return predicate.apply(entry.getValue()) ? 
 				entry : alt.get(entry);
@@ -277,8 +295,11 @@ class DetailIterator<T> extends TraverseIterator<T>{
 	private final Iterator<Entry<T>> masterItor;
 	private Iterator<Entry<T>> sub;
 	
-	public DetailIterator(Iterator<Entry<T>> masterItor, Predicate<T> predicate) {
-		super(predicate);
+	
+
+	public DetailIterator(Iterator<Entry<T>> masterItor,
+			Predicate<T> letBy, Predicate<T> carryOn) {
+		super(letBy, carryOn);
 		this.masterItor = masterItor;
 	}
 
@@ -293,7 +314,7 @@ class DetailIterator<T> extends TraverseIterator<T>{
 	}
 	
 	protected Iterator<Entry<T>> initSub(final Entry<T> root){
-		return new TraverseIterator<T>(root, predicate); 
+		return new TraverseIterator<T>(root, letBy, carryOn); 
 	}
 	public void remove() {
 		throw new UnsupportedOperationException("this is an immutable itertator");
@@ -309,7 +330,7 @@ class DetailIterator<T> extends TraverseIterator<T>{
 class NestedSelectorIterator<T> extends DetailIterator<T>{
 		private final String selector;
 		public NestedSelectorIterator(Iterator<Entry<T>> origin, String selector) {
-			super(origin, Predicate.NULL);
+			super(origin, Predicate.TRUE, Predicate.TRUE);
 			this.selector = selector;
 		}
 		protected Iterator<Entry<T>> initSub(Entry<T> root){

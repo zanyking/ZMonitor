@@ -25,7 +25,8 @@ package org.zmonitor.util;
  */
 public interface Predicate<T> {
 
-	Predicate NULL = new Predicate() {
+	
+	Predicate TRUE = new Predicate() {
 		public boolean apply(Object input) {
 			return true;
 		}

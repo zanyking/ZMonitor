@@ -10,14 +10,12 @@ import org.zmonitor.MonitorPoint;
 import org.zmonitor.ZMonitor;
 import org.zmonitor.handler.SampleConsoleMonitorSequenceHandler;
 import org.zmonitor.selector.Entry;
-import org.zmonitor.selector.SelectionEntryBase;
 import org.zmonitor.selector.Selectors;
 import org.zmonitor.selector.impl.zm.MSWrapper;
 import org.zmonitor.test.junit.MonitoredResult;
 import org.zmonitor.test.junit.TestBase;
 
 import zmonitor.test.clz.A;
-import zmonitor.test.clz.C;
 
 /**
  * @author Ian YT Tsai(Zanyking)

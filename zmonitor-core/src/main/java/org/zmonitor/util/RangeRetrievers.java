@@ -162,7 +162,7 @@ public enum RangeRetrievers implements RangeRetriever {
 	 *(there's no NEXT)
 	 *</pre>
 	 */
-	TRAVERSE{
+	TRAVERSE_NEXT{
 		public Range retrieve(MonitorPoint current){
 			MonitorPoint next = dfs(current, current);
 			return new Range( current, next) ;
