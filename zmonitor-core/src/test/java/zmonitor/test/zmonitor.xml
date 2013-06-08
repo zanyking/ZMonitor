@@ -8,8 +8,17 @@
 	<monitor-sequence-pipe mode="SYNC" />
 	
 	
-	<monitor-sequence-handler name="console-LOG4J" 
-		class="org.zmonitor.handler.SampleConsoleMonitorSequenceHandler"/>
+	<monitor-sequence-handler name="console-handler" 
+		class="org.zmonitor.handler.SampleConsoleMonitorSequenceHandler"
+		previousMillis="false"	
+		nextMillis="true"
+		callerJavaFile="true"
+		showId="false"
+		showType="false"
+		showClass="false"
+		showMessage="true">
+		
+	</monitor-sequence-handler>
 	
 	
 	

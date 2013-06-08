@@ -34,6 +34,11 @@ public class SampleConsoleMonitorSequenceHandler extends ZMBeanBase
 		return new SimpleDateFormat("HH:mm:ss:SSS yyyy/MM/dd");
 	}
 	public SampleConsoleMonitorSequenceHandler(){}
+
+	public void configure(ConfigContext webConf) {
+		// TODO Auto-generated method stub
+	}
+	
 	
 	public void handle(MonitorSequence ms){
 		//dump Records from Black Box
@@ -54,7 +59,7 @@ public class SampleConsoleMonitorSequenceHandler extends ZMBeanBase
 		
 		Strings.appendln(sb, indent,"[ pre~ | ~next ]ms");
 		
-		writeRoot(sb, root, indent, indent);
+		write(sb, root, indent, indent);
 		
 		Strings.append(sb, root.getMonitorMeta().getTrackerName()," <- MONITOR_SEQUENCE DUMP END, toStringTLHandler spent nanosecond: ");
 		
@@ -65,28 +70,7 @@ public class SampleConsoleMonitorSequenceHandler extends ZMBeanBase
 	protected void toString(String result){
 		System.out.println(result);
 	}
-	/**
-	 * 
-	 * @param sb
-	 * @param root
-	 * @param prefix
-	 * @param indent
-	 */
-	public void writeRoot(StringBuffer sb, MonitorPoint root, String prefix, String indent){
-		
-		
-		String mesgPfx = Strings.append(prefix, "[",align(0),
-				"|",align(retrieveMillisToEnd(root)),"]ms [",root.getMonitorMeta(),"]");
-//				"|",Strings.alignedMillisStr(record.getSelfPeriod()),"]ms [",record.name,"]");
-		
-		Strings.appendln(sb, mesgPfx , " total MPs:",root.getMonitorSequence().getCounter(), " - ",root.getMessage());
-		
-		String childPrefix = prefix+indent;
-		for(MonitorPoint child : root.getChildren()){
-			write(sb, child, childPrefix, indent);
-		}
-	}
-	private SelectorAdaptor selAdptor = ZMonitorManager.getInstance().getSelectorAdaptor();
+
 	/**
 	 * 
 	 * @param sb
@@ -109,44 +93,60 @@ public class SampleConsoleMonitorSequenceHandler extends ZMBeanBase
 		}
 	}
 	
+	private SelectorAdaptor selAdptor = ZMonitorManager.getInstance().getSelectorAdaptor();
+	
+	private boolean previousMillis = true;
+	private boolean nextMillis = true;
+	private boolean callerJavaFile = true;
+	private boolean showId = false;
+	private boolean showType = true;
+	private boolean showClass = true;
+	private boolean showMessage = true;
 	
 	public void writeMP(StringBuffer sb, MonitorPoint mp, String prefix){
 		String mpId = selAdptor.retrieveId(mp);
 		Set<String> mpCssClz = selAdptor.retrieveConceptualCssClasses(mp);
 		String mpType = selAdptor.retrieveType(mp);
 		
-		Strings.appendln(sb, prefix, "[",
-				align(retrieveMillisToPrevious(mp)),
-				"|",align(retrieveMillisToNext(mp)),"]ms",
-				", ID:", mpId,
-				", TYPE:", mpType,
-				", CLASS:", mpCssClz,
-				", MESSAGE:",mp.getMessage()
-				);
+		Strings.append(sb, prefix, "[");
+		
+		if(previousMillis)
+			Strings.append(sb, align(retrieveMillisToPrevious(mp)));
+		if(previousMillis && nextMillis)
+			Strings.append(sb, "|");
+		if(nextMillis)
+			Strings.append(sb, align(retrieveMillisToNext(mp)));
+		
+		Strings.append(sb, "]ms ");
+		if(callerJavaFile)
+			writeTraceElement(sb, "", mp.getMonitorMeta());
+		if(showId)
+			Strings.append(sb, ", ID:", mpId);
+		if(showType)
+			Strings.append(sb, ", TYPE:", mpType);
+		if(showClass)
+			Strings.append(sb, ", CLASS:", mpCssClz);
+		if(showMessage)
+			Strings.append(sb, ", MESSAGE:",mp.getMessage());
+		
+		Strings.append(sb,"\n");
+		
 //				"|",Strings.alignedMillisStr(record.getSelfPeriod()),"]ms [",record.name,"]");
 		
-		writeTraceElement(sb, prefix, mp.getMonitorMeta());
+		
 	}
 	
-	
-	
-	
-	private String toString(Marker marker, String seperator){
-		StringBuffer sb = new StringBuffer();
-		Iterator<Marker> itor = marker.iterator();
-		Marker mk = null;
-		while(itor.hasNext() ){
-			 mk = itor.next();
-			 sb.append(toString(mk, seperator)).append(seperator);
+	private static void writeTraceElement(StringBuffer sb, String prefix, MonitorMeta meta){
+		if(meta.isCallerNotAvailable()){
+			Strings.append(sb, prefix, "caller's stackTraceElement is not available.");
+			return;
+		}else{
+			Strings.append(sb, prefix,"at ",
+					meta.getClassName(),".",
+					meta.getMethodName(),"(",
+					meta.getFileName(),":",meta.getLineNumber(),")");	
 		}
-		sb.append(marker.getName());
-		return sb.toString();
 	}
-
-	public void configure(ConfigContext webConf) {
-		// TODO Auto-generated method stub
-	}
-
 
 	public static String align(long ms){
 		String prefix = "";
@@ -154,22 +154,49 @@ public class SampleConsoleMonitorSequenceHandler extends ZMBeanBase
 		else if(ms < 100) prefix = "   ";
 		else if(ms < 1000) prefix = "  ";
 		else if(ms < 10000) prefix = " ";
-//		else if(ms < 100000) prefix = " ";
 		return prefix + ms;
 	}
 	
-	private static void writeTraceElement(StringBuffer sb, String prefix, MonitorMeta meta){
-		if(meta.isCallerNotAvailable()){
-			Strings.appendln(sb, prefix, "caller's stackTraceElement is not available.");
-			return;
-		}
-		meta.getClassName();
-		Strings.appendln(sb, prefix,"at ",
-			meta.getClassName(),".",
-			meta.getMethodName(),"(",
-			meta.getFileName(),":",meta.getLineNumber(),")");
+	public boolean isPreviousMillis() {
+		return previousMillis;
 	}
-
-
-	
+	public void setPreviousMillis(boolean previousMillis) {
+		this.previousMillis = previousMillis;
+	}
+	public boolean isNextMillis() {
+		return nextMillis;
+	}
+	public void setNextMillis(boolean nextMillis) {
+		this.nextMillis = nextMillis;
+	}
+	public boolean isCallerJavaFile() {
+		return callerJavaFile;
+	}
+	public void setCallerJavaFile(boolean callerJavaFile) {
+		this.callerJavaFile = callerJavaFile;
+	}
+	public boolean isShowId() {
+		return showId;
+	}
+	public void setShowId(boolean showId) {
+		this.showId = showId;
+	}
+	public boolean isShowType() {
+		return showType;
+	}
+	public void setShowType(boolean showType) {
+		this.showType = showType;
+	}
+	public boolean isShowClass() {
+		return showClass;
+	}
+	public void setShowClass(boolean showClass) {
+		this.showClass = showClass;
+	}
+	public boolean isShowMessage() {
+		return showMessage;
+	}
+	public void setShowMessage(boolean showMessage) {
+		this.showMessage = showMessage;
+	}
 }

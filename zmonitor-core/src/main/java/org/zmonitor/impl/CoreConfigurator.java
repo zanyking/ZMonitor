@@ -28,7 +28,6 @@ import org.zmonitor.util.PropertySetter;
 public class CoreConfigurator  implements Configurator {
 	
 	
-	public static final String REL_MEASURE_POINT_INFO_FACTORY = "mp-info-factory";
 	public static final String REL_TIMELINE_HANDLER = "monitor-sequence-handler";
 	private static final String REL_MONITOR_SEQUENCE_PIPE = "monitor-sequence-pipe";
 	
@@ -57,19 +56,25 @@ public class CoreConfigurator  implements Configurator {
 		msPipeCtx.getManager().setMSPipe(pipe);
 	}
 	
-	private static void prepareMSHandlers(final ConfigContext  monitorMgmt){
-		monitorMgmt.forEach(REL_TIMELINE_HANDLER, new Visitor(){
+	private static void prepareMSHandlers(final ConfigContext  configCtx){
+		configCtx.forEach(REL_TIMELINE_HANDLER, new Visitor(){
 			public boolean visit(int index, Node node) {
 				MonitorSequenceHandler handler = newInstanceByClassAttr(node, null, true);
 				String name = DOMs.getAttributeValue(node, NAME);
-				monitorMgmt.applyPropertyTags( new PropertySetter(handler));
+				configCtx.applyPropertyTags( new PropertySetter(handler));
+				
+				XMLConfigs.applyAttributesToBean(node, 
+						new PropertySetter(handler), 
+						XMLConfigs.ignores("name", "class"));
+				
 				if(name==null||name.length()<=0)
 					throw new WrongConfigurationException(
 							"You forgot to assign a \"name\" attribute to handler the declaration of: "+handler);
 				handler.setId(name);
-				monitorMgmt.getManager().addMonitorSequenceHandler(handler);
+				
+				configCtx.getManager().addMonitorSequenceHandler(handler);
 				if(handler instanceof CustomConfigurable){
-					Configs.initCustomConfigurable(monitorMgmt, (CustomConfigurable) handler, false);
+					Configs.initCustomConfigurable(configCtx, (CustomConfigurable) handler, false);
 				}
 				return false;
 			}

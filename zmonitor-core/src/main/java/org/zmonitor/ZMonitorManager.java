@@ -176,6 +176,14 @@ public final class ZMonitorManager {
 		return li.get(0);
 	}
 	/**
+	 * 
+	 * @param id getBean by id.
+	 * @return
+	 */
+	public <T> T getBeanById(String id){
+		return fZMBeanRepository.get(id);
+	}
+	/**
 	 * register a bean if it is a ZMBean, otherwise do nothing. 
 	 * @param bean
 	 */
