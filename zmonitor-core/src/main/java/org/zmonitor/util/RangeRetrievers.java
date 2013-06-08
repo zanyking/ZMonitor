@@ -57,74 +57,65 @@ public enum RangeRetrievers implements RangeRetriever {
 		}
 	},
 	/**
-	 * >
-	 * CASE 1: next is the next sibling if current mp has next sibling.<br>
+	 * A Broad First Search range retriever.<br>
+	 * Next mp is the next sibling if current mp has next sibling (based on BFS algorithm).<br>
 	 * <pre>
-	 *|-mp     -> THIS
-	 *|-mp     -> NEXT
-	 *</pre>
-	 * <pre>
-	 *|-mp     -> THIS
+	 *|-mp     -> CURRENT
 	 *   |-mp
 	 *   |-mp
 	 *|-mp     -> NEXT
 	 *</pre>
-	 *CASE 2: mp is the end of it's parent (or ancestor), next is the sibling of the ancestor which was ended by this mp.<br>
+	 * current mp is the end of it's parent (or ancestor), next mp is the next sibling of the ancestor which was ended by current mp.<br>
+	 *<pre>
+	 *|-mp     -> ancestor
+	 *   |-mp
+	 *   |-mp  -> CURRENT (the END of parent)
+	 *|-mp     -> NEXT
+	 *</pre>
+	 *CASE 3: current mp is the end of entire monitor sequence, next mp is null. <br>
 	 *<pre>
 	 *|-mp     
 	 *   |-mp
-	 *   |-mp  -> THIS (the END of parent)
-	 *|-mp     -> NEXT
-	 *</pre>
-	 *CASE 3: mp is the end of entire monitor sequence, next is NULL. <br>
-	 *<pre>
-	 *|-mp     
-	 *   |-mp
-	 *   |-mp  -> THIS
+	 *   |-mp  -> CURRENT
 	 *(there's no NEXT)
 	 *</pre>
 	 */
 	NEXT{
 		public Range retrieve(MonitorPoint current){
-			MonitorPoint next = findNext(current);
+			MonitorPoint next = BFS(current);
 			return new Range( current, next) ;
 		}
 		
-		private MonitorPoint findNext(MonitorPoint current){
+		private MonitorPoint BFS(MonitorPoint current){
 			if(current.getParent() == null)return null;//this is a root mp, root has no next.
 			
 			MonitorPoint next = current.getNextSibling();
 			if(next == null){
 				// current is the last child of parent, 
 				// search parent's next sibling.
-				next = findNext( current.getParent());
+				next = BFS( current.getParent());
 			}
 			return next;
 		}
 	},
 	/**
-	 * CASE 1:  mp is a middle child, previous is the previous sibling.<br>
-	 * <pre>
-	 *|-mp     -> PREVIOUS
-	 *|-mp     -> THIS
-	 *</pre>
-	 * CASE 2: No matter how much child mp the previous sibling has, previous is still the previous sibling<br>
-	 * <pre>
-	 *|-mp     -> PREVIOUS
-	 *   |-mp
-	 *   |-mp
-	 *|-mp     -> THIS
-	 *</pre>
-	 *CASE 3: mp is the first child, previous is parent.<br>
+	 * Current mp is a middle child, previous mp is the previous sibling.<br>
 	 *<pre>
 	 *|-mp     -> PREVIOUS
-	 *   |-mp  -> THIS
+	 *   |-mp
+	 *   |-mp
+	 *|-mp     -> CURRENT
+	 *</pre>
+	 * Current mp is the first child of its parent, previous mp is current mp's parent.<br>
+	 *<pre>
+	 *|-mp     -> PREVIOUS
+	 *   |-mp  -> CURRENT
 	 *   |-mp
 	 *</pre>
-	 *CASE 4: mp is root, previous is null.<br>
+	 * Current mp is root, previous is null.<br>
 	 *<pre>
 	 *(there's no PREVIOUS)
-	 *|-mp     -> THIS (root)
+	 *|-mp     -> CURRENT (root)
 	 *   |-mp  
 	 *   |-mp
 	 *</pre>
@@ -137,5 +128,59 @@ public enum RangeRetrievers implements RangeRetriever {
 			}
 			return new Range(current, pre); 
 		}
-	};
+	},
+	/**
+	 * A Depth First Search range retriever.<br>
+	 * 
+	 * Next mp is the first child of current mp. (based on DFS algorithm).<br>
+	 * <pre>
+	 *|-mp     -> CURRENT
+	 *   |-mp  -> NEXT
+	 *   |-mp
+	 *|-mp     
+	 *</pre>
+	 *
+	 * Next mp is the next sibling if current mp has no child.<br>
+	 * <pre>
+	 *|-mp     -> CURRENT
+	 *|-mp     -> NEXT
+	 *</pre>
+	 *
+	 * Current mp is the end of it's parent (or ancestor), next mp is the next sibling of the ancestor which was ended by current mp.<br>
+	 *<pre>
+	 *|-mp     -> ancestor
+	 *   |-mp
+	 *   |-mp  -> CURRENT (the END of parent)
+	 *|-mp     -> NEXT
+	 *</pre>
+	 *
+	 * Current mp is the end of entire monitor sequence, next mp is NULL. <br>
+	 *<pre>
+	 *|-mp     
+	 *   |-mp
+	 *   |-mp  -> CURRENT
+	 *(there's no NEXT)
+	 *</pre>
+	 */
+	TRAVERSE{
+		public Range retrieve(MonitorPoint current){
+			MonitorPoint next = dfs(current, current);
+			return new Range( current, next) ;
+		}
+		private MonitorPoint dfs(MonitorPoint root, MonitorPoint current){
+			MonitorPoint next = current.getFirstChild();
+
+			while(next == null){//has no first child, look up next sibling...
+				next = current.getNextSibling();
+				if(next ==null){//current is the last child of parent, looking up parent's next sibling.
+					current = current.getParent();
+					if(current == null || current == root){// reach the end...
+						return null;
+					}
+				}
+			}
+			return next;
+		}
+	}
+	;
 }

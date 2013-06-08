@@ -11,16 +11,17 @@ import org.zmonitor.util.Predicate;
 
 /**
  * <p>
- * represent the selected result of an element set.
+ * 	A selection represent a set of selected monitor points.
  * 
  * <p>
- * The basic concept is to mix {@link Iterator} with  
- * a bunch of criteria operations. 
+ * The selection API is a mixture of {@link Iterator} API 
+ * and a bunch of criteria operations; The concept of criteria operations 
+ * are borrowed from:<i>com.google.common.collect.Iterators</i>. 
  * 
- *     
  * <p>
- * The concept of criteria operations are borrowed from: 
- * 	com.google.common.collect.Iterators. 
+ * The iteration of a selection only iterate the selected monitor point itself,  
+ * to traverse every child of selected monitor points, please take a look
+ * at {@code #traverse()}. 
  * 
  * @author Ian YT Tsai(Zanyking)
  *
@@ -54,15 +55,20 @@ public interface Selection<T, R extends Selection<T, R>> {
 //	 * @return
 //	 */
 //	Selection<T> eq(String attribute, Class<?> type, Object value);
+	
 	/**
 	 * 
 	 * @param JQuery selector format string
-	 * @return
+	 * @return a new Selection based on given selector.
 	 */
 	R select(String selector);
 	
-	
-	
+	/**
+	 * Create a new selection which iterate & traverse every selected element through Depth First Search algorithm.  
+	 * @param predicate determine if the incoming element is good to iterate.   
+	 * @return a new Selection which iterate both selected monitor points and their children.
+	 */
+	R traverse(Predicate<T> predicate);
 	/**
 	 * Returns the first element in the selection that satisfies the given
 	 * predicate. If no such element is found, null will be returned from this

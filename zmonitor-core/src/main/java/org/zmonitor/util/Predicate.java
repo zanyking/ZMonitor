@@ -25,6 +25,11 @@ package org.zmonitor.util;
  */
 public interface Predicate<T> {
 
+	Predicate NULL = new Predicate() {
+		public boolean apply(Object input) {
+			return true;
+		}
+	};
 
 	/**
 	   * Returns the result of applying this predicate to {@code input}. This method is <i>generally

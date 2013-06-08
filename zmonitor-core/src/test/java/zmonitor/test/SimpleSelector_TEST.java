@@ -26,7 +26,7 @@ import zmonitor.test.clz.C;
 public class SimpleSelector_TEST  extends TestBase{
 
 	@Test
-	public void simpleTestSelectorEngine() throws Exception{
+	public void testType() throws Exception{
 		
 		ZMonitor.push("this is a test mesg!", true);
 //		new C().doC1();
@@ -35,22 +35,19 @@ public class SimpleSelector_TEST  extends TestBase{
 		ZMonitor.pop(true);
 		
 		
-		
-		
 		//====================================================================
 		
 		MonitoredResult result = this.getMonitoredResult();
-		;
 		SampleConsoleMonitorSequenceHandler handler = new SampleConsoleMonitorSequenceHandler();
-		String selector = ".A .B .C";
+		String selector = "push";
 		
 		
 		Iterator<Entry<MonitorPoint>> it = 
 				Selectors.iterator(new MSWrapper(result.getAll().get(0)), 
 						selector);
-		Entry<MonitorPoint> entry;
-		StringBuffer sb = new StringBuffer("Selector:\""+selector+"\" \n");
 		
+		StringBuffer sb = new StringBuffer("Selector:\""+selector+"\" \n");
+		Entry<MonitorPoint> entry;
 		while(it.hasNext()){
 			entry = it.next();
 			handler.writeMP(sb, entry.getValue(), " ");
