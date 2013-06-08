@@ -13,9 +13,9 @@ import org.zmonitor.impl.SimpleMonitorMeta;
 import org.zmonitor.impl.ThreadLocalMonitorLifecycleManager;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.marker.Marker;
-import org.zmonitor.marker.MarkerFactory;
 import org.zmonitor.spi.MonitorLifecycle;
 
+import static org.zmonitor.marker.Markers.*;
 
 /**
  * <p>
@@ -37,8 +37,23 @@ import org.zmonitor.spi.MonitorLifecycle;
  */
 public final class ZMonitor {
 	
-	private static final Marker NATIVE_MARKER = MarkerFactory.getMarker("native"); 
-	private static final String DEFAULT_TRACKER_NAME = "default";
+//	public static final Marker NATIVE_MARKER;
+//	public static final Marker MK_PUSH;
+//	public static final Marker MK_RECORD;
+//	public static final Marker MK_END;
+//	public static final String DEFAULT_TRACKER_NAME = "default";
+//	
+//	static{
+//		NATIVE_MARKER = MarkerFactory.getMarker("native");
+//		MK_PUSH = MarkerFactory.getMarker("push");
+//		MK_PUSH.add(NATIVE_MARKER);
+//		
+//		MK_RECORD = MarkerFactory.getMarker("record");
+//		MK_RECORD.add(NATIVE_MARKER);
+//		
+//		MK_END = MarkerFactory.getMarker("end");
+//		MK_END.add(NATIVE_MARKER);
+//	}
 	
 	private ZMonitor(){}
 	/*
@@ -104,7 +119,7 @@ public final class ZMonitor {
 	 * @return
 	 */
 	public static MonitorPoint push(Object mesg){
-		return push(NATIVE_MARKER, mesg, false);
+		return push(MK_PUSH_ZM, mesg, false);
 	}	
 	/**
 	 * If you want to start a {@link MonitorPoint} in your Java code manually, use this method.<br>
@@ -118,7 +133,7 @@ public final class ZMonitor {
 	 * @see #push(Name, Object)
 	 */
 	public static MonitorPoint push(Object mesg, boolean traceCallerStack) {
-		return push(NATIVE_MARKER, mesg, traceCallerStack);
+		return push(MK_PUSH_ZM, mesg, traceCallerStack);
 	}
 	/**
 	 * 
@@ -128,7 +143,7 @@ public final class ZMonitor {
 	 * @return
 	 */
 	public static MonitorPoint push(Marker marker, Object message, boolean traceCallerStack){
-		CoreTrackingContext ctx = new CoreTrackingContext(DEFAULT_TRACKER_NAME);
+		CoreTrackingContext ctx = new CoreTrackingContext(TRACKER_NAME_ZM);
 		ctx.setCreateMillis(System.currentTimeMillis());
 		ctx.setMessage(message);
 		ctx.setMonitorMeta(newMonitorMeta(marker, traceCallerStack, 3));
@@ -141,6 +156,7 @@ public final class ZMonitor {
 	 */
 	public static MonitorPoint push(TrackingContext ctx){
 		long nanosec = System.nanoTime();
+		long slSpMillis = System.currentTimeMillis();
 		MonitorLifecycle lc = ctx.getLifeCycle();
 		if(lc==null){
 			throw new IllegalStateException("Not able to retrieve a MonitorLifecycle. " +
@@ -151,14 +167,20 @@ public final class ZMonitor {
 		}
 		MonitorSequence ms = lc.getInstance();
 		MonitorPoint mp = ms.start(ctx);
-		ms.accumulateSelfSpendNanos(System.nanoTime()- nanosec);
+		ms.accumulateSelfSpend(System.nanoTime()- nanosec, 
+				System.currentTimeMillis() - slSpMillis);
+		
 		return mp;
 	}
 	
 	
 	
 	private static MonitorMeta newMonitorMeta(Marker marker, boolean shouldDo, int callerLevel){
-		if(!shouldDo)return null;
+		
+		if(!shouldDo){
+			return new SimpleMonitorMeta(marker, TRACKER_NAME_ZM);		
+		}
+		
 		StackTraceElement[] stackElemts = Thread.currentThread().getStackTrace();
 		callerLevel += 1;
 		if(stackElemts.length<=callerLevel){
@@ -166,7 +188,7 @@ public final class ZMonitor {
 			throw new Error("How could method has no caller?");
 		}
 		StackTraceElement sElemt = stackElemts[callerLevel];
-		return new SimpleMonitorMeta(marker, sElemt);
+		return new SimpleMonitorMeta(marker, TRACKER_NAME_ZM, sElemt);
 	}
 	
 	/**
@@ -178,7 +200,7 @@ public final class ZMonitor {
 	 * @return a {@link MonitorPoint} that will contain caller's java source information. 
 	 */
 	public static MonitorPoint record(Object mesg, boolean traceCallerStack){
-		return record(null, mesg, traceCallerStack);
+		return record(MK_RECORD_ZM, mesg, traceCallerStack);
 	}
 	/**
 	 * traceCallerStack is default false.
@@ -186,7 +208,7 @@ public final class ZMonitor {
 	 * @return
 	 */
 	public static MonitorPoint record(String mesg){
-		return record(null, mesg, false);
+		return record(MK_RECORD_ZM, mesg, false);
 	}
 	/**
 	 * 
@@ -196,7 +218,7 @@ public final class ZMonitor {
 	 * @return
 	 */
 	public static MonitorPoint record(Marker marker, Object message, boolean traceCallerStack){
-		CoreTrackingContext ctx = new CoreTrackingContext(DEFAULT_TRACKER_NAME);
+		CoreTrackingContext ctx = new CoreTrackingContext(TRACKER_NAME_ZM);
 		ctx.setCreateMillis(System.currentTimeMillis());
 		ctx.setMessage(message);
 		ctx.setMonitorMeta(newMonitorMeta(marker, traceCallerStack, 3));
@@ -209,6 +231,7 @@ public final class ZMonitor {
 	 */
 	public static MonitorPoint record(TrackingContext ctx){
 		long nanosec = System.nanoTime();
+		long slSpMillis = System.currentTimeMillis();
 		MonitorLifecycle lc = ctx.getLifeCycle();
 		if(lc==null){
 			throw new IllegalStateException("Not able to retrieve a MonitorLifecycle. " +
@@ -222,8 +245,9 @@ public final class ZMonitor {
 		MonitorPoint mp = lc.isMonitorStarted() ? 
 				ms.record(ctx) : ms.start(ctx);
 		
-		ms.accumulateSelfSpendNanos(System.nanoTime()- nanosec);
-		
+		ms.accumulateSelfSpend(System.nanoTime()- nanosec, 
+			System.currentTimeMillis() - slSpMillis);
+				
 		return mp;
 	}
 	
@@ -231,25 +255,25 @@ public final class ZMonitor {
 	 * traceCallerStack is default false.
 	 */
 	public static MonitorPoint pop(){
-		return pop(null, null, true);
+		return pop(MK_END_ZM, null, true);
 	}
 	/**
 	 * traceCallerStack is default false.
 	 */
-	public static MonitorPoint pop(Marker marker){
-		return pop(marker, null, false);
+	public static MonitorPoint pop(Object message){
+		return pop(MK_END_ZM, message, true);
 	}
 	/**
 	 * traceCallerStack is default false.
 	 */
 	public static MonitorPoint pop(Object message, boolean traceCallerStack){
-		return pop(null, message, traceCallerStack);
+		return pop(MK_END_ZM, message, traceCallerStack);
 	}
 	/**
 	 * traceCallerStack is default false.
 	 */
 	public static MonitorPoint pop(boolean traceCallerStack){
-		return pop(null, null, traceCallerStack);
+		return pop(MK_END_ZM, null, traceCallerStack);
 	}
 	/**
 	 * 
@@ -259,7 +283,7 @@ public final class ZMonitor {
 	 * @return
 	 */
 	public static MonitorPoint pop(Marker marker, Object message, boolean traceCallerStack){
-		CoreTrackingContext ctx = new CoreTrackingContext(DEFAULT_TRACKER_NAME);
+		CoreTrackingContext ctx = new CoreTrackingContext(TRACKER_NAME_ZM);
 		ctx.setCreateMillis(System.currentTimeMillis());
 		ctx.setMessage(message);
 		ctx.setMonitorMeta(newMonitorMeta(marker, traceCallerStack, 3));
@@ -272,6 +296,7 @@ public final class ZMonitor {
 	 */
 	public static MonitorPoint pop(TrackingContext ctx){
 		long nanosec = System.nanoTime();
+		long slSpMillis = System.currentTimeMillis();
 		
 		MonitorLifecycle lc = ctx.getLifeCycle();
 		if(lc==null){
@@ -284,7 +309,8 @@ public final class ZMonitor {
 		
 		MonitorSequence ms = lc.getMonitorSequence();
 		MonitorPoint mp = ms.end(ctx);
-		ms.accumulateSelfSpendNanos(System.nanoTime()- nanosec);
+		ms.accumulateSelfSpend(System.nanoTime()- nanosec, 
+				System.currentTimeMillis() - slSpMillis);
 		
 		if(ms.isFinished()){
 			lc.finish();

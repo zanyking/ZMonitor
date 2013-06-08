@@ -42,6 +42,7 @@ public class MonitorPoint implements Serializable{
 			Object mesg, 
 			MonitorSequence mSequence, 
 			long createMillis) {
+		if(mm==null)throw new NullPointerException();
 		this.monitorMeta = mm;
 		this.message = mesg;
 		this.mSequence = mSequence;
@@ -221,6 +222,7 @@ public class MonitorPoint implements Serializable{
 			return arr;
 		}
 
+		@SuppressWarnings("unchecked")
 		public <T> T[] toArray(T[] a) {
 			Object[] arr = new Object[size()];
 			int i=0;

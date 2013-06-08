@@ -10,7 +10,6 @@ import java.util.Set;
 
 import org.zmonitor.selector.Entry;
 import org.zmonitor.selector.SelectorEvalException;
-import org.zmonitor.selector.UndefinedAttributeException;
 import org.zmonitor.selector.impl.model.Attribute;
 import org.zmonitor.selector.impl.model.PseudoClass;
 import org.zmonitor.selector.impl.model.Selector;
@@ -81,20 +80,15 @@ public class EntryLocalProperties {
 
 		Set<String> enClzes = entry.getConceptualCssClasses();
 		
-		return enClzes.containsAll(classes);
-		
-//		String scls = ((HtmlBasedComponent) component).getSclass();
-//		String zcls = ((HtmlBasedComponent) component).getZclass();
-//		for(String c : classes){
-//			//this entry has no scls. 
-//			if(scls == null) return false;
-//			//looking for any 'C' which neither contained in scls nor equivalent to zcls. 
-//			if(!scls.matches("(?:^|.*\\s)"+c+"(?:\\s.*|$)") && 
-//					!Objects.equals(zcls, c)){
-//				return false;	
-//			}
-//		}
-//		return true;
+		//for any entry, 
+		//if any class from selector expression has no matches to entries classes declaration, return false.
+		boolean result = enClzes.containsAll(classes);
+		System.out.println("EntryLocalProperties:: [" +result+
+				"] Entry's ID: "+entry.getId());
+		System.out.println("EntryLocalProperties:: Entry's classes: "+enClzes);
+		System.out.println("EntryLocalProperties:: Selector classes: "+classes);
+		 
+		return result;
 	}
 	
 	
@@ -134,14 +128,15 @@ public class EntryLocalProperties {
 	
 	
 	
-	// helper //
-	private static<T> T getValue(Entry<T> entry, String name){
+	// helper //TODO to support 
+	private static<T, K> T getValue(Entry<K> entry, String name){
+		K target = entry.getValue();
 		
-		Class<?> clz = entry.getValue().getClass();
+		Class<?> clz = target.getClass();
 		
 		try {
 			return (T) clz.getMethod(
-					"get"+capitalize(name)).invoke(entry);
+					"get"+capitalize(name)).invoke(target);
 		} catch (NoSuchMethodException e) {
 			// no such method
 		} catch (SecurityException e) {
@@ -153,7 +148,7 @@ public class EntryLocalProperties {
 		}
 		try {
 			return (T) clz.getMethod(
-					"is"+capitalize(name)).invoke(entry);
+					"is"+capitalize(name)).invoke(target);
 		} catch (NoSuchMethodException e) {
 			// no such method
 		} catch (SecurityException e) {
@@ -164,10 +159,9 @@ public class EntryLocalProperties {
 			// exception thrown by the getter method
 		}
 		
-		// In ZK's internal implementation, we should search dynamic attributes 
-		// after object's attribute look up, but now we just throw exception.
-		throw new UndefinedAttributeException(clz, name);
-//		return component.getAttribute(name);
+		Object var = entry.getEntryContainer().resolveVariable(name, entry);
+		return (T) var;
+		
 	}
 	
 	private static String capitalize(String str){

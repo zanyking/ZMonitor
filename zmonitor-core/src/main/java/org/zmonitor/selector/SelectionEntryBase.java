@@ -80,7 +80,7 @@ public class SelectionEntryBase<T , R extends Selection<T, R>> implements Select
 	public Entry<T> next() {
 		Entry<T> next = itor.next();
 		if(next==null)
-			System.out.println("next==null! itor class is: "+itor.getClass());
+			throw new IllegalStateException("the next should never be NULL! "+itor);
 		return next;
 	}
 	public void remove() {
@@ -104,13 +104,14 @@ public class SelectionEntryBase<T , R extends Selection<T, R>> implements Select
 	public List<T> toList(){
 		return Selectors.toValueList(itor);
 	}
-
+	@SuppressWarnings("unchecked")
 	public R filter(
 			Predicate<T> predicate){
 		return (R) toSelection(Iterators.filter(this, 
 				new AdaptionPredicate<T>(predicate)));
 	}
 
+	@SuppressWarnings("unchecked")
 	public R select(String selector){
 		return (R) toSelection(
 			new NestedSelectorIterator<T>(this, selector));
@@ -166,6 +167,9 @@ class AdaptionPredicate<T> implements Predicate<Entry<T>>{
 class NestedSelectorIterator<T> implements Iterator<Entry<T>>{
 		private final Iterator<Entry<T>> origin; 
 		private final String selector;
+		private Iterator<Entry<T>> sub;
+		private boolean fetched = false;
+		private Entry<T> next;
 		/**
 		 * 
 		 * @param origin
@@ -176,9 +180,7 @@ class NestedSelectorIterator<T> implements Iterator<Entry<T>>{
 			this.selector = selector;
 		}
 
-		private Iterator<Entry<T>> sub;
-		private boolean fetched = false;
-		private Entry<T> next;
+		
 		
 		public boolean hasNext() {
 			loadNext();
@@ -200,13 +202,11 @@ class NestedSelectorIterator<T> implements Iterator<Entry<T>>{
 			while(sub==null || !sub.hasNext()){ 
 				
 				if(!origin.hasNext())return null;
-				sub = Selectors.iterator(origin.next(), selector) ;
 				
-				if(sub.hasNext()){
-					return sub.next();
-				}
+				sub = Selectors.iterator(origin.next(), selector) ;
+				if(sub.hasNext()) break;
 			}
-			return null;
+			return sub.next();
 		}
 		
 		public void remove() {

@@ -413,7 +413,10 @@ public class ZMonitorAppender extends AppenderSkeleton {
 					null:MarkerFactory.getMarker(markerName);
 			
 			SimpleMonitorMeta cInfo = new SimpleMonitorMeta(marker,
-					locInfo.getClassName(), locInfo.getMethodName(), lineNum, null);
+					getMonitorPointNameType(),
+					locInfo.getClassName(), 
+					locInfo.getMethodName(), 
+					lineNum, null);
 			ctx.setMonitorMeta(cInfo);
 		} else {
 			SimpleMonitorMeta cInfo = new SimpleMonitorMeta();

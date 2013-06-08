@@ -4,6 +4,8 @@
  */
 package org.zmonitor.util;
 
+import java.util.regex.Pattern;
+
 /**
  * @author Ian YT Tsai(Zanyking)
  *
@@ -37,10 +39,28 @@ public class Strings {
 		}
 	}
 	
+	public static String capitalize(String str){
+		char first = str.charAt(0);
+		if(Character.isUpperCase(first))return str;
+		return Character.toUpperCase(first) + str.substring(1);
+	}
+	
+	public static String toShortClassName(String fqcn){
+		int idx = fqcn.lastIndexOf(".");
+		if(idx >=0)
+			return fqcn.substring(idx+1);
+		else
+			return  fqcn;
+	}
+	
 	public static boolean isEmpty(String str){
 		return str==null || str.length()==0;
 	}
 	
+	public static String escapeId(String inStr){
+//		Pattern s;
+		return inStr.replaceAll("[\\W]", "_");
+	}
 	
 	
 	public static String toNumericString(long num, String spliter){
@@ -60,16 +80,6 @@ public class Strings {
 		return sb.reverse().toString();
 	}
 	
-	
-	public static String alignedMillisStr(long ms){
-		String prefix = "";
-		     if(ms < 10) prefix = "    ";
-		else if(ms < 100) prefix = "   ";
-		else if(ms < 1000) prefix = "  ";
-		else if(ms < 10000) prefix = " ";
-//		else if(ms < 100000) prefix = " ";
-		return prefix + ms;
-	}
 	
 	public static boolean isEmptyString(Object obj){
 		if(obj==null)return true;

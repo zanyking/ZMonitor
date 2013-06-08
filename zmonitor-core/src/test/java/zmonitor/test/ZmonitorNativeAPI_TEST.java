@@ -3,20 +3,17 @@
  */
 package zmonitor.test;
 
-import java.util.List;
-
 import org.junit.Test;
 import org.zmonitor.MonitorPoint;
-import org.zmonitor.MonitorSequence;
 import org.zmonitor.ZMonitor;
-import org.zmonitor.selector.Entry;
+import org.zmonitor.handler.SampleConsoleMonitorSequenceHandler;
 import org.zmonitor.selector.MonitorPointSelection;
-import org.zmonitor.selector.MonitorPointSelectionBase;
-import org.zmonitor.selector.Selection;
 import org.zmonitor.test.junit.MonitoredResult;
 import org.zmonitor.test.junit.TestBase;
-import org.zmonitor.util.Iterators;
+import org.zmonitor.util.Predicate;
 import org.zmonitor.util.RangeRetrievers;
+
+import zmonitor.test.clz.A;
 
 /**
  * @author ian
@@ -29,9 +26,18 @@ public class ZmonitorNativeAPI_TEST extends TestBase {
 	}
 	private static void method1() throws Exception{
 		ZMonitor.push("start method 1", true);
-		ZMonitor.record("point 1");
-		Thread.sleep(1234);
-		ZMonitor.record("point 2");
+
+		try{
+			
+			ZMonitor.record("point 1");
+			ZMonitor.record("point 2");
+			Thread.sleep(1234);	
+			new A().doA1();
+			
+		}catch(Exception e){
+			ZMonitor.record("exception: "+e.getMessage());// logger.error(); logger.debug();
+		}
+		
 		ZMonitor.pop(true);
 		
 		
@@ -62,28 +68,29 @@ public class ZmonitorNativeAPI_TEST extends TestBase {
 		
 		//2. use Selection
 		
+		String selector = "push";
+		 MonitorPointSelection mpSel = result.asSelection()
+			.select(selector) //Use JQuery Selector
+			.greaterThan(RangeRetrievers.END, 200L)		 
+			;
+		 
+//		 boolean anyPushMpWithException = mpSel.any(new Predicate<MonitorPoint>() {
+//				public boolean apply(MonitorPoint mp) {
+//					//TODO see if any message starts with "hello";
+//					return mp.getMessage().toString().indexOf("exception") >= 0;
+//				}
+//			});
 		
-		MonitorPointSelectionBase mpSel = 
-			(MonitorPointSelectionBase) result.asSelection()
-//		.select("") //Use JQuery Selector 
-		.greaterThan(RangeRetrievers.END, 200L)
-		;
 		
-		
-//		List<MonitorPoint> mps = mpSel.toList();
-//		System.out.println("Iterators.toString(mpSel): "+
-//				Iterators.toString(mpSel));
-		
-		if (!mpSel.hasNext()) {
-			System.out.println("mpSel is empty!");
-			return;
+		MonitorPoint mp;
+		StringBuffer sb = new StringBuffer("Selector:\""+selector+"\" \n");
+		SampleConsoleMonitorSequenceHandler handler = new SampleConsoleMonitorSequenceHandler();
+		while(mpSel.hasNext()){
+			mp = mpSel.toNext();
+			handler.writeMP(sb, mp, " ");
+			sb.append("--------------------\n");
 		}
-		Entry<MonitorPoint> mp = mpSel.next();
-		System.out.println("first mp is : "+mp);
-		
-		while (mpSel.hasNext()) {
-			System.out.println("mp is : "+mpSel.next());
-		}
+		System.out.println(sb);		
 		
 	}
 	

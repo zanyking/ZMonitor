@@ -12,12 +12,11 @@ import org.zmonitor.bean.ZMBeanRepository;
 import org.zmonitor.bean.ZMBeanRepositoryBase;
 import org.zmonitor.config.ConfigSource;
 import org.zmonitor.impl.ConfiguratorRepository;
-import org.zmonitor.impl.DefaultMeasurePointInfoFactory;
 import org.zmonitor.impl.MSPipe;
 import org.zmonitor.impl.ZMLog;
+import org.zmonitor.selector.SelectorAdaptor;
 import org.zmonitor.spi.MonitorLifecycle;
 import org.zmonitor.spi.MonitorLifecycleManager;
-import org.zmonitor.spi.MonitorPointInfoFactory;
 import org.zmonitor.spi.MonitorSequenceHandler;
 
 
@@ -217,15 +216,6 @@ public final class ZMonitorManager {
 		getMSPipe().pipe(mSquence);
 	}
 	
-	//TODO doesn't seem to be a unique object
-	private  MonitorPointInfoFactory monitorPointInfoFactory = new DefaultMeasurePointInfoFactory(); 
-	public  MonitorPointInfoFactory getMonitorPointInfoFactory() {
-		return monitorPointInfoFactory;
-	}
-	public  void setMonitorPointInfoFactory(MonitorPointInfoFactory mpInfoFac) {
-		ZMLog.debug("ZMonitorManager::MPInfoFactory = "+mpInfoFac);
-		monitorPointInfoFactory = mpInfoFac;
-	}
 	
 	private MonitorLifecycleManager lifecycleManager;
 	/**
@@ -243,7 +233,24 @@ public final class ZMonitorManager {
 		return getLifecycleManager().getLifecycle();
 	}
 
-
+	/**
+	 * tell ZMonitor how to adapt a MonitorPoint instance to selector engine.  
+	 */
+	private SelectorAdaptor selectorAdaptor = new SelectorAdaptor(); 
+	/**
+	 * 
+	 * @return
+	 */
+	public SelectorAdaptor getSelectorAdaptor(){
+		return selectorAdaptor;
+	}
+	/**
+	 * 
+	 * @param selectorAdaptor
+	 */
+	public void setSelectorAdaptor(SelectorAdaptor selectorAdaptor){
+		this.selectorAdaptor = selectorAdaptor;
+	}
 }//end of class
 /**
  * an noop implementation

@@ -5,12 +5,19 @@
 package org.zmonitor.handler;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.zmonitor.CustomConfigurable;
+import org.zmonitor.MonitorMeta;
 import org.zmonitor.MonitorPoint;
 import org.zmonitor.MonitorSequence;
+import org.zmonitor.ZMonitorManager;
 import org.zmonitor.bean.ZMBeanBase;
 import org.zmonitor.config.ConfigContext;
+import org.zmonitor.marker.Marker;
+import org.zmonitor.selector.SelectorAdaptor;
 import org.zmonitor.spi.MonitorSequenceHandler;
 import org.zmonitor.util.Strings;
 import static org.zmonitor.util.MPUtils.*;
@@ -28,26 +35,27 @@ public class SampleConsoleMonitorSequenceHandler extends ZMBeanBase
 	}
 	public SampleConsoleMonitorSequenceHandler(){}
 	
-	public void handle(MonitorSequence tl){
+	public void handle(MonitorSequence ms){
 		//dump Records from Black Box
-		long nano = System.nanoTime();
+		
+		MonitorPoint root = ms.getRoot();
+		
 		String indent = "    ";
-		String totalElipsd = Strings.alignedMillisStr(retrieveMillisToEnd(tl.getRoot()));
+		String totalElipsd = align(retrieveMillisToEnd(root));
 		StringBuffer sb = new StringBuffer();
 		
-//		Strings.appendln(sb, "[ ",getHHmmssSSS_yyyy_MM_dd().format(new Date())," ] ",
-//				tl.getName()," -> TIMELINE DUMP BEGIN");
+		Strings.appendln(sb, "[ ",getHHmmssSSS_yyyy_MM_dd().format(new Date())," ] ",
+				root.getMonitorMeta().getTrackerName()," -> MONITOR_SEQUENCE DUMP BEGIN");
 		
-		Strings.appendln(sb, "[",totalElipsd,"]ms Elipsed - ZMonitor Measure Points:",tl.getRecordAmount(),
-				", self spend Nanosec: ", Strings.toNumericString(tl.getSelfSpendNanos(),","));
+		Strings.appendln(sb, "[",totalElipsd,"]ms Elipsed - MP amount:",ms.getRecordAmount(), 
+				", self spend Nanosec: ", Strings.toNumericString(ms.getSelfSpendNanos(),","),
+				". self spend millis: ", Strings.toNumericString(ms.getSelfSpendMillis(),","));
 		Strings.appendln(sb, indent,"[ pre~ | ~next ]ms");
 		
+		writeRoot(sb, root, indent, indent);
 		
-		writeRoot(sb, tl.getRoot(), indent, indent);
+		Strings.append(sb, root.getMonitorMeta().getTrackerName()," <- MONITOR_SEQUENCE DUMP END, toStringTLHandler spent nanosecond: ");
 		
-//		Strings.append(sb, tl.getName()," <- TIMELINE DUMP END, toStringTLHandler spent nanosecond: ");
-		
-		Strings.appendln(sb, Strings.toNumericString(System.nanoTime() - nano, ","));
 		Strings.appendln(sb, "\n");
 		toString(sb.toString());
 	}
@@ -55,37 +63,79 @@ public class SampleConsoleMonitorSequenceHandler extends ZMBeanBase
 	protected void toString(String result){
 		System.out.println(result);
 	}
-	private void writeRoot(StringBuffer sb, MonitorPoint root, String prefix, String indent){
-		String mesgPfx = Strings.append(prefix, "[",Strings.alignedMillisStr(0),
-				"|",Strings.alignedMillisStr(retrieveMillisToEnd(root)),"]ms [",root.getMonitorMeta(),"]");
+	/**
+	 * 
+	 * @param sb
+	 * @param root
+	 * @param prefix
+	 * @param indent
+	 */
+	public void writeRoot(StringBuffer sb, MonitorPoint root, String prefix, String indent){
+		String mesgPfx = Strings.append(prefix, "[",align(0),
+				"|",align(retrieveMillisToEnd(root)),"]ms [",root.getMonitorMeta(),"]");
 //				"|",Strings.alignedMillisStr(record.getSelfPeriod()),"]ms [",record.name,"]");
 		
-		Strings.appendln(sb, mesgPfx , " children:",root.size(), " - ",root.getMessage());
+		Strings.appendln(sb, mesgPfx , " total MPs:",root.getMonitorSequence().getCounter(), " - ",root.getMessage());
 		
 		String childPrefix = prefix+indent;
 		for(MonitorPoint child : root.getChildren()){
 			write(sb, child, childPrefix, indent);
 		}
 	}
-	
-	private void write(StringBuffer sb, MonitorPoint mp, String prefix, String indent){
+	private SelectorAdaptor selAdptor = ZMonitorManager.getInstance().getSelectorAdaptor();
+	/**
+	 * 
+	 * @param sb
+	 * @param mp
+	 * @param prefix
+	 * @param indent
+	 */
+	public void write(StringBuffer sb, MonitorPoint mp, String prefix, String indent){
 		if(mp==null)return;
-		String mesgPfx = Strings.append(prefix, "[",
-				Strings.alignedMillisStr(retrieveMillisToPrevious(mp)),
-				"|",Strings.alignedMillisStr(retrieveMillisToNext(mp)),"]ms [",mp.getMonitorMeta(),"]");
-//				"|",Strings.alignedMillisStr(record.getSelfPeriod()),"]ms [",record.name,"]");
+		
+		writeMP(sb, mp, prefix);
 		
 		if(mp.isLeaf()){
-			Strings.appendln(sb, mesgPfx," - ",mp.getMessage());
 			return;
 		}
-		
-		Strings.appendln(sb, mesgPfx , " children:",mp.size(), " - ",mp.getMessage());
 		
 		String childPrefix = prefix+indent;
 		for(MonitorPoint child : mp.getChildren()){
 			write(sb, child, childPrefix, indent);
 		}
+	}
+	
+	
+	public void writeMP(StringBuffer sb, MonitorPoint mp, String prefix){
+		String mpId = selAdptor.retrieveId(mp);
+		Set<String> mpCssClz = selAdptor.retrieveConceptualCssClasses(mp);
+		String mpType = selAdptor.retrieveType(mp);
+		
+		String mesgPfx = Strings.append(prefix, "[",
+				align(retrieveMillisToPrevious(mp)),
+				"|",align(retrieveMillisToNext(mp)),"]ms",
+				", type=\"", mpType,"\"",
+				", class=\"", mpCssClz,"\"",
+				", id=\"", mpId,"\""
+				);
+//				"|",Strings.alignedMillisStr(record.getSelfPeriod()),"]ms [",record.name,"]");
+		
+		Strings.appendln(sb, mesgPfx ," - ",mp.getMessage());
+	}
+	
+	
+	
+	
+	private String toString(Marker marker, String seperator){
+		StringBuffer sb = new StringBuffer();
+		Iterator<Marker> itor = marker.iterator();
+		Marker mk = null;
+		while(itor.hasNext() ){
+			 mk = itor.next();
+			 sb.append(toString(mk, seperator)).append(seperator);
+		}
+		sb.append(marker.getName());
+		return sb.toString();
 	}
 
 	public void configure(ConfigContext webConf) {
@@ -93,7 +143,15 @@ public class SampleConsoleMonitorSequenceHandler extends ZMBeanBase
 	}
 
 
-	
+	public static String align(long ms){
+		String prefix = "";
+		     if(ms < 10) prefix = "    ";
+		else if(ms < 100) prefix = "   ";
+		else if(ms < 1000) prefix = "  ";
+		else if(ms < 10000) prefix = " ";
+//		else if(ms < 100000) prefix = " ";
+		return prefix + ms;
+	}
 
 
 	

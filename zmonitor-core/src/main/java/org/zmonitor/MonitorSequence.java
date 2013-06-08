@@ -30,7 +30,8 @@ public class MonitorSequence implements Serializable{
 	//TODO: an extra information that can be recalculated by counting mp tree.
 	protected int counter;
 	
-	protected long selfSpendNanosecond;
+	protected long selfSpendNanos;
+	protected long selfSpendMillis;
 	
 	/**
 	 * Default constructor for inheritance.
@@ -41,16 +42,22 @@ public class MonitorSequence implements Serializable{
 	 * @return the acumulated nanosecond that zmonitor spent to get this Measure Sequence.
 	 */
 	public long getSelfSpendNanos(){
-		return selfSpendNanosecond;
+		return selfSpendNanos;
+	}
+	/**
+	 * 
+	 * @return
+	 */
+	public long getSelfSpendMillis(){
+		return selfSpendMillis;
 	}
 	/**
 	 * 
 	 * @param nanosec the execution time that a measure point collective process used. 
-	 * @return accumulate nanosecond.
 	 */
-	public long accumulateSelfSpendNanos(long nanosec){
-		selfSpendNanosecond += nanosec;
-		return selfSpendNanosecond;
+	public void accumulateSelfSpend(long nanosec, long millis){
+		selfSpendNanos += nanosec;
+		selfSpendMillis += millis;
 	}
 	
 	public MonitorPoint getRoot() {

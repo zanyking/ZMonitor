@@ -60,8 +60,8 @@ public class ToStringVTreeVisitor extends VTreeVisitor {
 		RecordSummary<String> summary = aNode.getRecordSummary();
 		
 		Strings.appendln(sb, prefix, "[",
-				Strings.alignedMillisStr(summary.getAvgBeforePeriod()), "|",
-				Strings.alignedMillisStr(summary.getAvgAfterPeriod()),"]ms/",summary.getCounter(),
+				alignedMillisStr(summary.getAvgBeforePeriod()), "|",
+				alignedMillisStr(summary.getAvgAfterPeriod()),"]ms/",summary.getCounter(),
 				suffix);
 		prefix.push();
 		if(printMesg){
@@ -70,6 +70,16 @@ public class ToStringVTreeVisitor extends VTreeVisitor {
 			}	
 		}
 		prefix.pop();
+	}
+	
+	public static String alignedMillisStr(long ms){
+		String prefix = "";
+		     if(ms < 10) prefix = "    ";
+		else if(ms < 100) prefix = "   ";
+		else if(ms < 1000) prefix = "  ";
+		else if(ms < 10000) prefix = " ";
+//		else if(ms < 100000) prefix = " ";
+		return prefix + ms;
 	}
 
 	public String toString(){

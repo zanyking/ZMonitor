@@ -38,6 +38,8 @@ public class ZMonitorServletFilter implements Filter {
 	
 	private HttpRequestMonitorLifecycleManager hReqMSLfManager;
 	
+	private static final String TRACKER_NAME = "web";
+	
 	public void init(FilterConfig fConfig) throws ServletException {
 		// init ProfilingManager...
 		if(ZMonitorManager.isInitialized())return;
@@ -102,7 +104,7 @@ public class ZMonitorServletFilter implements Filter {
 			try{
 				ZMonitor.pop(newTrackingContext("<- END", 
 						new SimpleMonitorMeta(
-							MarkerFactory.getMarker("REQUEST_END"))));	
+							MarkerFactory.getMarker("REQUEST_END"), TRACKER_NAME)));	
 			}finally{
 				if(isIgnitBySelf){// force end...
 					hReqMSLfManager.finishRequest((HttpServletRequest) req);
@@ -139,7 +141,7 @@ public class ZMonitorServletFilter implements Filter {
 		
 		protected WebMonitorMeta(){}
 		public WebMonitorMeta(Marker marker, HttpServletRequest req) {
-			super(marker);
+			super(marker, TRACKER_NAME);
 			mimeType = req.getContentType();
 			protocol = req.getProtocol();
 			remoteAddr = req.getRemoteAddr();

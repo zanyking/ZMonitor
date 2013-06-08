@@ -51,9 +51,10 @@ public class EntryIterator<E> implements Iterator<Entry<E>> {
 	}
 	
 	private EntryIterator(EntryContainer<E> container, Entry<E> root, String selector){
-		if((container == null && root == null) || 
-				selector == null || 
-				selector.isEmpty()){
+		if(selector == null || selector.isEmpty()){
+			throw new IllegalArgumentException("Selector cannot be null or empty! selector:"+ selector);
+		}
+		if(container == null && root == null){
 			throw new IllegalArgumentException();
 		}
 		
@@ -148,6 +149,9 @@ public class EntryIterator<E> implements Iterator<Entry<E>> {
 	 *
 	 */
 	private Entry<E> seekNext() {
+		if(currCtx!=null && "A__init__12".equals(currCtx.getEntry().getId())){
+			
+		}
 		currCtx = index < 0 ? //if start from root? 
 			initRootCtx() : toNextCtx(currCtx);
 		

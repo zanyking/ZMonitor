@@ -15,7 +15,6 @@ import org.zmonitor.config.Configs;
 import org.zmonitor.config.WrongConfigurationException;
 import org.zmonitor.impl.MSPipe.Mode;
 import org.zmonitor.spi.Configurator;
-import org.zmonitor.spi.MonitorPointInfoFactory;
 import org.zmonitor.spi.MonitorSequenceHandler;
 import org.zmonitor.util.DOMs;
 import org.zmonitor.util.PropertySetter;
@@ -36,7 +35,6 @@ public class CoreConfigurator  implements Configurator {
 	
 	public void configure(ConfigContext monitorMgmt) {
 		prepareMSPipe(monitorMgmt);
-		prepareMPointInfoFacotry(monitorMgmt);
 		prepareMSHandlers(monitorMgmt);
 	}
 
@@ -58,17 +56,6 @@ public class CoreConfigurator  implements Configurator {
 		Configs.initCustomConfigurable(msPipeCtx, pipe, false);
 		msPipeCtx.getManager().setMSPipe(pipe);
 	}
-	
-	private static void prepareMPointInfoFacotry(ConfigContext  monitorMgmt){
-		
-		ConfigContext mpInfoFac = monitorMgmt.toNode(REL_MEASURE_POINT_INFO_FACTORY);
-		if(mpInfoFac.getNode()==null)return;//use default...
-		
-		MonitorPointInfoFactory mpInfoFactory = mpInfoFac.newBean(null, true);
-		mpInfoFac.applyPropertyTags( new PropertySetter(mpInfoFactory));
-		mpInfoFac.getManager().setMonitorPointInfoFactory(mpInfoFactory);
-	}
-	
 	
 	private static void prepareMSHandlers(final ConfigContext  monitorMgmt){
 		monitorMgmt.forEach(REL_TIMELINE_HANDLER, new Visitor(){

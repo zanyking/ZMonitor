@@ -59,14 +59,16 @@ public class MatchCtxImpl<E> implements MatchCtx<E>, MatchCtxCtrl{
 		this.entryIndex = 0;
 	}
 	
-	/*package*/ MatchCtxImpl(Entry<E> entry, boolean[][] qualifiedArr){
+	/*package*/ MatchCtxImpl(Entry<E> entry, boolean[][] qualifiedArr, MatchCtx<E> parent, int idx){
 		this.entry = entry;
 		this.qualifiedArr = qualifiedArr;
-		this.entryIndex = this.entry.getIndex();
+		this.parent = parent;
+		this.entryIndex = idx;
 	}
 	
 	public MatchCtxImpl<E> toNext() {
-		return new MatchCtxImpl<E>(entry.getNextSibling(), qualifiedArr);
+		Entry<E> nextSibling = entry.getNextSibling();
+		return new MatchCtxImpl<E>(nextSibling, qualifiedArr, this.parent, this.entryIndex+1);
 	}
 //	
 //	// operation //

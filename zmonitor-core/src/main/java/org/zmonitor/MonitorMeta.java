@@ -29,6 +29,11 @@ public interface MonitorMeta extends Serializable, Cloneable {
 	 */
 	public boolean isNativeMethod();
 	/**
+	 * 
+	 * @return
+	 */
+	public boolean isCallerNotAvailable();
+	/**
 	 * @return
 	 */
 	String getClassName() ;

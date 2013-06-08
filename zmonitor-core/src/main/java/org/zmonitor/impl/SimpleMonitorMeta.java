@@ -25,14 +25,15 @@ public class SimpleMonitorMeta implements MonitorMeta{
 	/**
 	 * @param marker
 	 */
-	public SimpleMonitorMeta(Marker marker){
+	public SimpleMonitorMeta(Marker marker, String trackerName){
 		this.marker = marker;
+		this.trackerName = trackerName;
 	};
 	/**
 	 * @param stEle
 	 */
-	public SimpleMonitorMeta(Marker marker, StackTraceElement stEle) {
-		this(marker);
+	public SimpleMonitorMeta(Marker marker, String trackerName, StackTraceElement stEle) {
+		this(marker, trackerName);
 		className = stEle.getClassName();
 		methodName = stEle.getMethodName();
 		lineNumber = stEle.getLineNumber();
@@ -44,12 +45,13 @@ public class SimpleMonitorMeta implements MonitorMeta{
 	 * @param methodName
 	 * @param lineNumber
 	 */
-	public SimpleMonitorMeta(Marker marker, String className, String methodName, int lineNumber, String fileName) {
-		this(marker);
+	public SimpleMonitorMeta(Marker marker, String trackerName, String className, String methodName, int lineNumber, String fileName) {
+		this(marker, trackerName);
 		this.className = className;
 		this.methodName = methodName;
 		this.lineNumber = lineNumber;
 		this.fileName = fileName;
+	
 	}
 
 	
@@ -59,7 +61,11 @@ public class SimpleMonitorMeta implements MonitorMeta{
 	public boolean isNativeMethod(){
 		return lineNumber==CODE_NATIVE_METHOD;
 	}
-
+	
+	public boolean isCallerNotAvailable() {
+		return lineNumber == CODE_NOT_AVAILABLE;
+	}
+	
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		if(className!=null)
@@ -181,6 +187,7 @@ public class SimpleMonitorMeta implements MonitorMeta{
 	public boolean isSimilar(MonitorMeta mMeta) {
 		return equals(mMeta);
 	}
+	
 	
 
 }

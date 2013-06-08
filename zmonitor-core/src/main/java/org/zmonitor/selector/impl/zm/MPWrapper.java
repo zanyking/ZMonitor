@@ -3,12 +3,9 @@
  */
 package org.zmonitor.selector.impl.zm;
 
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.zmonitor.MonitorPoint;
-import org.zmonitor.marker.Marker;
 import org.zmonitor.selector.Entry;
 import org.zmonitor.selector.EntryContainer;
 
@@ -21,6 +18,7 @@ public class MPWrapper implements Entry<MonitorPoint>{
 	private MCache mCache;
 	public MPWrapper(MonitorPoint mp, MCache mCache) {
 		this.mp = mp;
+		if(mp==null)throw new IllegalArgumentException("mp cannot be null!");
 		if(mCache==null){
 			mCache = new MCache(mp.getMonitorSequence());
 		}
@@ -32,7 +30,9 @@ public class MPWrapper implements Entry<MonitorPoint>{
 	}
 
 	public Entry<MonitorPoint> getParent() {
-		return mCache.toEntry(mp.getParent());
+		MonitorPoint temp = mp.getParent();
+		if(temp==null)return null;
+		return mCache.toEntry(temp);
 	}
 
 	public int getIndex() {
@@ -48,46 +48,34 @@ public class MPWrapper implements Entry<MonitorPoint>{
 	}
 
 	public Entry<MonitorPoint> getNextSibling() {
-		return mCache.toEntry(mp.getNextSibling());
+		MonitorPoint temp = mp.getNextSibling();
+		if(temp==null)return null;
+		return mCache.toEntry(temp);
 	}
 
 	public Entry<MonitorPoint> getPreviousSibling() {
-		return mCache.toEntry(mp.getPreviousSibling());
+		MonitorPoint temp = mp.getPreviousSibling();
+		if(temp==null)return null;
+		return mCache.toEntry(temp);
 	}
 
 	public Entry<MonitorPoint> getFirstChild() {
-		return mCache.toEntry(mp.getFirstChild());
+		MonitorPoint temp = mp.getFirstChild();
+		if(temp==null)return null;
+		return mCache.toEntry(temp);
 	}
 
 	public MonitorPoint getValue() {
 		return mp;
 	}
 
-	public String getType() {
-		return mp.getMonitorMeta().getTrackerName();
-	}
-
 	public String getId() {
-		return null;
+		return mCache.msw.retrieveId(mp);
 	}
-//	private static String toId(MonitorPoint mp){
-//		mp.getMonitorMeta().get
-//		return 
-//	}
-
+	public String getType() {
+		return mCache.msw.retrieveType(mp);
+	}
 	public Set<String> getConceptualCssClasses() {
-		Marker mk = mp.getMonitorMeta().getMarker();
-		
-		Set<String> ans = new HashSet<String>();
-		ans.add(mk.getName());
-		
-		Iterator<Marker> it = mk.iterator();
-		Marker reference;
-		
-		while (it.hasNext()) {
-			reference =  it.next();
-			ans.add(reference.getName());
-		}
-		return ans;
+		return mCache.msw.retrieveConceptualCssClasses(mp);
 	}
 }
