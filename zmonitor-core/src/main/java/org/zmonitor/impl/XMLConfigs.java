@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.zmonitor.config.WrongConfigurationException;
 import org.zmonitor.util.DOMs;

@@ -1,0 +1,37 @@
+
+
+ZMonitor Technology Tree:
+
+
+
+System Execution Monitoring : 
+	|	[DONE]Extracting Monitor Sequence from Call Sequence through Native API.
+	|
+	|-> Console view of Monitor Sequence:
+	|		[DONE]To help developer getting better understanding to an excution's call sequence.
+	|		[ N/A]
+	|
+	|-> adaptation to Logging System
+	|		|
+	|		|-> Leverage exsiting Logging system (Log4j, Slf4j, logback):
+	|				To extract Monitor Sequence from call sequence by leveraging the existed logging statement in app.
+	|
+	|-> combind with JUnit
+	|		|
+	|		|-> ZMonitor Implementation Self Testing
+	|		|
+	|		|-> Legacy System Testing: 
+	|				Achieve good test coverage to a business Object without refactoring.
+	|
+	|-> combind with JUnit, JMeter
+	|		|
+	|		|-> Web Application Testing: 
+	|				In a ZMonitorWebTestCase, developer can shoot a URL through JMeter to trigger a specific execution of the web application. 
+	|				Then, the ZMonitorWebTestCase will get back the Monitor Sequence which reflects such execution, 
+	|				and developer now has the ability to check the validity of it through manipulating the Monitor Sequence, by using a sophisticated ZMonitor Selection API.
+	|
+	|-> IDE Integration
+	|		|
+	|		|->  Active Web App Monitoring: through Request.
+	|				Active System Assertion through unit test case. (Has possibility to reuse the TestCase)
+	|

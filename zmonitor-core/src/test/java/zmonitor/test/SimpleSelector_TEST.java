@@ -15,7 +15,7 @@ import org.zmonitor.selector.impl.zm.MSWrapper;
 import org.zmonitor.test.junit.MonitoredResult;
 import org.zmonitor.test.junit.TestBase;
 
-import zmonitor.test.clz.A;
+import zmonitor.test.clz.BusinessObject;
 
 /**
  * @author Ian YT Tsai(Zanyking)
@@ -28,7 +28,7 @@ public class SimpleSelector_TEST  extends TestBase{
 		
 		ZMonitor.push("this is a test mesg!", true);
 //		new C().doC1();
-		new A().doA1();
+		new BusinessObject().doBiz();
 		
 		ZMonitor.pop(true);
 		

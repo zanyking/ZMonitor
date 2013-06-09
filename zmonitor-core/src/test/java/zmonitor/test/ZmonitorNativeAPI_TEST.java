@@ -13,7 +13,7 @@ import org.zmonitor.test.junit.TestBase;
 import org.zmonitor.util.Predicate;
 import org.zmonitor.util.RangeRetrievers;
 
-import zmonitor.test.clz.A;
+import zmonitor.test.clz.BusinessObject;
 
 /**
  * @author ian
@@ -32,7 +32,7 @@ public class ZmonitorNativeAPI_TEST extends TestBase {
 			ZMonitor.record("point 1");
 			ZMonitor.record("point 2");
 			Thread.sleep(1234);	
-			new A().doA1();
+			new BusinessObject().doBiz();
 			
 		}catch(Exception e){
 			ZMonitor.record("exception: "+e.getMessage());// logger.error(); logger.debug();

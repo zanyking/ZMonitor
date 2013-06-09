@@ -9,7 +9,6 @@ import java.net.URL;
 import org.junit.After;
 import org.junit.Before;
 import org.zmonitor.InitFailureException;
-import org.zmonitor.MonitorPoint;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.config.ConfigSource;
 import org.zmonitor.config.URLConfigSource;
@@ -17,8 +16,6 @@ import org.zmonitor.impl.MSPipe.Mode;
 import org.zmonitor.impl.ThreadLocalMonitorLifecycleManager;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.util.Loader;
-import org.zmonitor.util.MPUtils;
-import org.zmonitor.util.Predicate;
 
 
 /**

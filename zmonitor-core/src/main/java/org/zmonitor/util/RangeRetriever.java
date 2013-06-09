@@ -6,16 +6,17 @@ package org.zmonitor.util;
 import org.zmonitor.MonitorPoint;
 
 /**
- * If you want to take a look at an example of this interface or 
- * simply use the pre-build class, please refers to: {@link RangeRetrievers}.<br>
  * 
  * <p>
- * a range retriever will based on it's {@code #retrieve(MonitorPoint)} 
- * method to get a target {@code MonitorPoint} and create a range 
- * between the given mp to target mp. 
+ * An implementation of {@link RangeRetriever} will based on it's conceptual
+ * meaning to retrieve a range according to given target.
+
+ * <p>
+ * If you want to take a look at an example of this interface or simply use the
+ * pre-build class, please refers to: {@link RangeRetrievers}.<br>
  * 
  * @author Ian YT Tsai(Zanyking)
- *
+ * 
  */
 public interface RangeRetriever {
 	/**

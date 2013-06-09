@@ -3,14 +3,11 @@
  */
 package org.zmonitor.impl;
 
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.zmonitor.MonitorMeta;
 import org.zmonitor.MonitorPoint;
-import org.zmonitor.ZMonitor;
-import org.zmonitor.marker.Marker;
 import org.zmonitor.marker.Markers;
 import org.zmonitor.selector.SelectorAdaptation;
 import org.zmonitor.util.Strings;
@@ -74,27 +71,27 @@ public class DefaultSelectorAdaptation implements SelectorAdaptation{
 	 */
 	public static Set<String> retrieveConceptualCssClasses(MonitorMeta meta) {
 		
-		Set<String> classes = new HashSet<String>();
-		useTrackerClassAsCssClasses(classes, meta);
+		Set<String> classes = new LinkedHashSet<String>();
+		useCallerAsCssClasses(classes, meta);
 		return classes;
 	}
 	
-	private static void useMarkerAsCssClasses(Set<String> classes, MonitorMeta meta){
-		// marker as css class...
-		Marker mk =  Markers.retrieveRegisteredMajorMarker(meta);
-		classes.add(mk.getName());
-		Iterator<Marker> it = mk.iterator();
-		Marker reference;
-		while (it.hasNext()) {
-			reference =  it.next();
-			classes.add(reference.getName());
-		}
-	}
-	
-	
-	private static void useTrackerClassAsCssClasses(Set<String> classes, MonitorMeta meta){
+	private static void useCallerAsCssClasses(Set<String> classes, MonitorMeta meta){
 		if(meta.isCallerNotAvailable())return;
-		classes.add(Strings.toShortClassName(meta.getClassName()));
+		classes.add(Strings.toShortClassName(meta.getClassName()).replaceAll("[\\W]", "_"));
+		classes.add(meta.getMethodName().replaceAll("[\\W]", "_"));
 		
 	}
+//	private static void useMarkerAsCssClasses(Set<String> classes, MonitorMeta meta){
+//		// marker as css class...
+//		Marker mk =  Markers.retrieveRegisteredMajorMarker(meta);
+//		classes.add(mk.getName());
+//		Iterator<Marker> it = mk.iterator();
+//		Marker reference;
+//		while (it.hasNext()) {
+//			reference =  it.next();
+//			classes.add(reference.getName());
+//		}
+//	}
+	
 }

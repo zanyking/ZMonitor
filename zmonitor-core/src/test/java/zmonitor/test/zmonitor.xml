@@ -15,7 +15,7 @@
 		callerJavaFile="true"
 		showId="false"
 		showType="false"
-		showClass="false"
+		showClass="true"
 		showMessage="true">
 		
 	</monitor-sequence-handler>
