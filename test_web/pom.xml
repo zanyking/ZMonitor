@@ -73,6 +73,12 @@
 			<version>10.0.1</version>
 			<scope>test</scope>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.zmonitor</groupId>
+			<artifactId>zmonitor-core</artifactId>
+			<version>${zmonitor.version}</version>
+		</dependency>
 	</dependencies>
 
 </project>

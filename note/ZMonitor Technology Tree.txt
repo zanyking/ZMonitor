@@ -8,27 +8,36 @@ System Execution Monitoring :
 	|	[DONE]Extracting Monitor Sequence from Call Sequence through Native API.
 	|
 	|-> Console view of Monitor Sequence:
-	|		[DONE]To help developer getting better understanding to an excution's call sequence.
-	|		[ N/A]
+	|		[DONE] To help developer getting better understanding to an excution's call sequence.
+	|		[ N/A] provide template mechanism for Console Handler
 	|
 	|-> adaptation to Logging System
 	|		|
 	|		|-> Leverage exsiting Logging system (Log4j, Slf4j, logback):
-	|				To extract Monitor Sequence from call sequence by leveraging the existed logging statement in app.
+	|				[ N/A] To extract Monitor Sequence from call sequence by leveraging slf4j.
+	|				[ N/A] To extract Monitor Sequence from call sequence by leveraging log4j.
+	|				[ N/A] To extract Monitor Sequence from call sequence by leveraging Lobgback.
+	|				[ N/A] provide push, pop, record control through message pattern.
 	|
 	|-> combind with JUnit
 	|		|
-	|		|-> ZMonitor Implementation Self Testing
+	|		|-> ZMonitor Implementation for Self Unit Testing
+	|		|		[DONE] a JUnit test suite for ZMonitor Configuration test.
+	|		|		[DONE] a JUnit test suite for ZMonitor Selection API test.
 	|		|
-	|		|-> Legacy System Testing: 
-	|				Achieve good test coverage to a business Object without refactoring.
+	|		|-> Legacy System for Business Object Unit Testing: 
+	|				DESC: Achieve good testing coverage to a high-level Object without refactoring.
+	|				[DONE]	same as the internal testing.
 	|
 	|-> combind with JUnit, JMeter
 	|		|
 	|		|-> Web Application Testing: 
-	|				In a ZMonitorWebTestCase, developer can shoot a URL through JMeter to trigger a specific execution of the web application. 
+	|				DESC: In a ZMonitorWebTestCase, developer can shoot a URL through JMeter to trigger a specific execution of the web application. 
 	|				Then, the ZMonitorWebTestCase will get back the Monitor Sequence which reflects such execution, 
-	|				and developer now has the ability to check the validity of it through manipulating the Monitor Sequence, by using a sophisticated ZMonitor Selection API.
+	|				and developer now has the ability to check the validity of it through manipulating the Monitor 
+	|				Sequence, by using a sophisticated ZMonitor Selection API.
+	|				[ N/A] A WebTestBase.java for developer to extend.
+	|				[ N/A] WebTestBase should provide utility API for developer to 
 	|
 	|-> IDE Integration
 	|		|
