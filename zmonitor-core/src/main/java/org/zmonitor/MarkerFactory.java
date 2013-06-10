@@ -44,7 +44,9 @@ import org.zmonitor.marker.Marker;
  * @author Ceki G&uuml;lc&uuml; , modifid by Ian YT Tsai(Zanyking)
  */
 public class MarkerFactory {
-  static IMarkerFactory markerFactory = new BasicMarkerFactory();
+  static IMarkerFactory getInstance(){
+	  return ZMonitorManager.getInstance().getMarkerFactory();
+  }
 
   private MarkerFactory() {
   }
@@ -58,7 +60,7 @@ public class MarkerFactory {
    * @return marker
    */
   public static Marker getMarker(String name) {
-    return markerFactory.getMarker(name);
+    return getInstance().getMarker(name);
   }
 
   /**
@@ -69,7 +71,7 @@ public class MarkerFactory {
    * @since 1.5.1
    */
   public static Marker getDetachedMarker(String name) {
-    return markerFactory.getDetachedMarker(name);
+    return getInstance().getDetachedMarker(name);
   }
   
   /**
@@ -81,6 +83,6 @@ public class MarkerFactory {
    * @return the IMarkerFactory instance in use
    */
   public static IMarkerFactory getIMarkerFactory() {
-    return markerFactory;
+    return getInstance();
   }
 }

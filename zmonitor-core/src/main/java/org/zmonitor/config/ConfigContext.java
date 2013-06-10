@@ -53,7 +53,7 @@ public interface ConfigContext {
 	
 	/**
 	 * 
-	 * @param xPath the xquery result should be a nodeList.
+	 * @param xPath the xQuery result should be a nodeList.
 	 * @param visitor a visitor that will visits every entry of xquery result.
 	 */
 	public void forEach(String xPath, Visitor visitor);

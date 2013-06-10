@@ -12,8 +12,11 @@ import org.slf4j.helpers.FormattingTuple;
 import org.slf4j.helpers.MarkerIgnoringBase;
 import org.slf4j.helpers.MessageFormatter;
 import org.slf4j.spi.LocationAwareLogger;
+import org.zmonitor.HasNotInitializedException;
+import org.zmonitor.ZMonitor;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.impl.TrackingContextBase;
+import org.zmonitor.impl.ZMLog;
 import org.zmonitor.logger.LoggerMonitorMeta;
 import org.zmonitor.util.CallerStackTraceElementFinder;
 
@@ -28,26 +31,30 @@ import org.zmonitor.util.CallerStackTraceElementFinder;
  */
 public class ZMonitorLogger implements Logger, Serializable{
 	private static final long serialVersionUID = -5063731853235642189L;
-
+	
+//	private static class Not
 	/**
 	 * a smart reference to Slf4jConfigurator (borrow the
 	 * {@link java.util.concurrent.Callable<T>} interface)
 	 */
-	private Callable<Slf4jConfigurator> configRef = new Callable<Slf4jConfigurator>() {
+	private static class ConfigRef{
 		private Slf4jConfigurator slf4jConfig = null;
 
-		public Slf4jConfigurator call() throws Exception {
+		
+		public Slf4jConfigurator get() throws HasNotInitializedException {
 			if (slf4jConfig != null)
 				return slf4jConfig;
 			slf4jConfig = ZMonitorManager.getInstance().getBeanIfAny(
 					Slf4jConfigurator.class);
 			if (slf4jConfig == null) {
-				throw new IllegalStateException(
-						"the ZMonitorManager hasn't initialized yet, please initialize it before ");
+				throw new HasNotInitializedException(
+						"the ZMonitorManager hasn't initialized yet, please initialize it before use slf4j ZMonitor Adaptor.");
 			}
 			return slf4jConfig;
 		}
-	};
+	}//end of class...
+	private ConfigRef configRef = new ConfigRef();
+
 	
 	private static final CallerStackTraceElementFinder ST_ELEMENT_FINDER = 
 			new CallerStackTraceElementFinder(
@@ -55,7 +62,15 @@ public class ZMonitorLogger implements Logger, Serializable{
 					"org.slf4j");
 
 	/** The current log level */
-	protected LogLevel currentLogLevel = LogLevel.TRACE;
+	protected LogLevel getCurrentLogLevel(){
+		try {
+			return configRef.get().getLogLevel();
+		} catch (HasNotInitializedException e) {
+			ZMLog.warn(e, "getCurrentLogLevel() ",
+				"has been called while ZMonitorManager hasn't been started yet.");
+			return LogLevel.INFO;
+		}
+	}
 
 	private String name;
 
@@ -121,7 +136,15 @@ public class ZMonitorLogger implements Logger, Serializable{
 		TrackingContextBase tCtx = new TrackingContextBase("slf4j");
 		tCtx.setMessage(mt);
 		tCtx.setMonitorMeta(new LoggerMonitorMeta(
-				adapt(marker), tCtx.getTrackerName(), ST_ELEMENT_FINDER.find() ));
+				adapt(marker), tCtx.getTrackerName(), ST_ELEMENT_FINDER.find(), level.toString()));
+		
+		try {
+			configRef.get().tracking(tCtx);
+		} catch (HasNotInitializedException e) {
+			ZMLog.warn(e, "getCurrentLogLevel() ",
+					"has been called while ZMonitorManager hasn't been started yet.");
+			//do nothing because ZMonitor is not ready to serve...
+		}
 	}
 	
 	
@@ -185,7 +208,7 @@ public class ZMonitorLogger implements Logger, Serializable{
 	 *            is this level enabled?
 	 */
 	protected boolean isLevelEnabled(LogLevel logLevel) {
-		return (logLevel.greaterOrEquals(currentLogLevel));
+		return (logLevel.greaterOrEquals(getCurrentLogLevel()));
 	}
 
 	public boolean isTraceEnabled() {

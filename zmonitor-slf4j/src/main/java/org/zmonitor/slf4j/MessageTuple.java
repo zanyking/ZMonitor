@@ -50,8 +50,14 @@ public class MessageTuple {
 									// going to handle this part out side. 
 		this.argArray = argArray;
 	}
-	
-	
+	/**
+	 * need this method for ZMonitor to eat tracking operator.
+	 *  
+	 * @param messagePattern
+	 */
+	public void setMessagePattern(String messagePattern){
+		this.messagePattern = messagePattern;
+	}	
 	public String getMessagePattern() {
 		return messagePattern;
 	}

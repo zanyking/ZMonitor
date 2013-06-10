@@ -14,6 +14,8 @@ import org.zmonitor.config.ConfigSource;
 import org.zmonitor.impl.ConfiguratorRepository;
 import org.zmonitor.impl.MSPipe;
 import org.zmonitor.impl.ZMLog;
+import org.zmonitor.marker.BasicMarkerFactory;
+import org.zmonitor.marker.IMarkerFactory;
 import org.zmonitor.selector.SelectorAdaptor;
 import org.zmonitor.spi.MonitorLifecycle;
 import org.zmonitor.spi.MonitorLifecycleManager;
@@ -158,6 +160,20 @@ public final class ZMonitorManager {
 		this.resourceProvider = resourceProvider;
 		this.accept(resourceProvider);
 	}
+	IMarkerFactory markerFactory = new BasicMarkerFactory();
+	public IMarkerFactory getMarkerFactory(){
+		return markerFactory;
+	}
+	
+	public void setMarkerFactory(IMarkerFactory markerFac){
+		if (fZMBeanRepository.isStarted())
+			throw new IllegalStateException(
+					"marker factory can only be initiated while " +
+					"ZMonitorManager is in configuration phase.");
+		markerFactory = markerFac;
+	}
+	
+	
 	/**
 	 * @param tClz bean type.
 	 * @return every bean that matches the given type, size could be 0~n.

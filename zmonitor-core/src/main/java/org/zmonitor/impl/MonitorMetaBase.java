@@ -34,10 +34,12 @@ public class MonitorMetaBase implements MonitorMeta{
 	 */
 	public MonitorMetaBase(Marker marker, String trackerName, StackTraceElement stEle) {
 		this(marker, trackerName);
-		className = stEle.getClassName();
-		methodName = stEle.getMethodName();
-		lineNumber = stEle.getLineNumber();
-		fileName = stEle.getFileName();
+		if(stEle!=null){
+			className = stEle.getClassName();
+			methodName = stEle.getMethodName();
+			lineNumber = stEle.getLineNumber();
+			fileName = stEle.getFileName();	
+		}
 	}
 	/**
 	 * 

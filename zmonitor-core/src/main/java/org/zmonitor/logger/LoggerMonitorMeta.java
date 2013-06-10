@@ -14,21 +14,31 @@ public class LoggerMonitorMeta extends MonitorMetaBase {
 	private static final long serialVersionUID = -3699586119435983470L;
 	
 	
-
-	public LoggerMonitorMeta() {}
+	private String logLevel;
 
 	public LoggerMonitorMeta(Marker marker, String trackerName,
-			StackTraceElement stEle) {
+			StackTraceElement stEle, String logLevel) {
 		super(marker, trackerName, stEle);
+		this.logLevel = logLevel;
 	}
 
 	public LoggerMonitorMeta(Marker marker, String trackerName,
-			String className, String methodName, int lineNumber, String fileName) {
+			String className, String methodName, int lineNumber, String fileName, String logLevel) {
 		super(marker, trackerName, className, methodName, lineNumber, fileName);
+		this.logLevel = logLevel;
 	}
 
-	public LoggerMonitorMeta(Marker marker, String trackerName) {
+	public LoggerMonitorMeta(Marker marker, String trackerName, String logLevel) {
 		super(marker, trackerName);
+		this.logLevel = logLevel;
+	}
+
+	public String getLogLevel() {
+		return logLevel;
+	}
+
+	public void setLogLevel(String logLevel) {
+		this.logLevel = logLevel;
 	}
 
 }

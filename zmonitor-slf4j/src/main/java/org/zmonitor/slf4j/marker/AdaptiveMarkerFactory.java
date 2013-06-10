@@ -7,17 +7,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.IMarkerFactory;
-import org.slf4j.Marker;
-import org.zmonitor.slf4j.marker.AdaptiveMarker;
 
 /**
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class AdaptiveMarkerFactory implements IMarkerFactory {
+public class AdaptiveMarkerFactory implements IMarkerFactory, org.zmonitor.marker.IMarkerFactory {
 
-
-	  Map markerMap = new HashMap();
+	  Map<String, AdaptiveMarker> markerMap = new HashMap<String, AdaptiveMarker>();
 	  
 	  /**
 	   * Regular users should <em>not</em> create
@@ -35,12 +32,12 @@ public class AdaptiveMarkerFactory implements IMarkerFactory {
 	   * @param name the name of the marker to be created
 	   * @return a Marker instance
 	   */
-	  public synchronized Marker getMarker(String name) {
+	  public synchronized AdaptiveMarker getMarker(String name) {
 	    if (name == null) {
 	      throw new IllegalArgumentException("Marker name cannot be null");
 	    }
 
-	    Marker marker = (Marker) markerMap.get(name);
+	    AdaptiveMarker marker = markerMap.get(name);
 	    if (marker == null) {
 	      marker = new AdaptiveMarker(name);
 	      markerMap.put(name, marker);
@@ -66,9 +63,8 @@ public class AdaptiveMarkerFactory implements IMarkerFactory {
 	  }
 
 	  
-	  public Marker getDetachedMarker(String name) {
+	  public AdaptiveMarker getDetachedMarker(String name) {
 	    return  new AdaptiveMarker(name);
 	  }
 	  
-
 }
