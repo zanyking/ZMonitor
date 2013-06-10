@@ -22,9 +22,12 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package org.zmonitor.marker;
+package org.zmonitor;
 
-import org.zmonitor.impl.BasicMarkerFactory;
+import org.zmonitor.marker.BasicMarkerFactory;
+import org.zmonitor.marker.IMarkerFactory;
+import org.zmonitor.marker.Marker;
+
 
 
 /**

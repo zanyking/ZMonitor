@@ -7,7 +7,6 @@ package org.zmonitor.impl;
 import static org.zmonitor.impl.XMLConfigs.NAME;
 import static org.zmonitor.impl.XMLConfigs.newInstanceByClassAttr;
 
-import org.w3c.dom.Node;
 import org.zmonitor.CustomConfigurable;
 import org.zmonitor.config.ConfigContext;
 import org.zmonitor.config.ConfigContext.Visitor;
@@ -56,25 +55,23 @@ public class CoreConfigurator  implements Configurator {
 		msPipeCtx.getManager().setMSPipe(pipe);
 	}
 	
-	private static void prepareMSHandlers(final ConfigContext  configCtx){
+	private static void prepareMSHandlers(ConfigContext  configCtx){
 		configCtx.forEach(REL_TIMELINE_HANDLER, new Visitor(){
-			public boolean visit(int index, Node node) {
-				MonitorSequenceHandler handler = newInstanceByClassAttr(node, null, true);
-				String name = DOMs.getAttributeValue(node, NAME);
-				configCtx.applyPropertyTags( new PropertySetter(handler));
+			public boolean visit(int index, ConfigContext nodeCtx) {
+				MonitorSequenceHandler handler = nodeCtx.newBean(null, true);
+				PropertySetter setter = new PropertySetter(handler);
+//				nodeCtx.applyPropertyTags(setter);
+				nodeCtx.applyAttributes(setter, "name", "class");
 				
-				XMLConfigs.applyAttributesToBean(node, 
-						new PropertySetter(handler), 
-						XMLConfigs.ignores("name", "class"));
-				
+				String name = DOMs.getAttributeValue(nodeCtx.getNode(), NAME);
 				if(name==null||name.length()<=0)
 					throw new WrongConfigurationException(
 							"You forgot to assign a \"name\" attribute to handler the declaration of: "+handler);
 				handler.setId(name);
 				
-				configCtx.getManager().addMonitorSequenceHandler(handler);
+				nodeCtx.getManager().addMonitorSequenceHandler(handler);
 				if(handler instanceof CustomConfigurable){
-					Configs.initCustomConfigurable(configCtx, (CustomConfigurable) handler, false);
+					Configs.initCustomConfigurable(nodeCtx, (CustomConfigurable) handler, true);
 				}
 				return false;
 			}

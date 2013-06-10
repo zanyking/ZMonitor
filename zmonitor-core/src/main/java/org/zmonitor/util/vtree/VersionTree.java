@@ -6,7 +6,7 @@ package org.zmonitor.util.vtree;
 
 import org.zmonitor.MonitorPoint;
 import org.zmonitor.MonitorSequence;
-import org.zmonitor.impl.SimpleMonitorMeta;
+import org.zmonitor.impl.MonitorMetaBase;
 
 /**
  * @author Ian YT Tsai(Zanyking)
@@ -22,7 +22,7 @@ public class VersionTree{
 	 */
 	VersionNode getRootVNode() {
 		if(rootVNode==null){
-			rootVNode = new VersionNode( 0, 0,  new SimpleMonitorMeta());	
+			rootVNode = new VersionNode( 0, 0,  new MonitorMetaBase());	
 		}
 		return rootVNode;
 	}

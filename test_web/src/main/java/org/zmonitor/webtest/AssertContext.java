@@ -10,7 +10,7 @@ import org.zmonitor.selector.MonitorPointSelection;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public interface WebAppAssertContext {
+public interface AssertContext {
 
 	/**
 	 * 

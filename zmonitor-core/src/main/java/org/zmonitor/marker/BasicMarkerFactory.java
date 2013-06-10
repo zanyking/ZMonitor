@@ -22,13 +22,11 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
-package org.zmonitor.impl;
+package org.zmonitor.marker;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.zmonitor.marker.IMarkerFactory;
-import org.zmonitor.marker.Marker;
 
 
 /**

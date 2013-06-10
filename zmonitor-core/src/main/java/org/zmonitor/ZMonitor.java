@@ -8,9 +8,9 @@ import java.io.IOException;
 
 import org.zmonitor.config.ConfigSource;
 import org.zmonitor.config.ConfigSources;
-import org.zmonitor.impl.CoreTrackingContext;
-import org.zmonitor.impl.SimpleMonitorMeta;
+import org.zmonitor.impl.MonitorMetaBase;
 import org.zmonitor.impl.ThreadLocalMonitorLifecycleManager;
+import org.zmonitor.impl.TrackingContextBase;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.marker.Marker;
 import org.zmonitor.spi.MonitorLifecycle;
@@ -125,12 +125,12 @@ public final class ZMonitor {
 	 * If you want to start a {@link MonitorPoint} in your Java code manually, use this method.<br>
 	 * <p>
 	 * This method will collect the caller's {@link StackTraceElement} information by retrieving current thread's programming stack.<br>
-	 * So this method will be cause some performance overhead to your program, if you are able to compose a {@link Name} by yourself, please use {@link #push(Name, Object)} instead.
+	 * So this method will be cause some performance overhead to your program, if you are able to compose a {@link Marker} by yourself, please use {@link #push(Marker, Object)} instead.
 	 * </p>
 	 * @param mesg the message that you want to assign to {@link MonitorPoint}.
 	 * @param traceCallerStack
 	 * @return A {@link MonitorPoint} that will contain caller's java source information.
-	 * @see #push(Name, Object)
+	 * @see #push(Marker, Object)
 	 */
 	public static MonitorPoint push(Object mesg, boolean traceCallerStack) {
 		return push(MK_PUSH_ZM, mesg, traceCallerStack);
@@ -143,7 +143,7 @@ public final class ZMonitor {
 	 * @return
 	 */
 	public static MonitorPoint push(Marker marker, Object message, boolean traceCallerStack){
-		CoreTrackingContext ctx = new CoreTrackingContext(TRACKER_NAME_ZM);
+		TrackingContextBase ctx = new TrackingContextBase(TRACKER_NAME_ZM);
 		ctx.setCreateMillis(System.currentTimeMillis());
 		ctx.setMessage(message);
 		ctx.setMonitorMeta(newMonitorMeta(marker, traceCallerStack, 3));
@@ -178,7 +178,7 @@ public final class ZMonitor {
 	private static MonitorMeta newMonitorMeta(Marker marker, boolean shouldDo, int callerLevel){
 		
 		if(!shouldDo){
-			return new SimpleMonitorMeta(marker, TRACKER_NAME_ZM);		
+			return new MonitorMetaBase(marker, TRACKER_NAME_ZM);		
 		}
 		
 		StackTraceElement[] stackElemts = Thread.currentThread().getStackTrace();
@@ -188,7 +188,7 @@ public final class ZMonitor {
 			throw new Error("How could method has no caller?");
 		}
 		StackTraceElement sElemt = stackElemts[callerLevel];
-		return new SimpleMonitorMeta(marker, TRACKER_NAME_ZM, sElemt);
+		return new MonitorMetaBase(marker, TRACKER_NAME_ZM, sElemt);
 	}
 	
 	/**
@@ -218,7 +218,7 @@ public final class ZMonitor {
 	 * @return
 	 */
 	public static MonitorPoint record(Marker marker, Object message, boolean traceCallerStack){
-		CoreTrackingContext ctx = new CoreTrackingContext(TRACKER_NAME_ZM);
+		TrackingContextBase ctx = new TrackingContextBase(TRACKER_NAME_ZM);
 		ctx.setCreateMillis(System.currentTimeMillis());
 		ctx.setMessage(message);
 		ctx.setMonitorMeta(newMonitorMeta(marker, traceCallerStack, 3));
@@ -283,7 +283,7 @@ public final class ZMonitor {
 	 * @return
 	 */
 	public static MonitorPoint pop(Marker marker, Object message, boolean traceCallerStack){
-		CoreTrackingContext ctx = new CoreTrackingContext(TRACKER_NAME_ZM);
+		TrackingContextBase ctx = new TrackingContextBase(TRACKER_NAME_ZM);
 		ctx.setCreateMillis(System.currentTimeMillis());
 		ctx.setMessage(message);
 		ctx.setMonitorMeta(newMonitorMeta(marker, traceCallerStack, 3));

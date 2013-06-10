@@ -74,12 +74,16 @@ public class WebConfigurator extends ZMBeanBase implements Configurator {
 			final DefaultUrlFilter filter){
 
 		urlFilterCtx.forEach( REL_CONDITION, new Visitor(){
-			public boolean visit(int idx, Node node) {
+			public boolean visit(int idx, ConfigContext nodeCtx) {
+				
 				Condition cond = new Condition();
-				urlFilterCtx.applyPropertyTags(new PropertySetter(cond));
-				applyAttributesToBean( node, new PropertySetter(cond), null);
+				PropertySetter setter = new PropertySetter(cond);
+				
+				urlFilterCtx.applyPropertyTags(setter);
+				nodeCtx.applyAttributes(setter);
+				
 				if(cond.getPattern()==null){
-					cond.setPattern(getTextFromAttrOrContent(node, "pattern"));
+					cond.setPattern(nodeCtx.getAttribute("pattern"));
 				}
 				filter.add(cond);
 				return true;

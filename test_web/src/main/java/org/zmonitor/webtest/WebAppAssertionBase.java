@@ -14,7 +14,7 @@ public abstract class WebAppAssertionBase implements WebAppAssertion {
 		return false;
 	}
 
-	public void test(WebAppAssertContext asrtCtx) throws Exception {
+	public void doAssert(AssertContext asrtCtx) throws Exception {
 
 	}
 

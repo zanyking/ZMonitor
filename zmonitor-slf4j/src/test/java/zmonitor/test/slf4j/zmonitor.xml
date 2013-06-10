@@ -9,8 +9,10 @@
 	
 	
 	<slf4j-conf logLevel="error">
-		<tracker name="slf4jAdaptor">
-			
+		<tracker name="slf4jAdaptor" keepOperator="true">
+			<push><![CDATA[->]]></push>
+			<record><![CDATA[]]></record>
+			<pop><![CDATA[<-]]></pop>
 		</tracker>
 		<property name="org.myapp">error</property>
 		<property name="org.myapp.web.ui">info</property>

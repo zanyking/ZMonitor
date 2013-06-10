@@ -12,18 +12,19 @@ import org.apache.log4j.spi.LocationInfo;
 import org.apache.log4j.spi.LoggingEvent;
 import org.zmonitor.AlreadyStartedException;
 import org.zmonitor.InitFailureException;
+import org.zmonitor.MarkerFactory;
 import org.zmonitor.MonitorSequence;
 import org.zmonitor.TrackingContext;
 import org.zmonitor.ZMonitor;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.config.ConfigSource;
 import org.zmonitor.config.ConfigSources;
-import org.zmonitor.impl.SimpleMonitorMeta;
+import org.zmonitor.impl.MonitorMetaBase;
 import org.zmonitor.impl.ThreadLocalMonitorLifecycleManager;
+import org.zmonitor.impl.TrackingContextBase;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.logger.log4j.NdcContext.NdcObj;
 import org.zmonitor.marker.Marker;
-import org.zmonitor.marker.MarkerFactory;
 import org.zmonitor.spi.MonitorLifecycle;
 import org.zmonitor.util.Strings;
 
@@ -398,7 +399,7 @@ public class ZMonitorAppender extends AppenderSkeleton {
 	 * @return
 	 */
 	protected TrackingContext newTrackingContext(LoggingEvent event, String markerName, String message){
-		Log4jTrackingContext ctx = new Log4jTrackingContext("log4j");
+		TrackingContextBase ctx = new TrackingContextBase("log4j");
 		ctx.setMessage(message);
 		if (javaSourceLocationInfo) {
 			LocationInfo locInfo = event.getLocationInformation();
@@ -412,14 +413,14 @@ public class ZMonitorAppender extends AppenderSkeleton {
 			Marker marker = markerName==null? 
 					null:MarkerFactory.getMarker(markerName);
 			
-			SimpleMonitorMeta cInfo = new SimpleMonitorMeta(marker,
+			MonitorMetaBase cInfo = new MonitorMetaBase(marker,
 					getMonitorPointNameType(),
 					locInfo.getClassName(), 
 					locInfo.getMethodName(), 
 					lineNum, null);
 			ctx.setMonitorMeta(cInfo);
 		} else {
-			SimpleMonitorMeta cInfo = new SimpleMonitorMeta();
+			MonitorMetaBase cInfo = new MonitorMetaBase();
 			cInfo.setClassName(event.getLoggerName());
 			ctx.setMonitorMeta(cInfo);
 		}

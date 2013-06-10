@@ -15,6 +15,9 @@ System Execution Monitoring :
 	|		|
 	|		|-> Leverage exsiting Logging system (Log4j, Slf4j, logback):
 	|				[ N/A] To extract Monitor Sequence from call sequence by leveraging slf4j.
+	|					[ N/A] Slf4j logger log impl.(get a quick & direty version)
+	|					[ N/A] Slf4j Configurator (for slf4j tracker) in zmonitor.xml
+	|					[ N/A] Slf4j tracker Interface(identify needed factors)
 	|				[ N/A] To extract Monitor Sequence from call sequence by leveraging log4j.
 	|				[ N/A] To extract Monitor Sequence from call sequence by leveraging Lobgback.
 	|				[ N/A] provide push, pop, record control through message pattern.
@@ -36,6 +39,7 @@ System Execution Monitoring :
 	|				Then, the ZMonitorWebTestCase will get back the Monitor Sequence which reflects such execution, 
 	|				and developer now has the ability to check the validity of it through manipulating the Monitor 
 	|				Sequence, by using a sophisticated ZMonitor Selection API.
+					[ N/A] Integrate JMeter into 
 	|				[ N/A] A WebTestBase.java for developer to extend.
 	|				[ N/A] WebTestBase should provide utility API for developer to 
 	|
@@ -43,4 +47,7 @@ System Execution Monitoring :
 	|		|
 	|		|->  Active Web App Monitoring: through Request.
 	|				Active System Assertion through unit test case. (Has possibility to reuse the TestCase)
-	|
+	|				[ N/A] WebAppAssertion 
+	|				[ N/A] IDE MS Handler, send MS to IDE side
+	|				[ N/A] Eclipse Plugin which receive MS as an event, and notify user when assertion failed.
+	|				[ N/A] 

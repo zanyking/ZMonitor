@@ -15,17 +15,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.zmonitor.AlreadyStartedException;
+import org.zmonitor.MarkerFactory;
 import org.zmonitor.MonitorMeta;
 import org.zmonitor.TrackingContext;
 import org.zmonitor.ZMonitor;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.config.ConfigSource;
 import org.zmonitor.config.ConfigSources;
-import org.zmonitor.impl.SimpleMonitorMeta;
+import org.zmonitor.impl.MonitorMetaBase;
 import org.zmonitor.impl.TrackingContextBase;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.marker.Marker;
-import org.zmonitor.marker.MarkerFactory;
 
 /**
  * 
@@ -103,7 +103,7 @@ public class ZMonitorServletFilter implements Filter {
 			
 			try{
 				ZMonitor.pop(newTrackingContext("<- END", 
-						new SimpleMonitorMeta(
+						new MonitorMetaBase(
 							MarkerFactory.getMarker("REQUEST_END"), TRACKER_NAME)));	
 			}finally{
 				if(isIgnitBySelf){// force end...
@@ -124,7 +124,7 @@ public class ZMonitorServletFilter implements Filter {
 	/**
 	 * @author Ian YT Tsai(Zanyking)
 	 */
-	public static class WebMonitorMeta extends SimpleMonitorMeta{
+	public static class WebMonitorMeta extends MonitorMetaBase{
 		protected static final long serialVersionUID = 7285893125167926262L;
 		protected String mimeType;
 		protected String protocol;

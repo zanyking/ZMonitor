@@ -71,7 +71,7 @@ public interface ConfigContext {
 		 * @param self
 		 * @return true if you want to continue, false break the iteration.
 		 */
-		public boolean visit(int idx, Node node);
+		public boolean visit(int idx, ConfigContext nodeCtx);
 	}
 	/**
 	 * 

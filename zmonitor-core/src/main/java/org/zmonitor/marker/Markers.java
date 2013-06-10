@@ -3,6 +3,7 @@
  */
 package org.zmonitor.marker;
 
+import org.zmonitor.MarkerFactory;
 import org.zmonitor.MonitorMeta;
 
 /**

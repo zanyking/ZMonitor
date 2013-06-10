@@ -1,14 +1,13 @@
 /**
  * 
  */
-package org.zmonitor.impl;
+package org.zmonitor.marker;
 
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import org.zmonitor.marker.Marker;
 
 /**
  * @author Ian YT Tsai(Zanyking)
@@ -21,7 +20,7 @@ public class BasicMarker implements Marker {
 	private final String name;
 	private List<Marker> refereceList;
 
-	BasicMarker(String name) {
+	protected BasicMarker(String name) {
 		if (name == null) {
 			throw new IllegalArgumentException("A marker name cannot be null");
 		}

@@ -16,7 +16,7 @@ import org.zmonitor.test.junit.TestBase;
 public class Slf4jSimple_TEST extends TestBase{
 
 	@Test
-	public void simpleUsage() throws Exception {
+	public void test_Configuration() throws Exception {
 		Logger logger = LoggerFactory.getLogger(Slf4jSimple_TEST.class);
 		logger.info("Hello World");
 		

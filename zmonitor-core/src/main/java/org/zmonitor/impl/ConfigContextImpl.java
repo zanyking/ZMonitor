@@ -69,7 +69,8 @@ public class ConfigContextImpl implements ConfigContext{
 	public void forEach(String xPath, Visitor visitor) {
 		NodeList nodeList = domRetriever.getNodeList(currentNode, xPath);
 		for(int i=0, j=nodeList.getLength();i<j;i++){
-			boolean b = visitor.visit(i, nodeList.item(i));
+			boolean b = visitor.visit(i, new ConfigContextImpl(
+					attrs, zMonitorManager, domRetriever, nodeList.item(i)));
 			if(!b)break;
 		}
 	}
@@ -80,7 +81,8 @@ public class ConfigContextImpl implements ConfigContext{
 	
 	public void applyPropertyTags(final PropertySetter setter) {
 		forEach( PROPERTY, new Visitor(){
-			public boolean visit(int idx, Node propNode) {
+			public boolean visit(int idx, ConfigContext nodeCtx) {
+				Node propNode = nodeCtx.getNode();
 				String name = DOMs.getAttributeValue(propNode, NAME);
 				String value = XMLConfigs.getTextFromAttrOrContent(propNode, VALUE);
 				setter.setProperty(name, value);

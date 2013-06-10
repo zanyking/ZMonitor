@@ -7,6 +7,7 @@ import org.slf4j.IMarkerFactory;
 import org.slf4j.MarkerFactory;
 import org.slf4j.helpers.BasicMarkerFactory;
 import org.slf4j.spi.MarkerFactoryBinder;
+import org.zmonitor.slf4j.marker.AdaptiveMarkerFactory;
 
 /**
  * The binding of {@link MarkerFactory} class with an actual instance of
@@ -19,7 +20,7 @@ public class StaticMarkerBinder implements MarkerFactoryBinder {
 
 	public static final StaticMarkerBinder SINGLETON = new StaticMarkerBinder();
 
-	final IMarkerFactory markerFactory = new BasicMarkerFactory();
+	final IMarkerFactory markerFactory = new AdaptiveMarkerFactory();
 
 	private StaticMarkerBinder() {
 	}

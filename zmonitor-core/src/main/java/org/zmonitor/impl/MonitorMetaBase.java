@@ -11,7 +11,7 @@ import org.zmonitor.util.Strings;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class SimpleMonitorMeta implements MonitorMeta{
+public class MonitorMetaBase implements MonitorMeta{
 	private static final long serialVersionUID = -2036093624490603264L;
 
 	protected String className; 
@@ -21,18 +21,18 @@ public class SimpleMonitorMeta implements MonitorMeta{
 	protected Marker marker;
 	protected String trackerName;
 	
-	public SimpleMonitorMeta(){};
+	public MonitorMetaBase(){};
 	/**
 	 * @param marker
 	 */
-	public SimpleMonitorMeta(Marker marker, String trackerName){
+	public MonitorMetaBase(Marker marker, String trackerName){
 		this.marker = marker;
 		this.trackerName = trackerName;
 	};
 	/**
 	 * @param stEle
 	 */
-	public SimpleMonitorMeta(Marker marker, String trackerName, StackTraceElement stEle) {
+	public MonitorMetaBase(Marker marker, String trackerName, StackTraceElement stEle) {
 		this(marker, trackerName);
 		className = stEle.getClassName();
 		methodName = stEle.getMethodName();
@@ -45,7 +45,7 @@ public class SimpleMonitorMeta implements MonitorMeta{
 	 * @param methodName
 	 * @param lineNumber
 	 */
-	public SimpleMonitorMeta(Marker marker, String trackerName, String className, String methodName, int lineNumber, String fileName) {
+	public MonitorMetaBase(Marker marker, String trackerName, String className, String methodName, int lineNumber, String fileName) {
 		this(marker, trackerName);
 		this.className = className;
 		this.methodName = methodName;
@@ -143,7 +143,7 @@ public class SimpleMonitorMeta implements MonitorMeta{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		SimpleMonitorMeta other = (SimpleMonitorMeta) obj;
+		MonitorMetaBase other = (MonitorMetaBase) obj;
 		if (className == null) {
 			if (other.className != null)
 				return false;
@@ -174,8 +174,8 @@ public class SimpleMonitorMeta implements MonitorMeta{
 		return true;
 	}
 	
-	protected SimpleMonitorMeta clone(){
-		SimpleMonitorMeta clone = new SimpleMonitorMeta();
+	protected MonitorMetaBase clone(){
+		MonitorMetaBase clone = new MonitorMetaBase();
 		clone.className = this.className;
 		clone.fileName = this.fileName;
 		clone.lineNumber = this.lineNumber;

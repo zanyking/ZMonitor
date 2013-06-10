@@ -28,6 +28,6 @@ public interface WebAppAssertion {
 	 *             forwarded to an identical system that has the ability 
 	 *             to notify user. 
 	 */
-	void test(WebAppAssertContext asrtCtx)throws Exception;
+	void doAssert(AssertContext asrtCtx)throws Exception;
 	
 }

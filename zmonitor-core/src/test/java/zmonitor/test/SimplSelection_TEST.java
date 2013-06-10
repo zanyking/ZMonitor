@@ -41,6 +41,7 @@ public class SimplSelection_TEST extends TestBase {
 	Predicate<MonitorPoint> letByMessageContainsPPP = new Predicate<MonitorPoint>() {
 		public boolean apply(MonitorPoint mp) {
 			// find out the mp which message contains "ppp"
+			if(mp.getMessage()==null)return false;
 			return mp.getMessage().toString() .indexOf("ppp") >= 0;
 		}
 	};
