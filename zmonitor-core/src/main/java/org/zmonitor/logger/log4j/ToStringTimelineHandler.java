@@ -11,7 +11,7 @@ import org.zmonitor.ZMonitor;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class ToStringTimelineHandler extends org.zmonitor.handler.SampleConsoleMonitorSequenceHandler{
+public class ToStringTimelineHandler extends org.zmonitor.handler.EclipseConsoleMonitorSequenceHandler{
 	private Logger logger = Logger.getLogger(ZMonitor.class);
 
 	@Override

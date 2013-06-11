@@ -9,7 +9,7 @@
 	
 	
 	<monitor-sequence-handler name="console-handler" 
-		class="org.zmonitor.handler.SampleConsoleMonitorSequenceHandler"
+		class="org.zmonitor.handler.EclipseConsoleMonitorSequenceHandler"
 		previousMillis="false"	
 		nextMillis="true"
 		callerJavaFile="true"

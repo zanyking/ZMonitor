@@ -2,5 +2,5 @@
 <!-- do not use Id here, let TestBase generate the ID by class name -->
 <zmonitor>
 	<monitor-sequence-handler name="console-LOG4J" 
-		class="org.zmonitor.handler.SampleConsoleMonitorSequenceHandler"/>
+		class="org.zmonitor.handler.EclipseConsoleMonitorSequenceHandler"/>
 </zmonitor>

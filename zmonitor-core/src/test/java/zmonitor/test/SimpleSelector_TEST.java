@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.zmonitor.MonitorPoint;
 import org.zmonitor.ZMonitor;
 import org.zmonitor.ZMonitorManager;
-import org.zmonitor.handler.SampleConsoleMonitorSequenceHandler;
+import org.zmonitor.handler.EclipseConsoleMonitorSequenceHandler;
 import org.zmonitor.selector.MonitorPointSelection;
 import org.zmonitor.test.junit.MonitoredResult;
 import org.zmonitor.test.junit.TestBase;
@@ -47,7 +47,7 @@ public class SimpleSelector_TEST  extends TestBase{
 		StringBuffer sb = new StringBuffer("testSelection_Selector: " +selector+
 				"\n");
 		sb.append("--------------------\n");
-		SampleConsoleMonitorSequenceHandler handler = 
+		EclipseConsoleMonitorSequenceHandler handler = 
 				ZMonitorManager.getInstance().getBeanById("console-handler");
 		
 		int counter = 0;
@@ -78,7 +78,7 @@ public class SimpleSelector_TEST  extends TestBase{
 		StringBuffer sb = new StringBuffer("testSelection_SelectorPseudoClass: " +selector+
 				"\n");
 		sb.append("--------------------\n");
-		SampleConsoleMonitorSequenceHandler handler = 
+		EclipseConsoleMonitorSequenceHandler handler = 
 				ZMonitorManager.getInstance().getBeanById("console-handler");
 		
 		int counter = 0;

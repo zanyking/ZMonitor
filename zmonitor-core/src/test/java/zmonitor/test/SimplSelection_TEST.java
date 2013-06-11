@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.zmonitor.MonitorPoint;
 import org.zmonitor.ZMonitor;
 import org.zmonitor.ZMonitorManager;
-import org.zmonitor.handler.SampleConsoleMonitorSequenceHandler;
+import org.zmonitor.handler.EclipseConsoleMonitorSequenceHandler;
 import org.zmonitor.selector.MonitorPointSelection;
 import org.zmonitor.test.junit.MonitoredResult;
 import org.zmonitor.test.junit.TestBase;
@@ -61,7 +61,7 @@ public class SimplSelection_TEST extends TestBase {
 
 		MonitorPoint mp;
 		StringBuffer sb = new StringBuffer("traverse with letBy\n");
-		SampleConsoleMonitorSequenceHandler handler = 
+		EclipseConsoleMonitorSequenceHandler handler = 
 				ZMonitorManager.getInstance().getBeanById("console-handler");
 		int counter = 0;
 		while(mpSel.hasNext()){
@@ -91,7 +91,7 @@ public class SimplSelection_TEST extends TestBase {
 		MonitorPoint mp;
 		StringBuffer sb = new StringBuffer("traverse with letBy | greaterThan \n");
 		
-		SampleConsoleMonitorSequenceHandler handler = 
+		EclipseConsoleMonitorSequenceHandler handler = 
 				ZMonitorManager.getInstance().getBeanById("console-handler");
 		
 		int counter = 0;

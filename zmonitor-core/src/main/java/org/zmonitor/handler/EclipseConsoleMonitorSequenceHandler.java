@@ -28,14 +28,14 @@ import static org.zmonitor.util.MPUtils.*;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class SampleConsoleMonitorSequenceHandler extends ZMBeanBase 
+public class EclipseConsoleMonitorSequenceHandler extends ZMBeanBase 
 	implements MonitorSequenceHandler, CustomConfigurable {
-	
+	//SampleConsoleMonitorSequenceHandler
 	
 	private static SimpleDateFormat getHHmmssSSS_yyyy_MM_dd(){
 		return new SimpleDateFormat("HH:mm:ss:SSS yyyy/MM/dd");
 	}
-	public SampleConsoleMonitorSequenceHandler(){}
+	public EclipseConsoleMonitorSequenceHandler(){}
 
 	public void configure(ConfigContext webConf) {
 		selAdptor = webConf.getManager().getSelectorAdaptor();

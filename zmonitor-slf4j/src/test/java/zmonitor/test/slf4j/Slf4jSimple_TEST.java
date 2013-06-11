@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zmonitor.MonitorPoint;
 import org.zmonitor.ZMonitorManager;
-import org.zmonitor.handler.SampleConsoleMonitorSequenceHandler;
+import org.zmonitor.handler.EclipseConsoleMonitorSequenceHandler;
 import org.zmonitor.selector.MonitorPointSelection;
 import org.zmonitor.test.junit.MonitoredResult;
 import org.zmonitor.test.junit.TestBase;
@@ -49,7 +49,7 @@ public class Slf4jSimple_TEST extends TestBase{
 		StringBuffer sb = new StringBuffer(
 				"testSelection_SelectorPseudoClass: " + selector + "\n");
 		sb.append("--------------------\n");
-		SampleConsoleMonitorSequenceHandler handler = ZMonitorManager
+		EclipseConsoleMonitorSequenceHandler handler = ZMonitorManager
 				.getInstance().getBeanById("console-handler");
 
 		int counter = 0;
