@@ -67,10 +67,15 @@ public class MessageTuple {
 	public Throwable getThrowable() {
 		return throwable;
 	}
+	private transient String formattedMessage;
 	public String toFormattedMessage(){
-		return MessageFormatter.arrayFormat(messagePattern, argArray);
+		if(formattedMessage==null)
+			formattedMessage =  MessageFormatter.arrayFormat(messagePattern, argArray);
+		return formattedMessage;
 	}
-	
+	public String toString(){
+		return toFormattedMessage();
+	}
 	
 }
 

@@ -22,7 +22,7 @@ public class StaticLoggerBinder implements LoggerFactoryBinder {
 	 * 
 	 * @return the StaticLoggerBinder singleton
 	 */
-	public static final StaticLoggerBinder getSingleon(){
+	public static final StaticLoggerBinder getSingleton(){
 		return SINGLETON;
 	}
 	

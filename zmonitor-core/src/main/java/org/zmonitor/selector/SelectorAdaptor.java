@@ -31,12 +31,13 @@ import org.zmonitor.util.Strings;
 public class SelectorAdaptor implements SelectorAdaptation{
 
 	
-	private final Map<String, SelectorAdaptation> supports = 
-			new HashMap<String, SelectorAdaptation>();
+	private final Map<String, SelectorAdaptation> supports;
+	private final DefaultSelectorAdaptation inner;
 	
-	
-	private final DefaultSelectorAdaptation inner = 
-			new DefaultSelectorAdaptation();
+	public SelectorAdaptor(){
+		inner = new DefaultSelectorAdaptation();
+		supports = new HashMap<String, SelectorAdaptation>();
+	}
 	
 	/**
 	 * 

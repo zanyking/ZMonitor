@@ -5,7 +5,7 @@ ZMonitor Technology Tree:
 
 
 System Execution Monitoring : 
-	|	[DONE]Extracting Monitor Sequence from Call Sequence through Native API.
+	|	[DONE]Extracting Monitor Sequence from call sequence through Native API.
 	|
 	|-> Console view of Monitor Sequence:
 	|		[DONE] To help developer getting better understanding to an excution's call sequence.
@@ -14,10 +14,10 @@ System Execution Monitoring :
 	|-> adaptation to Logging System
 	|		|
 	|		|-> Leverage exsiting Logging system (Log4j, Slf4j, logback):
-	|				[ N/A] To extract Monitor Sequence from call sequence by leveraging slf4j.
-	|					[ N/A] Slf4j logger log impl.(get a quick & direty version)
-	|					[ N/A] Slf4j Configurator (for slf4j tracker) in zmonitor.xml
-	|					[ N/A] Slf4j tracker Interface(identify needed factors)
+	|				[DONE] To extract Monitor Sequence from call sequence by leveraging slf4j.
+	|					[DONE] Slf4j logger log impl.(get a quick & direty version)
+	|					[DONE] Slf4j Configurator (for slf4j tracker) in zmonitor.xml
+	|					[DONE] Slf4j tracker Interface(identify needed factors)
 	|				[ N/A] To extract Monitor Sequence from call sequence by leveraging log4j.
 	|				[ N/A] To extract Monitor Sequence from call sequence by leveraging Lobgback.
 	|				[ N/A] provide push, pop, record control through message pattern.
@@ -30,7 +30,7 @@ System Execution Monitoring :
 	|		|
 	|		|-> Legacy System for Business Object Unit Testing: 
 	|				DESC: Achieve good testing coverage to a high-level Object without refactoring.
-	|				[DONE]	same as the internal testing.
+	|				[DONE] same as the internal testing.
 	|
 	|-> combind with JUnit, JMeter
 	|		|
@@ -49,5 +49,6 @@ System Execution Monitoring :
 	|				Active System Assertion through unit test case. (Has possibility to reuse the TestCase)
 	|				[ N/A] WebAppAssertion 
 	|				[ N/A] IDE MS Handler, send MS to IDE side
-	|				[ N/A] Eclipse Plugin which receive MS as an event, and notify user when assertion failed.
-	|				[ N/A] 
+	|				[ N/A] Eclipse Plugin which receive MS as an event, provide an interactive interface for Developer to Browse, Query and Delete Monitored Sequences.
+	|					[ N/A] jq Selector mixed with other syntaxes for management and special condition.
+	|					[ N/A] delete

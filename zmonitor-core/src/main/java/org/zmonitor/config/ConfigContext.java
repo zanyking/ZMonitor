@@ -17,6 +17,10 @@ import org.zmonitor.util.PropertySetter;
  *
  */
 public interface ConfigContext {
+	String NAME = "name";
+	String VALUE = "value";
+	String PROPERTY = "property";
+	
 	/**
 	 * attributes the config.properties provided.
 	 * @param key the key to access property
@@ -92,6 +96,11 @@ public interface ConfigContext {
 	 * @return
 	 */
 	public <T> T newBean(Class<T> defaultClass, boolean mustHave);
+	/**
+	 * 
+	 * @return
+	 */
+	public String getContent();
 }
 
 

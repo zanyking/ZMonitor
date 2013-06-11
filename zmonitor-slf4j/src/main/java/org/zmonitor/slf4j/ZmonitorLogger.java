@@ -58,18 +58,25 @@ public class ZMonitorLogger implements Logger, Serializable{
 	
 	private static final CallerStackTraceElementFinder ST_ELEMENT_FINDER = 
 			new CallerStackTraceElementFinder(
+					"java.lang",
 					"org.zmonitor",
 					"org.slf4j");
 
 	/** The current log level */
+	
+	private LogLevel currentLogLevel;
+	
 	protected LogLevel getCurrentLogLevel(){
-		try {
-			return configRef.get().getLogLevel();
-		} catch (HasNotInitializedException e) {
-			ZMLog.warn(e, "getCurrentLogLevel() ",
-				"has been called while ZMonitorManager hasn't been started yet.");
-			return LogLevel.INFO;
+		if(currentLogLevel==null){
+			try {
+				currentLogLevel = configRef.get().getLogLevel(name);
+			} catch (HasNotInitializedException e) {
+				ZMLog.warn(e, "getCurrentLogLevel() ",
+					"has been called while ZMonitorManager hasn't been started yet.");
+				return LogLevel.INFO;
+			}	
 		}
+		return currentLogLevel;
 	}
 
 	private String name;

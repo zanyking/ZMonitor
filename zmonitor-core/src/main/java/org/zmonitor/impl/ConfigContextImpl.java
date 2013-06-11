@@ -52,6 +52,11 @@ public class ConfigContextImpl implements ConfigContext{
 		return  XMLConfigs.getTextFromAttrOrContent(currentNode, key);
 	}
 	
+
+	public String getContent() {
+		return DOMs.getTextValue(currentNode);
+	}
+	
 	public ZMonitorManager getManager() {
 		return zMonitorManager;
 	}
@@ -75,9 +80,6 @@ public class ConfigContextImpl implements ConfigContext{
 		}
 	}
 
-	public static final String NAME = "name";
-	public static final String VALUE = "value";
-	public static final String PROPERTY = "property";
 	
 	public void applyPropertyTags(final PropertySetter setter) {
 		forEach( PROPERTY, new Visitor(){
@@ -100,6 +102,8 @@ public class ConfigContextImpl implements ConfigContext{
 	public <T> T newBean(Class<T> defaultClass, boolean mustHave) {
 		return XMLConfigs.newInstanceByClassAttr(currentNode, defaultClass, mustHave);
 	}
+
+
 
 
 

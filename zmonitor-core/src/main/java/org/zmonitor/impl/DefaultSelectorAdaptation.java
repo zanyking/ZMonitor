@@ -82,16 +82,5 @@ public class DefaultSelectorAdaptation implements SelectorAdaptation{
 		classes.add(meta.getMethodName().replaceAll("[\\W]", "_"));
 		
 	}
-//	private static void useMarkerAsCssClasses(Set<String> classes, MonitorMeta meta){
-//		// marker as css class...
-//		Marker mk =  Markers.retrieveRegisteredMajorMarker(meta);
-//		classes.add(mk.getName());
-//		Iterator<Marker> it = mk.iterator();
-//		Marker reference;
-//		while (it.hasNext()) {
-//			reference =  it.next();
-//			classes.add(reference.getName());
-//		}
-//	}
 	
 }

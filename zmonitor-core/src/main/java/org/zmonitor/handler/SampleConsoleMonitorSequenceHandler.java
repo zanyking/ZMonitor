@@ -38,7 +38,9 @@ public class SampleConsoleMonitorSequenceHandler extends ZMBeanBase
 	public SampleConsoleMonitorSequenceHandler(){}
 
 	public void configure(ConfigContext webConf) {
-		// TODO Auto-generated method stub
+		selAdptor = webConf.getManager().getSelectorAdaptor();
+		System.out.println("ZMonitorManager.getInstance().getSelectorAdaptor()"
+				+selAdptor);
 	}
 	
 	
@@ -95,7 +97,7 @@ public class SampleConsoleMonitorSequenceHandler extends ZMBeanBase
 		}
 	}
 	
-	private SelectorAdaptor selAdptor = ZMonitorManager.getInstance().getSelectorAdaptor();
+	private SelectorAdaptor selAdptor;
 	
 	private boolean previousMillis = true;
 	private boolean nextMillis = true;
