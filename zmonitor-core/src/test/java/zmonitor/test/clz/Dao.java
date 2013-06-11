@@ -19,9 +19,9 @@ public class Dao {
 	}
 
 	public void getBean() {
-		ZMonitor.push("> getBean()", true);
+		ZMonitor.push("> getBean() message with ppp", true);
 		lookUpDB();
-		ZMonitor.pop("< getBean() message with ppp", true);
+		ZMonitor.pop("< getBean()", true);
 	}
 
 	private void lookUpDB(){

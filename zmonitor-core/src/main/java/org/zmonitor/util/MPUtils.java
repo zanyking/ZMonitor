@@ -40,7 +40,7 @@ public class MPUtils {
 	 * 0 otherwise.
 	 */
 	public static long retrieveMillisToNext(MonitorPoint current){
-		return RangeRetrievers.NEXT.retrieve(current).getInterval();
+		return RangeRetriever.Default.NEXT.retrieve(current).getInterval();
 	}
 	/**
 	 * retrieve the elapsed time from previous mp(see: {@link #getPrevious(MonitorPoint)}) to current mp.  
@@ -53,7 +53,7 @@ public class MPUtils {
 	 * @return the elapsed time in milliseconds
 	 */
 	public static long retrieveMillisToPrevious(MonitorPoint current){
-		return RangeRetrievers.PREVIOUS.retrieve(current).getInterval();
+		return RangeRetriever.Default.PREVIOUS.retrieve(current).getInterval();
 	}
 	
 	/**
@@ -70,7 +70,7 @@ public class MPUtils {
 	 * @return
 	 */
 	public static long retrieveMillisToEnd(MonitorPoint current){
-		return RangeRetrievers.END.retrieve(current).getInterval();
+		return RangeRetriever.Default.END.retrieve(current).getInterval();
 	}
 	
 

@@ -10,8 +10,7 @@ import org.zmonitor.handler.SampleConsoleMonitorSequenceHandler;
 import org.zmonitor.selector.MonitorPointSelection;
 import org.zmonitor.test.junit.MonitoredResult;
 import org.zmonitor.test.junit.TestBase;
-import org.zmonitor.util.Predicate;
-import org.zmonitor.util.RangeRetrievers;
+import org.zmonitor.util.RangeRetriever;
 
 import zmonitor.test.clz.BusinessObject;
 
@@ -71,7 +70,7 @@ public class ZmonitorNativeAPI_TEST extends TestBase {
 		String selector = "push";
 		 MonitorPointSelection mpSel = result.asSelection()
 			.select(selector) //Use JQuery Selector
-			.greaterThan(RangeRetrievers.END, 200L)		 
+			.greaterThan(RangeRetriever.Default.END, 200L)		 
 			;
 		 
 //		 boolean anyPushMpWithException = mpSel.any(new Predicate<MonitorPoint>() {

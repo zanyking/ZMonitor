@@ -3,79 +3,93 @@
  */
 package org.zmonitor.selector.impl;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
+
+import org.zmonitor.selector.SelectorEvalException;
 
 /**
  * The default set of pseudo classes in Selector.
  * @author simonpai
  */
+@SuppressWarnings("rawtypes")
 public class BasicPseudoClassDefs {
 	
-	private static Map<String, PseudoClassDef> _defs = 
-		new HashMap<String, PseudoClassDef>();
+	
+	private static final Map<String, PseudoClassDef> DEFs;
 	
 	static {
-		
+		Map<String, PseudoClassDef> tempDefs = 
+				new HashMap<String, PseudoClassDef>();
 		// :root
-		_defs.put("root", new PseudoClassDef(){
+		tempDefs.put("root", new PseudoClassDef(){
 			public boolean accept(MatchCtx ctx, String ... parameters) {
-				if(parameters.length > 0) return false;
+				if(parameters.length > 0) 
+					throw new SelectorEvalException("Does not accept argument, args:"+parameters);
 				return ctx.getEntry().getParent() == null;
 			}
 		});
 		
 		// :first-child
-		_defs.put("first-child", new PseudoClassDef(){
+		tempDefs.put("first-child", new PseudoClassDef(){
 			public boolean accept(MatchCtx ctx, String ... parameters) {
-				if(parameters.length > 0) return false;
+				if(parameters.length > 0) 
+					throw new SelectorEvalException("Does not accept argument, args:"+parameters);
 				return ctx.getChildIndex() == 0;
 			}
 		});
 		
 		// :last-child
-		_defs.put("last-child", new PseudoClassDef(){
+		tempDefs.put("last-child", new PseudoClassDef(){
 			public boolean accept(MatchCtx ctx, String ... parameters) {
-				if(parameters.length > 0) return false;
+				if(parameters.length > 0)
+					throw new SelectorEvalException("Does not accept argument, args:"+parameters);
 				return ctx.getChildIndex() + 1 == 
 					ctx.getSiblingSize();
 			}
 		});
 		
 		// :only-child
-		_defs.put("only-child", new PseudoClassDef(){
+		tempDefs.put("only-child", new PseudoClassDef(){
 			public boolean accept(MatchCtx ctx, String ... parameters) {
-				if(parameters.length > 0) return false;
+				if(parameters.length > 0) 
+					throw new SelectorEvalException("Does not accept argument, args:"+parameters);
 				return ctx.getSiblingSize() == 1;
 			}
 		});
 		
 		// :empty
-		_defs.put("empty", new PseudoClassDef(){
+		tempDefs.put("empty", new PseudoClassDef(){
 			public boolean accept(MatchCtx ctx, String ... parameters) {
-				if(parameters.length > 0) return false;
+				if(parameters.length > 0) 
+					throw new SelectorEvalException("Does not accept argument, args:"+parameters);
 				return ctx.getEntry().isEmpty();
 			}
 		});
 		
 		// :nth-child(n)
-		_defs.put("nth-child", new PseudoClassDef(){
+		tempDefs.put("nth-child", new PseudoClassDef(){
 			public boolean accept(MatchCtx ctx, String ... parameters) {
-				return parameters.length == 1 && 
+				if( parameters.length != 1 )
+					throw new SelectorEvalException("must assign only one argument, args:"+parameters);
+				return 
 					acceptNthPattern(ctx.getChildIndex()+1, parameters[0]);
 			}
 		});
 		
 		// :nth-last-child(n)
-		_defs.put("nth-last-child", new PseudoClassDef(){
+		tempDefs.put("nth-last-child", new PseudoClassDef(){
 			public boolean accept(MatchCtx ctx, String ... parameters) {
-				return parameters.length == 1 && 
+				if( parameters.length != 1 )
+					throw new SelectorEvalException("must assign only one argument, args:"+parameters);
+				return 
 					acceptNthPattern(ctx.getSiblingSize() - 
 							ctx.getChildIndex(), parameters[0]);
 			}
 		});
-		
+		DEFs = Collections.unmodifiableMap(tempDefs);
 	}
 	
 	
@@ -86,7 +100,7 @@ public class BasicPseudoClassDefs {
 	 * @return a pseudo class definition
 	 */
 	public static PseudoClassDef getDefinition(String name){
-		return _defs.get(name);
+		return DEFs.get(name);
 	}
 	
 	// helper //
@@ -95,7 +109,11 @@ public class BasicPseudoClassDefs {
 				"even".equals(pattern) && index % 2 == 0 || 
 				new NthChildPattern(pattern).accept(index);
 	}
-	
+	/**
+	 * 
+	 * @author simonpai
+	 *
+	 */
 	private static class NthChildPattern {
 		
 		private final int _preNum;
@@ -128,7 +146,6 @@ public class BasicPseudoClassDefs {
 			String s = (p=='+' || p=='-') ? str.substring(1) : str;
 			return (p=='-'?-1:1) * (s.isEmpty()? defValue : Integer.valueOf(s));
 		}
-		
 	}
 	
 }

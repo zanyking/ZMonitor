@@ -7,6 +7,8 @@ package org.zmonitor.handler;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import org.zmonitor.CustomConfigurable;
@@ -135,7 +137,13 @@ public class SampleConsoleMonitorSequenceHandler extends ZMBeanBase
 		
 		
 	}
-	
+	public void writeRoot2MP(StringBuffer sb, MonitorPoint mp, String indent){
+		List<MonitorPoint> bloodline = getBloodline(mp);
+		String prefix = indent;
+		for(MonitorPoint current : bloodline){
+			writeMP(sb, current, prefix+=indent);	
+		}
+	}
 	private static void writeTraceElement(StringBuffer sb, String prefix, MonitorMeta meta){
 		if(meta.isCallerNotAvailable()){
 			Strings.append(sb, prefix, "caller's stackTraceElement is not available.");
@@ -148,7 +156,19 @@ public class SampleConsoleMonitorSequenceHandler extends ZMBeanBase
 		}
 	}
 
-	public static String align(long ms){
+	
+	private static List<MonitorPoint> getBloodline(MonitorPoint mp){
+		LinkedList<MonitorPoint> bloodline = new LinkedList<MonitorPoint>();
+		bloodline.addFirst(mp);
+		mp = mp.getParent();
+		while(mp!=null){
+			bloodline.addFirst(mp);
+			mp = mp.getParent();
+		}
+		return bloodline;
+	}
+
+	private static String align(long ms){
 		String prefix = "";
 		     if(ms < 10) prefix = "    ";
 		else if(ms < 100) prefix = "   ";

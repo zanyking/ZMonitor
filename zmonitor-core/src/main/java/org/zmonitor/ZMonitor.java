@@ -35,26 +35,7 @@ import static org.zmonitor.marker.Markers.*;
  * 
  *@author Ian YT Tsai(Zanyking)
  */
-public final class ZMonitor {
-	
-//	public static final Marker NATIVE_MARKER;
-//	public static final Marker MK_PUSH;
-//	public static final Marker MK_RECORD;
-//	public static final Marker MK_END;
-//	public static final String DEFAULT_TRACKER_NAME = "default";
-//	
-//	static{
-//		NATIVE_MARKER = MarkerFactory.getMarker("native");
-//		MK_PUSH = MarkerFactory.getMarker("push");
-//		MK_PUSH.add(NATIVE_MARKER);
-//		
-//		MK_RECORD = MarkerFactory.getMarker("record");
-//		MK_RECORD.add(NATIVE_MARKER);
-//		
-//		MK_END = MarkerFactory.getMarker("end");
-//		MK_END.add(NATIVE_MARKER);
-//	}
-	
+public final class ZMonitor {	
 	private ZMonitor(){}
 	/*
 	 * the ZMonitor self ignition is designed for lazy developer who want to use ZMonitor API directly without

@@ -36,8 +36,8 @@ public class EntryIterator<E> implements Iterator<Entry<E>> {
 	 * @param container the reference page for selector
 	 * @param selector the selector string
 	 */
-	public EntryIterator(EntryContainer<E> container, String selector){
-		this(container, null, selector);
+	public EntryIterator(EntryContainer<E> container, String selector, Map<String, PseudoClassDef<E>> psudoClassDefs){
+		this(container, null, selector, psudoClassDefs);
 	}
 	
 	/**
@@ -46,11 +46,11 @@ public class EntryIterator<E> implements Iterator<Entry<E>> {
 	 * @param root the reference Entry for selector
 	 * @param selector the selector string
 	 */
-	public EntryIterator(Entry<E> root, String selector){
-		this(null, root, selector);
+	public EntryIterator(Entry<E> root, String selector, Map<String, PseudoClassDef<E>> psudoClassDefs){
+		this(null, root, selector, psudoClassDefs);
 	}
 	
-	private EntryIterator(EntryContainer<E> container, Entry<E> root, String selector){
+	private EntryIterator(EntryContainer<E> container, Entry<E> root, String selector, Map<String, PseudoClassDef<E>> psudoClassDefs){
 		if(selector == null || selector.isEmpty()){
 			throw new IllegalArgumentException("Selector cannot be null or empty! selector:"+ selector);
 		}
@@ -59,6 +59,9 @@ public class EntryIterator<E> implements Iterator<Entry<E>> {
 		}
 		
 		this.localDefs = new HashMap<String, PseudoClassDef>();
+		if(psudoClassDefs!=null)
+			localDefs.putAll(psudoClassDefs);
+		
 		this.selectorList = new Parser().parse(selector);
 		this.root = root;
 		this.container = container;
@@ -70,7 +73,7 @@ public class EntryIterator<E> implements Iterator<Entry<E>> {
 	 * @param name the pseudo class name
 	 * @param def the pseudo class definition
 	 */
-	public void setPseudoClassDef(String name, PseudoClassDef def){
+	public void setPseudoClassDef(String name, PseudoClassDef<E> def){
 		localDefs.put(name, def);
 	}
 	
@@ -149,9 +152,6 @@ public class EntryIterator<E> implements Iterator<Entry<E>> {
 	 *
 	 */
 	private Entry<E> seekNext() {
-		if(currCtx!=null && "A__init__12".equals(currCtx.getEntry().getId())){
-			
-		}
 		currCtx = index < 0 ? //if start from root? 
 			initRootCtx() : toNextCtx(currCtx);
 		

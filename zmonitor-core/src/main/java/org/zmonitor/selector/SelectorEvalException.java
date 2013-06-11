@@ -4,8 +4,16 @@
 package org.zmonitor.selector;
 
 /**
+ * <p>
+ * Throw this exception when ever you found there's an error occurred in
+ * Selector expression evaluation, for example:
+ * 
+ * <p>
+ * While implementing a {@link org.zmonitor.selector.impl.PseudoClassDef<T>},
+ * you might throw this exception if there's anything wrong with parameters.
+ * 
  * @author Ian YT Tsai(Zanyking)
- *
+ * 
  */
 public class SelectorEvalException extends RuntimeException {
 	private static final long serialVersionUID = -313564439015273596L;
@@ -22,7 +30,6 @@ public class SelectorEvalException extends RuntimeException {
 	 */
 	public SelectorEvalException(String message) {
 		super(message);
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -30,7 +37,6 @@ public class SelectorEvalException extends RuntimeException {
 	 */
 	public SelectorEvalException(Throwable cause) {
 		super(cause);
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -39,7 +45,6 @@ public class SelectorEvalException extends RuntimeException {
 	 */
 	public SelectorEvalException(String message, Throwable cause) {
 		super(message, cause);
-		// TODO Auto-generated constructor stub
 	}
 
 }

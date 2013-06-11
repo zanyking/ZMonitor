@@ -54,11 +54,20 @@ public class Range {
 	public boolean greaterThan(long millis){
 		return getInterval() > millis;
 	}
-	
-	public boolean smallerThan(long millis){
+	/**
+	 * 
+	 * @param millis
+	 * @return
+	 */
+	public boolean lessThan(long millis){
 		return getInterval() < millis;
 	}
-	
+	/**
+	 * 
+	 * @param startMillis
+	 * @param endMillis
+	 * @return
+	 */
 	public boolean between(long startMillis, long endMillis){
 		long val = getInterval();
 		return val > startMillis && val < endMillis;

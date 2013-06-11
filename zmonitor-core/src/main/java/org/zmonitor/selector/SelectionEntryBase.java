@@ -4,12 +4,16 @@
 package org.zmonitor.selector;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
+import org.zmonitor.selector.impl.PseudoClassDef;
 import org.zmonitor.util.Iterators;
 import org.zmonitor.util.Predicate;
+import org.zmonitor.util.Strings;
 
 
 /**
@@ -21,7 +25,29 @@ import org.zmonitor.util.Predicate;
 public class SelectionEntryBase<T , R extends Selection<T, R>> implements Selection<T, R>, Iterator<Entry<T>>{
 
 	protected final Iterator<Entry<T>> itor;
+	protected Map<String, PseudoClassDef<T>> pseudoClassDefs;
 	
+	/**
+	 * 
+	 * @param name
+	 * @param pseudoClassDef
+	 */
+	public void addPseudoClassDef(String name, PseudoClassDef<T> pseudoClassDef) {
+		if(Strings.isEmpty(name))
+			throw new IllegalArgumentException("the name of PseudoClassDef cannot be empty!");
+		if(pseudoClassDefs==null){ 
+			pseudoClassDefs = new HashMap<String, PseudoClassDef<T>>();
+		}
+		pseudoClassDefs.put(name, pseudoClassDef);
+	}
+	/**
+	 * 
+	 * @param name
+	 */
+	public void removePseudoClassDef(String name){
+		if(pseudoClassDefs==null)return;
+		pseudoClassDefs.remove(name);
+	}
 	/**
 	 * 
 	 * @param itor
@@ -114,7 +140,7 @@ public class SelectionEntryBase<T , R extends Selection<T, R>> implements Select
 	@SuppressWarnings("unchecked")
 	public R select(String selector){
 		return (R) toSelection(
-			new NestedSelectorIterator<T>(this, selector));
+			new NestedSelectorIterator<T>(this, selector, pseudoClassDefs));
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -329,12 +355,17 @@ class DetailIterator<T> extends TraverseIterator<T>{
  */
 class NestedSelectorIterator<T> extends DetailIterator<T>{
 		private final String selector;
-		public NestedSelectorIterator(Iterator<Entry<T>> origin, String selector) {
+		private final Map<String, PseudoClassDef<T>> pseudoClassDefs;
+		
+		@SuppressWarnings("unchecked")
+		public NestedSelectorIterator(Iterator<Entry<T>> origin, String selector, 
+				Map<String, PseudoClassDef<T>> pseudoClassDefs) {
 			super(origin, Predicate.TRUE, Predicate.TRUE);
 			this.selector = selector;
+			this.pseudoClassDefs = pseudoClassDefs;
 		}
 		protected Iterator<Entry<T>> initSub(Entry<T> root){
-			return Selectors.iterator(root, selector) ;
+			return Selectors.iterator(root, selector, pseudoClassDefs) ;
 		}
 }//end of class...
 
