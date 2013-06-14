@@ -32,10 +32,10 @@ public interface SelectorAdaptation {
 	 */
 	public Set<String> retrieveConceptualCssClasses(MonitorPoint mp);
 	/**
-	 * 
+	 * To help Selector Engine to resolve an attribute of current MonitorPoint
 	 * @param varName
 	 * @param mp
 	 * @return
 	 */
-	public Object resolveVariable(String varName, MonitorPoint mp);
+	public Object resolveAttribute(String varName, MonitorPoint mp);
 }

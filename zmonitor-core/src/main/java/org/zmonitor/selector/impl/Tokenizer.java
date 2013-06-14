@@ -87,15 +87,15 @@ public class Tokenizer {
 				// flush previous identifier/whitespace
 				if(inputClass != _prevClass &&_prevClass != null && 
 						_prevClass.isMultiple())
-					flush(_prevChar, _prevClass, false);
+					flushToken(_prevChar, _prevClass, false);
 				
 				// previous char is ^/$/* but input is not =
 				if(origin == State.IN_ATTRIBUTE && _opEscaped && input!='=')
-					flush(_prevChar, _prevClass, false);
+					flushToken(_prevChar, _prevClass, false);
 				
 				// flush current
 				if(!inputClass.isMultiple() && !isPrefix)
-					flush(input, inputClass, true);
+					flushToken(input, inputClass, true);
 				
 				// update status
 				if(input == '(') _inParam = true;
@@ -113,7 +113,7 @@ public class Tokenizer {
 				
 				// flush last token if any
 				if(_anchor < _step)
-					flush(_prevChar, _prevClass, false);
+					flushToken(_prevChar, _prevClass, false);
 			}
 			
 			@Override
@@ -139,6 +139,12 @@ public class Tokenizer {
 				if(Character.isWhitespace(c))
 					return CharClass.WHITESPACE;
 				
+				//TODO additional spec of a.b.c='sdf'
+				if('.' == c.charValue() && _current==State.IN_ATTRIBUTE){
+					System.out.println("give . IN_ATTRIBUTE a specific CharClass, say: attrOperator");
+					return CharClass.LITERAL;
+				}
+				
 				return c == '\\' ? CharClass.ESCAPE : CharClass.OTHER;
 			}
 			
@@ -156,7 +162,7 @@ public class Tokenizer {
 				throw new ParseException(_step, _current, input);
 			}
 
-			private void flush(char input, CharClass inputClass, boolean withCurrChar){
+			private void flushToken(char input, CharClass inputClass, boolean withCurrChar){
 				int endIndex = _step + (withCurrChar? 1 : _escaped? -1 : 0);
 				_tokens.add(new Token(
 						getTokenType(input, inputClass), _anchor, endIndex));
@@ -173,7 +179,6 @@ public class Tokenizer {
 				case WHITESPACE:
 					return Type.WHITESPACE;
 				}
-				
 				switch(input){
 				case ',':
 					return _inParam ? 
@@ -188,8 +193,9 @@ public class Tokenizer {
 					return Type.CBN_GENERAL_SIBLING;
 				case '#':
 					return Type.NTN_ID;
-				case '.':
-					return Type.NTN_CLASS;
+				case '.'://TODO
+					return (inputClass==CharClass.ATTR_GETTER_OP)? 
+							Type.IDENTIFIER : Type.NTN_CLASS;
 				case ':':
 					return Type.NTN_PSDOCLS;
 				case '\'':
@@ -241,7 +247,7 @@ public class Tokenizer {
 	}
 	
 	private enum CharClass {
-		LITERAL(true), WHITESPACE(true), ESCAPE, OTHER;
+		LITERAL(true), WHITESPACE(true), ESCAPE, OTHER, ATTR_GETTER_OP;
 		
 		private boolean _multiple;
 		

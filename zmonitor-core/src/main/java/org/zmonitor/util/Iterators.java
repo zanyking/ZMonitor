@@ -28,8 +28,8 @@ public class Iterators {
 			protected T computeNext() {
 				while (unfiltered.hasNext()) {
 					T element = unfiltered.next();
-					if(element ==null)
-						System.out.println("element is NULL! unfiltered class:"+unfiltered.getClass());
+					Arguments.checkNotNull(element, 
+							"element is NULL! unfiltered class:",unfiltered.getClass());
 					
 					if (predicate.apply(element)) {
 						return element;

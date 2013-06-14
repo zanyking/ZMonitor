@@ -49,6 +49,6 @@ public interface EntryContainer<E> {
 	 * @param e
 	 * @return
 	 */
-	public Object resolveVariable( String varName, Entry<E> e);
+	public Object resolveAttribute( String varName, Entry<E> e);
 	
 }

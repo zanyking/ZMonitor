@@ -18,7 +18,7 @@ public class BusinessObject {
 
 	
 	public void doBiz(){
-		logger.trace(">> doBiz()", true);
+		logger.trace(">> doBiz() hello world!", true);
 		b.doService();
 		logger.trace("<< doBiz()", true);
 	}

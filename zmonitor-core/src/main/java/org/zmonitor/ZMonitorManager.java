@@ -20,6 +20,7 @@ import org.zmonitor.selector.SelectorAdaptor;
 import org.zmonitor.spi.MonitorLifecycle;
 import org.zmonitor.spi.MonitorLifecycleManager;
 import org.zmonitor.spi.MonitorSequenceHandler;
+import org.zmonitor.util.Arguments;
 
 
 /**
@@ -126,9 +127,7 @@ public final class ZMonitorManager {
 	 * @return
 	 */
 	public void performConfiguration(ConfigSource configSource){
-		if(configSource==null)
-			throw new IllegalArgumentException("configSource cannot be null!");
-		
+		Arguments.checkNotNull(configSource, "configSource cannot be null!");
 		this.configSource = configSource;
 		cRepo.scan();
 		cRepo.performConfiguration(ZMonitorManager.this);

@@ -19,7 +19,7 @@ public class Service {
 	Dao c;
 	
 	public Service(Dao c) {
-		logger.trace(">> constructing Service...", true);
+		logger.trace(">> constructing Service... hello world!", true);
 		this.c = c;
 		logger.trace("<< Service constructed.", true);
 	}

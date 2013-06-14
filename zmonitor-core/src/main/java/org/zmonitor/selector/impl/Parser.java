@@ -141,7 +141,10 @@ public class Parser {
 	
 	// state, char class //
 	private enum State {
-		PRE_SELECTOR, IN_SELECTOR, PRE_COMBINATOR, POST_COMBINATOR;
+		PRE_SELECTOR, 
+		IN_SELECTOR, 
+		PRE_COMBINATOR, 
+		POST_COMBINATOR;
 	}
 	
 	private enum CharClass {
@@ -274,7 +277,9 @@ public class Parser {
 					new TransitionListener<Token, Type>(){
 				public void onTransit(Token input, Type inputClass) {
 					// set attribute name
-					_seq.addAttribute(input.source(_source));
+					String chunk = input.source(_source);
+					System.out.println("jqSelector Parser: to attr_post_name sub state, in transition: src_chunk="+chunk);
+					_seq.addAttribute(chunk);
 				}
 			})
 			.addRoutes(SubState.ATTR_PRE_VALUE, 
@@ -373,6 +378,7 @@ public class Parser {
 		
 		ATTR_PRE_NAME, ATTR_POST_NAME, 
 		ATTR_PRE_VALUE, ATTR_POST_VALUE,
+		
 		ATTR_PRE_VALUE_INSQT, ATTR_POST_VALUE_INSQT,
 		ATTR_PRE_VALUE_INDQT, ATTR_POST_VALUE_INDQT;
 	}

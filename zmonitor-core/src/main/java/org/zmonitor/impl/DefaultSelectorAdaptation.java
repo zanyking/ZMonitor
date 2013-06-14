@@ -44,7 +44,7 @@ public class DefaultSelectorAdaptation implements SelectorAdaptation{
 		return retrieveConceptualCssClasses(mp.getMonitorMeta());
 	}
 
-	public Object resolveVariable(String varName, MonitorPoint mp) {
+	public Object resolveAttribute(String varName, MonitorPoint mp) {
 		return new DefaultMPVariableResolver(mp).resolveVariable(varName);
 	}
 	/**

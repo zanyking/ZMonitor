@@ -62,8 +62,9 @@ public class MSWrapper implements EntryContainer<MonitorPoint>{
 	public Set<String> retrieveConceptualCssClasses(MonitorPoint mp) {
 		return adaptor.retrieveConceptualCssClasses(mp);
 	}
-	public Object resolveVariable(String varName, Entry<MonitorPoint> e) {
-		return adaptor.resolveVariable(varName, e.getValue());
+	
+	public Object resolveAttribute(String varName, Entry<MonitorPoint> e) {
+		return adaptor.resolveAttribute(varName, e.getValue());
 	}
 	
 

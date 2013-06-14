@@ -10,6 +10,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+import org.zmonitor.util.Arguments;
+
 /**
  * 
  * 
@@ -42,7 +44,8 @@ public class MonitorPoint implements Serializable{
 			Object mesg, 
 			MonitorSequence mSequence, 
 			long createMillis) {
-		if(mm==null)throw new NullPointerException();
+		Arguments.checkNotNull(mm, "monitorMeta should never be null, ",
+				"please check your TrackingContext usage.");
 		this.monitorMeta = mm;
 		this.message = mesg;
 		this.mSequence = mSequence;

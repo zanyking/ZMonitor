@@ -22,13 +22,13 @@ public class Dao {
 	}
 
 	public void getBean() {
-		logger.trace(">> getBean() message with ppp", true);
+		logger.trace(">> getBean() hello world!", true);
 		lookUpDB();
 		logger.trace("<< getBean()", true);
 	}
 
 	private void lookUpDB(){
-		logger.trace(">> lookUpDB() ppp", true);
+		logger.trace(">> lookUpDB() hello world!", true);
 		try {
 			Thread.sleep(100);
 		} catch (InterruptedException e) {

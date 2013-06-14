@@ -6,6 +6,7 @@ package org.zmonitor.config;
 import java.io.IOException;
 import java.net.URL;
 
+import org.zmonitor.util.Arguments;
 import org.zmonitor.util.DOMRetriever;
 
 /**
@@ -19,8 +20,7 @@ public class URLConfigSource implements ConfigSource {
 	 * 
 	 */
 	public URLConfigSource(URL url) {
-		if(url==null)
-			throw new IllegalArgumentException("url cannot be null!");
+		Arguments.checkNotNull(url, "url cannot be null!");
 		this.url = url;
 	}
 

@@ -74,8 +74,8 @@ public class SelectorAdaptor implements SelectorAdaptation{
 	}
 	
 
-	public Object resolveVariable(String varName, MonitorPoint mp) {
-		return get(mp).resolveVariable(varName, mp);
+	public Object resolveAttribute(String varName, MonitorPoint mp) {
+		return get(mp).resolveAttribute(varName, mp);
 	}
 
 	

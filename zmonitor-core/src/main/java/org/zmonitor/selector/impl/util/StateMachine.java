@@ -117,7 +117,7 @@ public abstract class StateMachine<E, C, IN> {
 		if(origin == null){
 			destination = getLandingState(input, inputClass); // dest
 			if(destination == null) {
-				doReject(input);
+				doReject(input);// reject if there's no destination.
 				return;
 			}
 			onStart(input, inputClass, destination);

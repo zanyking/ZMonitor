@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.zmonitor.selector.impl.PseudoClassDef;
+import org.zmonitor.util.Arguments;
 import org.zmonitor.util.Iterators;
 import org.zmonitor.util.Predicate;
 import org.zmonitor.util.Strings;
@@ -33,8 +34,8 @@ public class SelectionEntryBase<T , R extends Selection<T, R>> implements Select
 	 * @param pseudoClassDef
 	 */
 	public void addPseudoClassDef(String name, PseudoClassDef<T> pseudoClassDef) {
-		if(Strings.isEmpty(name))
-			throw new IllegalArgumentException("the name of PseudoClassDef cannot be empty!");
+		Arguments.checkNotEmpty(name, "the name of PseudoClassDef cannot be empty!");
+		
 		if(pseudoClassDefs==null){ 
 			pseudoClassDefs = new HashMap<String, PseudoClassDef<T>>();
 		}
@@ -254,12 +255,6 @@ class TraverseIterator<T> implements Iterator<Entry<T>>{
 		}
 		fetched = true;
 	}
-//	private Alternative<T> LET_BY_ALTERNATIVE = new Alternative<T>(){
-//		public Entry<T> get(Entry<T> current) {
-//			if(current==null) return null;
-//			return predicate(seekNext(current), letBy, LET_BY_ALTERNATIVE);
-//		}
-//	};
 	
 	protected Entry<T> seekNext(){
 		return dfs( root, next);
