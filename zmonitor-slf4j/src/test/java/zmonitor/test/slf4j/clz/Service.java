@@ -19,17 +19,23 @@ public class Service {
 	Dao c;
 	
 	public Service(Dao c) {
-		logger.trace(">> constructing Service... hello world!", true);
+		logger.trace(">> constructing Service... hello world!");
 		this.c = c;
-		logger.trace("<< Service constructed.", true);
+		logger.trace("<< Service constructed.");
 	}
 
 
 
 	public void doService() {
-		logger.trace(">> doService()", true);
+		logger.trace(">> doService()");
 		c.getBean();
-		logger.trace("<< doService()", true);
+		logger.trace("<< doService()");
+	}
+	
+	public void doService2() {
+		logger.trace(">> doService2()");
+		c.getBean();
+		logger.trace("<< doService2()");
 	}
 
 }

@@ -8,6 +8,7 @@ import java.util.Set;
 import org.zmonitor.MonitorPoint;
 import org.zmonitor.selector.Entry;
 import org.zmonitor.selector.EntryContainer;
+import org.zmonitor.util.Strings;
 
 /**
  * @author Ian YT Tsai(Zanyking)
@@ -25,6 +26,15 @@ public class MPWrapper implements Entry<MonitorPoint>{
 		this.mCache = mCache;
 	}
 
+	public String toString(){
+		StringBuffer sb = new StringBuffer();
+		
+		Strings.append(sb, "MPWrapper ID:",getId(),
+				", CLZ:",getConceptualCssClasses(),
+				", MESG:",mp.getMessage());
+		
+		return sb.toString();
+	}
 	public EntryContainer<MonitorPoint> getEntryContainer() {
 		return mCache.msw;
 	}
@@ -77,5 +87,10 @@ public class MPWrapper implements Entry<MonitorPoint>{
 	}
 	public Set<String> getConceptualCssClasses() {
 		return mCache.msw.retrieveConceptualCssClasses(mp);
+	}
+
+	public int getSiblingSize() {
+		MonitorPoint parent = mp.getParent();
+		return (parent==null)? 0 : parent.size();
 	}
 }

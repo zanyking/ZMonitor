@@ -18,24 +18,24 @@ public class Dao {
 	 * 
 	 */
 	public Dao() {
-		logger.trace(" Dao constructed.", true);
+		logger.trace(" Dao constructed.");
 	}
 
 	public void getBean() {
-		logger.trace(">> getBean() hello world!", true);
+		logger.trace(">> getBean() user:{}, ID:{}", "Ian Tsai", 12);
 		lookUpDB();
-		logger.trace("<< getBean()", true);
+		logger.trace("<< getBean()");
 	}
 
 	private void lookUpDB(){
-		logger.trace(">> lookUpDB() hello world!", true);
+		logger.trace(">> lookUpDB() hello world!");
 		try {
 			Thread.sleep(100);
 		} catch (InterruptedException e) {
-			logger.warn("InterruptedException occurred: "+e, true);
+			logger.warn("InterruptedException occurred: "+e);
 		}
 		finally{
-			logger.trace("<< lookUpDB()", true);	
+			logger.trace("<< lookUpDB()");	
 		}
 		
 	}

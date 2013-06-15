@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.zmonitor.selector.Entry;
 import org.zmonitor.selector.SelectorEvalException;
 
 /**
@@ -25,35 +26,35 @@ public class BasicPseudoClassDefs {
 				new HashMap<String, PseudoClassDef>();
 		// :root
 		tempDefs.put("root", new PseudoClassDef(){
-			public boolean accept(MatchCtx ctx, String ... parameters) {
+			public boolean accept(Entry ctx, String ... parameters) {
 				if(parameters.length > 0) 
 					throw new SelectorEvalException("Does not accept argument, args:"+parameters);
-				return ctx.getEntry().getParent() == null;
+				return ctx.getParent() == null;
 			}
 		});
 		
 		// :first-child
 		tempDefs.put("first-child", new PseudoClassDef(){
-			public boolean accept(MatchCtx ctx, String ... parameters) {
+			public boolean accept(Entry ctx, String ... parameters) {
 				if(parameters.length > 0) 
 					throw new SelectorEvalException("Does not accept argument, args:"+parameters);
-				return ctx.getChildIndex() == 0;
+				return ctx.getIndex() == 0;
 			}
 		});
 		
 		// :last-child
 		tempDefs.put("last-child", new PseudoClassDef(){
-			public boolean accept(MatchCtx ctx, String ... parameters) {
+			public boolean accept(Entry ctx, String ... parameters) {
 				if(parameters.length > 0)
 					throw new SelectorEvalException("Does not accept argument, args:"+parameters);
-				return ctx.getChildIndex() + 1 == 
+				return ctx.getIndex() + 1 == 
 					ctx.getSiblingSize();
 			}
 		});
 		
 		// :only-child
 		tempDefs.put("only-child", new PseudoClassDef(){
-			public boolean accept(MatchCtx ctx, String ... parameters) {
+			public boolean accept(Entry ctx, String ... parameters) {
 				if(parameters.length > 0) 
 					throw new SelectorEvalException("Does not accept argument, args:"+parameters);
 				return ctx.getSiblingSize() == 1;
@@ -62,31 +63,31 @@ public class BasicPseudoClassDefs {
 		
 		// :empty
 		tempDefs.put("empty", new PseudoClassDef(){
-			public boolean accept(MatchCtx ctx, String ... parameters) {
+			public boolean accept(Entry ctx, String ... parameters) {
 				if(parameters.length > 0) 
 					throw new SelectorEvalException("Does not accept argument, args:"+parameters);
-				return ctx.getEntry().isEmpty();
+				return ctx.isEmpty();
 			}
 		});
 		
 		// :nth-child(n)
 		tempDefs.put("nth-child", new PseudoClassDef(){
-			public boolean accept(MatchCtx ctx, String ... parameters) {
+			public boolean accept(Entry ctx, String ... parameters) {
 				if( parameters.length != 1 )
 					throw new SelectorEvalException("must assign only one argument, args:"+parameters);
 				return 
-					acceptNthPattern(ctx.getChildIndex()+1, parameters[0]);
+					acceptNthPattern(ctx.getIndex()+1, parameters[0]);
 			}
 		});
 		
 		// :nth-last-child(n)
 		tempDefs.put("nth-last-child", new PseudoClassDef(){
-			public boolean accept(MatchCtx ctx, String ... parameters) {
+			public boolean accept(Entry ctx, String ... parameters) {
 				if( parameters.length != 1 )
 					throw new SelectorEvalException("must assign only one argument, args:"+parameters);
 				return 
 					acceptNthPattern(ctx.getSiblingSize() - 
-							ctx.getChildIndex(), parameters[0]);
+							ctx.getIndex(), parameters[0]);
 			}
 		});
 		DEFs = Collections.unmodifiableMap(tempDefs);

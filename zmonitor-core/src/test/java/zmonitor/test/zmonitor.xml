@@ -12,11 +12,11 @@
 		class="org.zmonitor.handler.EclipseConsoleMonitorSequenceHandler"
 		previousMillis="false"	
 		nextMillis="true"
-		callerJavaFile="true"
-		showId="false"
+		callerJavaFile="false"
+		showId="true"
 		showType="false"
 		showClass="true"
-		showMessage="true">
+		showMessage="false">
 		
 	</monitor-sequence-handler>
 	

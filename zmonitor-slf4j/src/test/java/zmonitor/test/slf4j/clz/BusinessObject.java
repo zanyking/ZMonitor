@@ -11,15 +11,15 @@ public class BusinessObject {
 	Service b;
 	
 	public BusinessObject() {
-		logger.trace(">> constructing BusinessObject...", true);
+		logger.trace(">> constructing BusinessObject...");
 		b = new Service(new Dao());
-		logger.trace("<< BusinessObject constructed.", true);
+		logger.trace("<< BusinessObject constructed.");
 	}
 
 	
 	public void doBiz(){
-		logger.trace(">> doBiz() hello world!", true);
+		logger.trace(">> doBiz() hello world!");
 		b.doService();
-		logger.trace("<< doBiz()", true);
+		logger.trace("<< doBiz()");
 	}
 }

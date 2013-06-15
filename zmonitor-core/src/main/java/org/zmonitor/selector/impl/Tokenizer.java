@@ -7,8 +7,8 @@ import java.util.ArrayList;
 
 import org.zmonitor.selector.impl.Token.Type;
 import org.zmonitor.selector.impl.util.CharSequenceIterator;
-import org.zmonitor.selector.impl.util.StateCtx;
-import org.zmonitor.selector.impl.util.StateMachine;
+import org.zmonitor.util.fsm.StateCtx;
+import org.zmonitor.util.fsm.StateMachine;
 
 /**
  * A tokenizer of selector string.
@@ -72,7 +72,7 @@ public class Tokenizer {
 			}
 			
 			@Override
-			protected void onAfterStep(Character input, CharClass inputClass,
+			protected void afterStep(Character input, CharClass inputClass,
 					State origin, State destination) {
 				
 				doDebug("* OP Escaped: " + _opEscaped);
@@ -141,7 +141,6 @@ public class Tokenizer {
 				
 				//TODO additional spec of a.b.c='sdf'
 				if('.' == c.charValue() && _current==State.IN_ATTRIBUTE){
-					System.out.println("give . IN_ATTRIBUTE a specific CharClass, say: attrOperator");
 					return CharClass.LITERAL;
 				}
 				

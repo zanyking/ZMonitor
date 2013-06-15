@@ -98,11 +98,11 @@ public class SimplSelection_TEST extends TestBase {
 		while(mpSel.hasNext()){
 			counter++;
 			mp = mpSel.toNext();
-			handler.writeMP(sb, mp, " ");
+			handler.writeRoot2MP(sb, mp, " ");
 			sb.append("--------------------\n");
 		}
 		System.out.println(sb);		
-		Assert.assertEquals(2, counter);
+		Assert.assertEquals(4, counter);
 	}
 	
 	

@@ -43,7 +43,7 @@ public class MonitorPointSelectionBase extends SelectionEntryBase<MonitorPoint, 
 	 */
 	private void initPseudoClassDefs(){
 		super.addPseudoClassDef(PSEUDO_CLASS_GREATER_THAN, new PseudoClassDef<MonitorPoint>() {
-			public boolean accept(MatchCtx<MonitorPoint> ctx, String... parameters) {
+			public boolean accept(Entry<MonitorPoint> ctx, String... parameters) {
 				if(parameters.length!=2)
 					throw new SelectorEvalException("must has two arguments! parameters:"+parameters);
 				RangeRetriever rr = null;
@@ -56,14 +56,14 @@ public class MonitorPointSelectionBase extends SelectionEntryBase<MonitorPoint, 
 					throw new SelectorEvalException("invalid RangeRetriever name:"+parameters[0]);
 				try{
 					long millis = Long.parseLong(parameters[1]);
-					return rr.retrieve(ctx.getEntry().getValue()).greaterThan(millis);
+					return rr.retrieve(ctx.getValue()).greaterThan(millis);
 				}catch(Exception e){
 					throw new SelectorEvalException("invalid millis:"+parameters[1]);
 				}
 			}
 		});
 		super.addPseudoClassDef(PSEUDO_CLASS_LESS_THAN, new PseudoClassDef<MonitorPoint>() {
-			public boolean accept(MatchCtx<MonitorPoint> ctx, String... parameters) {
+			public boolean accept(Entry<MonitorPoint> ctx, String... parameters) {
 				if(parameters.length!=2)
 					throw new SelectorEvalException("must has two arguments! parameters:"+parameters);
 				
@@ -77,14 +77,14 @@ public class MonitorPointSelectionBase extends SelectionEntryBase<MonitorPoint, 
 					throw new SelectorEvalException("invalid RangeRetriever name:"+parameters[0]);
 				try{
 					long millis = Long.parseLong(parameters[1]);
-					return rr.retrieve(ctx.getEntry().getValue()).lessThan(millis);
+					return rr.retrieve(ctx.getValue()).lessThan(millis);
 				}catch(Exception e){
 					throw new SelectorEvalException("invalid millis:"+parameters[1]);
 				}
 			}
 		});
 		super.addPseudoClassDef(PSEUDO_CLASS_BETWEEN, new PseudoClassDef<MonitorPoint>() {
-			public boolean accept(MatchCtx<MonitorPoint> ctx, String... parameters) {
+			public boolean accept(Entry<MonitorPoint> ctx, String... parameters) {
 				if(parameters.length!=3)
 					throw new SelectorEvalException("must has three arguments! parameters:"+parameters);
 				RangeRetriever rr = null;
@@ -108,7 +108,7 @@ public class MonitorPointSelectionBase extends SelectionEntryBase<MonitorPoint, 
 					throw new SelectorEvalException("invalid end millis:"+parameters[2]);
 				}
 				
-				return rr.retrieve(ctx.getEntry().getValue()).between(startMillis, endMillis);
+				return rr.retrieve(ctx.getValue()).between(startMillis, endMillis);
 			}
 		});
 	}

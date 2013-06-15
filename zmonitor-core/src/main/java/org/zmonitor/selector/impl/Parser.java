@@ -8,14 +8,14 @@ import java.util.List;
 
 import org.zmonitor.selector.impl.InSequenceStateMachine.SubState;
 import org.zmonitor.selector.impl.Token.Type;
-import org.zmonitor.selector.impl.model.Selector;
-import org.zmonitor.selector.impl.model.SimpleSelectorSequence;
 import org.zmonitor.selector.impl.model.Attribute.Operator;
+import org.zmonitor.selector.impl.model.Selector;
 import org.zmonitor.selector.impl.model.Selector.Combinator;
-import org.zmonitor.selector.impl.util.MacroStateCtx;
-import org.zmonitor.selector.impl.util.StateCtx;
-import org.zmonitor.selector.impl.util.StateMachine;
-import org.zmonitor.selector.impl.util.StateCtx.TransitionListener;
+import org.zmonitor.selector.impl.model.SimpleSelectorSequence;
+import org.zmonitor.util.fsm.MacroStateCtx;
+import org.zmonitor.util.fsm.StateCtx;
+import org.zmonitor.util.fsm.StateCtx.TransitionListener;
+import org.zmonitor.util.fsm.StateMachine;
 
 /**
  * A parser that parses selector string and generates selector objects.
@@ -278,7 +278,6 @@ public class Parser {
 				public void onTransit(Token input, Type inputClass) {
 					// set attribute name
 					String chunk = input.source(_source);
-					System.out.println("jqSelector Parser: to attr_post_name sub state, in transition: src_chunk="+chunk);
 					_seq.addAttribute(chunk);
 				}
 			})

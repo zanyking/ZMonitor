@@ -26,4 +26,8 @@ public interface MatchCtxCtrl {
 	 * @return
 	 */
 	boolean[][] getQualified();
+	/**
+	 * 
+	 */
+	void moveToNextSibling();
 }

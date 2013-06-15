@@ -3,12 +3,14 @@
  */
 package org.zmonitor.selector.impl;
 
+import org.zmonitor.selector.Entry;
+
 
 /**
  * The model of pseudo class definition
  * @author simonpai
  */
-public interface PseudoClassDef<T> {
+public interface PseudoClassDef<E> {
 	
 	/**
 	 * Return true if the component qualifies this pseudo class.
@@ -16,6 +18,6 @@ public interface PseudoClassDef<T> {
 	 * @param parameters
 	 * @return
 	 */
-	public boolean accept(MatchCtx<T> ctx, String ... parameters);
+	public boolean accept(Entry<E> ctx, String ... parameters);
 	
 }

@@ -38,6 +38,11 @@ public class Slf4jConfigurator extends ZMBeanBase implements Configurator{
 			public String retrieveType(MonitorPoint mp) {
 				return Markers.retrieveRegisteredMajorMarker(mp.getMonitorMeta()).getName();
 			}
+
+			@Override
+			public Object resolveAttribute(String varName, MonitorPoint mp) {
+				return new Slf4jMPVariableResolver(mp).resolveVariable(varName);
+			}
 		});
 		
 		ConfigContext slf4jConfCtx = monitorMgmt.toNode(REL_SLF4J_CONF);

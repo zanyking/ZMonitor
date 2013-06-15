@@ -71,4 +71,6 @@ public interface Entry<E> {
 	 */
 	Set<String> getConceptualCssClasses();
 	
+	int getSiblingSize();
+	
 }

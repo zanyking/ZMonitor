@@ -3,6 +3,9 @@
  */
 package org.zmonitor.impl;
 
+import java.util.List;
+import java.util.Map;
+
 import org.zmonitor.MonitorPoint;
 import org.zmonitor.util.Arguments;
 import org.zmonitor.util.GetterInvocationCache;
@@ -28,30 +31,74 @@ public class DefaultMPVariableResolver {
 
 	
 	/**
+	 * support <i>a.b.c</i> getter chain format.
 	 * 
 	 * @param attributeChain
 	 *            might be: a.b.c the ZMonitor Selector Engine should be able to
 	 *            handle getter chain.
-	 * @return
+	 *            
+	 * @return null if any mid evaluation returned null.
+	 * 
 	 */
 	public Object resolveVariable(String attributeChain) {
+		Arguments.checkNotEmpty(attributeChain, 
+				"the given attribute cannot be null!");
+		
 		String[] attrs = attributeChain.split("[.]");
 		
-		Object[] roots = new Object[]{mp, mp.getMonitorMeta()};
-		Object result = null;
-		for(Object root : roots){
-			result = recusiveGet(root, attrs, 0);
+		Object target = null;
+		Getter getter = null;
+		for(Object root :  new Object[]{mp, mp.getMonitorMeta()}){
+			getter = toGetter(attrs[0], root);
+			if(getter.exist()){
+				target = getter.invoke(root).getValue();
+				break;	
+			}
 		}
-		return result;
+		if(!getter.exist()){
+			throw new AttributeResolveException("neither [" +
+					mp.getClass().getSimpleName()+
+					"[ nor ["+mp.getMonitorMeta().getClass().getSimpleName()+
+					"] can provide proper getter for attribute: "+attrs[0]);
+		}
 		
+		if(attrs.length==1 || target==null){
+			return target;
+		}
+		return recursive(target, attrs, 1).getValue();
 	}
 	
-	private static Result recusiveGet(Object target, String[] attrs, int idx){
+	protected Result recursive(Object target, String[] attrs, int idx){
 		Arguments.checkNotNull(target);
-		Getter getter = getter1(attrs[idx], target);
+		if(target instanceof Map){
+			return recursiveMap((Map)target, attrs, idx);
+			
+		}else if(target.getClass().isArray()){
+			return recursiveArray((Object[])target, attrs, idx);
+			
+		}else{
+			return recursiveBean(target, attrs, idx);
+		}
+	}
+	/**
+	 * to support:<br>
+	 * <i> .BusinessObject[logLevel=ERROR, message.abc*='hello world!']</i>
+	 * <i> .BusinessObject[message.def*=123]</i>
+	 * <i> .BusinessObject[message.ghi*=true]</i>
+	 * 
+	 * @param target
+	 * @param attrs
+	 * @param idx
+	 * @return
+	 */
+	protected Result recursiveBean(Object target, String[] attrs, int idx){
+		Getter getter = toGetter(attrs[idx], target);
 		
-		if(!getter.exist())
-			return null;
+		if(!getter.exist()){
+			return null;// no possible getter for this attribute of current target.
+		}
+			
+		
 		if(!getter.isAbleToUse()){
 			throw new AttributeResolveException(Strings.append(
 					"the getter chain evaluation: \"",
@@ -61,11 +108,11 @@ public class DefaultMPVariableResolver {
 		}
 		
 		Result result = getter.invoke(target);
-		
+		Object value = result.getValue();
 		if((attrs.length-idx)<=1 ){
 			return result;
-		}else if(result.getValue()!=null){
-			return recusiveGet(result.getValue(), attrs, idx + 1);
+		}else if(value!=null){
+			return recursive(value, attrs, idx + 1);
 		}else if(result.hasError()){
 			throw new AttributeResolveException(Strings.append(
 					"the getter chain evaluation: \"",
@@ -73,21 +120,89 @@ public class DefaultMPVariableResolver {
 					"\" is faild due to invocation error, message:",
 					result.getError().getMessage()),
 						result.getError());
-		}else{
-			throw new AttributeResolveException(Strings.append(
-					"the getter chain evaluation: \"",
+		}else{// mid-getter returned null, let caller decide what to do.
+			return new Result(null, new AttributeResolveException(Strings.append(
+					"the getter chain evaluation is faild due to bean:\"",
 					toString(attrs, idx),
-					"\" is faild due to getter returned null: ", getter));
+					"\" returned null, getter detail:", getter)));
 		}
 	}
+	
+	/**
+	 * to support:<br>
+	 * <i> .BusinessObject[message.abc*='hello world!']</i>
+	 * <i> .BusinessObject[message.def*=123]</i>
+	 * <i> .BusinessObject[message.ghi*=true]</i>
+	 * 
+	 * @param map
+	 * @param attrs
+	 * @param idx
+	 * @return
+	 */
+	protected Result recursiveMap(Map map, String[] attrs, int idx ){
+		Object value = map.get(attrs[idx]);
+		
+		if((attrs.length-idx)<=1 ){
+			return new Result(value, null);
+		}else if(value!=null){
+			return recursive(value, attrs, idx + 1);
+		}else{
+			return new Result(null, new AttributeResolveException(Strings.append(
+					"the getter chain evaluation is faild due to bean:\"",
+					toString(attrs, idx),
+					"\" returned null, getter detail:", map)));
+		}
+	}
+	/**
+	 * to support:<br>
+	 * <i> .BusinessObject[message.0*='hello world!']</i>
+	 * <i> .BusinessObject[message.13=123]</i>
+	 * <i> .BusinessObject[message.5=true]</i>
+	 * 
+	 * @param list
+	 * @param attrs
+	 * @param idx
+	 * @return
+	 */
+	protected Result recursiveArray(Object[] array, String[] attrs, int idx ){
+
+		int listIdx = -1;
+		try{
+			listIdx = Integer.parseInt(attrs[idx]);
+		}catch(NumberFormatException e){
+			new AttributeResolveException(Strings.append(
+					"the getter chain evaluation: \"",
+					toString(attrs, idx),
+					"\" is faild, the attribute \"",attrs[idx]
+					,"\" is not integer"),
+						e);
+		}
+		Object value = null;
+		if(array.length>=listIdx){
+			value = array[listIdx];	
+		}
+		
+		
+		if((attrs.length-idx)<=1 ){
+			return new Result(value, null);
+		}else if(value!=null){
+			return recursive(value, attrs, idx + 1);
+		}else{
+			return new Result(null, new AttributeResolveException(Strings.append(
+					"the getter chain evaluation is faild due to bean:\"",
+					toString(attrs, idx),
+					"\" returned null, getter detail")));
+		}
+	}
+	
 
 	
-	private static Getter getter1(String attribute, Object target){
+	protected static Getter toGetter(String attribute, Object target){
 		return GetterInvocationCache.SINGELTON.get(
 				target.getClass(), attribute);
 	}
 	
-	private static String toString(String[] arr, int idx){
+	protected static String toString(String[] arr, int idx){
 		StringBuffer sb = new StringBuffer();
 		for(int i=0;i<idx;i++){
 			sb.append(arr[i]);

@@ -5,7 +5,14 @@
 	
 	
 	<monitor-sequence-handler name="console-handler" 
-		class="org.zmonitor.handler.EclipseConsoleMonitorSequenceHandler"/>
+		class="org.zmonitor.handler.EclipseConsoleMonitorSequenceHandler"
+		previousMillis="false"	
+		nextMillis="true"
+		callerJavaFile="false"
+		showId="true"
+		showType="false"
+		showClass="true"
+		showMessage="true"/>
 	
 	
 	<slf4j-conf defaultLogLevel="error" eatOperator="false">

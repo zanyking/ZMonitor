@@ -3,79 +3,79 @@
  */
 package org.zmonitor.selector.impl;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import org.zmonitor.selector.Entry;
+import org.zmonitor.selector.impl.EntryLocalProperties;
+import org.zmonitor.selector.impl.MatchCtx;
+import org.zmonitor.selector.impl.MatchCtxCtrl;
+import org.zmonitor.selector.impl.PseudoClassDef;
 import org.zmonitor.selector.impl.model.Selector;
 import org.zmonitor.selector.impl.model.SimpleSelectorSequence;
 
-/**
- * @author Ian YT Tsai(Zanyking)
- *
- */
-public class MatchCtxImpl<E> implements MatchCtx<E>, MatchCtxCtrl{
 
-	private MatchCtx<E> parent;
-	private Entry<E> entry;
+/**
+ * A wrapper of Component, providing a context for selector matching algorithm.
+ * @since 6.0.0
+ * @author simonpai
+ */
+public class MatchCtxImpl<E> implements MatchCtx<E>, MatchCtxCtrl {
 	
-	// qualified positions, a Dynamic Programming matrix to keep states.
-	private boolean[][] qualifiedArr;
+	private MatchCtx<E> _parent;
+	private Entry<E> _comp;
+	
+	// qualified positions
+	private final boolean[][] _qualified;
 	
 	// pseudo-class support
-	private int entryIndex = -1;
+	private int _compChildIndex = -1;
 	
 	
 	
-	
-	
-	
-	public boolean[][] getQualified(){
-		return qualifiedArr;
+	/*package*/ MatchCtxImpl(Entry<E> component) { // used by root jumping
+		_comp = component;
+		_qualified = new boolean[0][0];
+		_compChildIndex = component.getIndex();
 	}
 	
-	/*package*/ MatchCtxImpl(Entry<E> entry, List<Selector> selectorList){
-		this.entry = entry;
-		this.qualifiedArr = new boolean[selectorList.size()][];
+	/*package*/ MatchCtxImpl(Entry<E> component, List<Selector> selectorList) { // root
+		_comp = component;
+		_qualified = new boolean[selectorList.size()][];
 		
 		for(Selector selector : selectorList)
-			qualifiedArr[selector.getSelectorIndex()] = new boolean[selector.size()];
+			_qualified[selector.getSelectorIndex()] = new boolean[selector.size()];
 		
-		this.entryIndex = this.entry.getIndex();
+		_compChildIndex = component.getIndex();
 	}
 	
-	/*package*/ MatchCtxImpl(Entry<E> entry, MatchCtx<E> parent){
-		this.entry = entry;
-		
-		boolean[][] parentQualified = 
-				((MatchCtxCtrl) parent).getQualified();
+	/*package*/ MatchCtxImpl(Entry<E> component, MatchCtx<E> parent) {// first child
+		_comp = component;
+		boolean[][] parentQualified = ((MatchCtxCtrl)parent).getQualified();
 		
 		int selectorListSize = parentQualified.length;
-		qualifiedArr = new boolean[selectorListSize][];
-		for(int i=0; i < selectorListSize; i++){
-			qualifiedArr[i] = new boolean[ parentQualified[i].length];
+		_qualified = new boolean[selectorListSize][];
+		int pSeqQLength;// parent Sequence qualified array length
+		for (int i = 0; i < selectorListSize; i++) {
+			pSeqQLength = parentQualified[i].length;
+			_qualified[i] = Arrays.copyOf(parentQualified[i], pSeqQLength);
+//			_qualified[i][pSeqQLength - 1] = false;// last one should always be
+													// false, it's the element
+													// itself should check
 		}
-		this.parent = parent;
-		this.entryIndex = 0;
+
+		_parent = parent;
+		_compChildIndex = 0;
 	}
 	
-	/*package*/ MatchCtxImpl(Entry<E> entry, boolean[][] qualifiedArr, MatchCtx<E> parent, int idx){
-		this.entry = entry;
-		this.qualifiedArr = qualifiedArr;
-		this.parent = parent;
-		this.entryIndex = idx;
-	}
 	
-	public MatchCtxImpl<E> toNext() {
-		Entry<E> nextSibling = entry.getNextSibling();
-		return new MatchCtxImpl<E>(nextSibling, qualifiedArr, this.parent, this.entryIndex+1);
+	
+	// operation //
+	public void moveToNextSibling() {
+		_comp = _comp.getNextSibling();
+		_compChildIndex++;
 	}
-//	
-//	// operation //
-//	public void moveToNextSibling(){
-//		entry = entry.getNextSibling();
-//		entryIndex++;
-//	}
 	
 	
 	
@@ -83,48 +83,51 @@ public class MatchCtxImpl<E> implements MatchCtx<E>, MatchCtxCtrl{
 	/**
 	 * Return the parent context
 	 */
-	public MatchCtx<E> getParent(){
-		return parent;
+	public MatchCtx<E> getParent() {
+		return _parent;
 	}
 	
 	/**
 	 * Return the component.
 	 */
-	public Entry<E> getEntry(){
-		return entry;
+	public Entry<E> getEntry() {
+		return _comp;
 	}
 	
 	/**
 	 * Return the child index of the component. If the component is one of the 
 	 * page roots, return -1.
 	 */
-	public int getChildIndex(){
-		if(entryIndex > -1) return entryIndex;
-		Entry<E> parent = entry.getParent();
-		return parent == null ? -1 : entry.getIndex();
+	public int getChildIndex() {
+		if(_compChildIndex > -1) return _compChildIndex;
+		Entry<E> parent = _comp.getParent();
+		return parent == null ? -1 : _comp.getIndex();
 	}
 	
 	/**
 	 * Return the count of total siblings of the component, including itself.
-	 * @return
 	 */
-	public int getSiblingSize(){
-		Entry<E> parent = entry.getParent();
+	public int getSiblingSize() {
+		Entry parent = _comp.getParent();
 		return parent == null ? 
-				entry.getEntryContainer().size() : 
+				_comp.getEntryContainer().size() : 
 					parent.size();
 	}
+	
+	
 	
 	// match position //
 	/**
 	 * Return true if the component matched the given position of the given 
 	 * selector.
-	 * @param selector
+	 * @param selectorIndex
 	 * @param position
-	 * @return
 	 */
 	public boolean isQualified(int selectorIndex, int position) {
-		return qualifiedArr[selectorIndex][position];
+		if (selectorIndex < 0 || selectorIndex >= _qualified.length)
+			return false;
+		boolean[] posq = _qualified[selectorIndex];
+		return position > -1 && position < posq.length && posq[position];
 	}
 	
 	public void setQualified(int selectorIndex, int position) {
@@ -133,17 +136,18 @@ public class MatchCtxImpl<E> implements MatchCtx<E>, MatchCtxCtrl{
 	
 	public void setQualified(int selectorIndex, int position, 
 			boolean qualified) {
-		qualifiedArr[selectorIndex][position] = qualified;
+		_qualified[selectorIndex][position] = qualified;
 	}
-	
+	public boolean[][] getQualified(){
+		return _qualified;
+	}
 	/**
 	 * Return true if the component matched the last position of any selectors
 	 * in the list. (i.e. the one we are looking for)
-	 * @return
 	 */
 	public boolean isMatched() {
-		for(int i = 0; i< qualifiedArr.length; i++) 
-			if(isMatched(i)) 
+		for (int i = 0; i < _qualified.length; i++) 
+			if (isMatched(i)) 
 				return true;
 		return false;
 	}
@@ -152,12 +156,14 @@ public class MatchCtxImpl<E> implements MatchCtx<E>, MatchCtxCtrl{
 	 * Return true if the component matched the last position of the given
 	 * selector.
 	 * @param selectorIndex
-	 * @return
 	 */
 	public boolean isMatched(int selectorIndex) {
-		boolean[] quals = qualifiedArr[selectorIndex];
-		return quals[quals.length-1];
+		if (selectorIndex < 0 || selectorIndex >= _qualified.length)
+			return false;
+		boolean[] quals = _qualified[selectorIndex];
+		return quals[quals.length - 1];
 	}
+	
 	
 	
 	// match local property //
@@ -166,36 +172,43 @@ public class MatchCtxImpl<E> implements MatchCtx<E>, MatchCtxCtrl{
 	 * SimpleSelectorSequence.
 	 * @param seq 
 	 * @param defs 
-	 * @return
 	 */
 	public boolean match(SimpleSelectorSequence seq, 
-			Map<String, PseudoClassDef> defs){
-		
-		return EntryLocalProperties.match(this, seq, defs);
+			Map<String, PseudoClassDef> defs) {
+		boolean matches = EntryLocalProperties.match(this, seq, defs);
+		return matches;
 	}
 	
-	// TODO: remove after testing
-	@Override
+	
 	public String toString() {
-		StringBuffer sb = new StringBuffer("");
-		for(boolean[] bs : qualifiedArr) { 
-			sb.append("Q[");
-			for(boolean b : bs) sb.append(b?'1':'0');
-			sb.append("]");
+		StringBuilder sb = new StringBuilder();
+		str(sb, _qualified);
+		sb.append(' ');
+		for (MatchCtx<E> c = this; (c = c.getParent()) != null;)
+			sb.append("  ");
+		sb.append(_comp);
+		return sb.toString();
+	}
+	
+	private static void str(StringBuilder sb, boolean[][] arr) {
+		if (arr.length > 1)
+			sb.append('[');
+		for (int i = 0; i < arr.length; i++) {
+			if (i > 0)
+				sb.append(',');
+			str(sb, arr[i]);
 		}
-		return sb.append(", ").append(entry).toString();
+		if (arr.length > 1)
+			sb.append(']');
+	}
+	
+	private static void str(StringBuilder sb, boolean[] arr) {
+		sb.append('[');
+		for (boolean b : arr)
+			sb.append(b ? '1' : '0');
+		sb.append(']');
 	}
 
 	
 	
-//	// helper //
-//	private static int getComponentIndex(Entry curr){
-//		int index = -1;
-//		while(curr != null) {
-//			curr = curr.getPreviousSibling();
-//			index++;
-//		}
-//		return index;
-//	}
-
 }

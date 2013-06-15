@@ -5,6 +5,7 @@ package zmonitor.test.slf4j;
 
 import java.util.ArrayList;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,13 +41,13 @@ public class Slf4jSimple_TEST extends TestBase{
 	}
 	
 	@Test
-	public void test_Configuration() throws Exception {
+	public void test_SimpleSlf4j() throws Exception {
 		runCase();
 		// 1. Get the monitored result through ZMonitor TestBase API.
 		MonitoredResult mResult = this.getMonitoredResult();
 
 		// 2. Use Selection API to manipulate the Monitor Point Sequence.
-		String selector = ".BusinessObject .Service .Dao .lookUpDB[message.abc*='hello world!']:greater-than(END,50)";
+		String selector = ".BusinessObject .Service .Dao .lookUpDB[message*='hello world!']:greater-than(END,50)";
 
 		MonitorPointSelection mpSel = mResult.asSelection().select(selector);
 
@@ -73,29 +74,76 @@ public class Slf4jSimple_TEST extends TestBase{
 	}
 	
 	
-	
 	@Test
-	public void test_SelectorParser(){
-		Parser parser = new Parser();
-		parser.setDebugMode(true);
-		String selector = " .test[message.abc*='hello world!']:greater-than(END,50)";
-		System.out.println("parse: "+selector);
-		parser.parse(selector);
-	}
-	
-	
-	@Test
-	public void test_Tockenizer(){
-		String selector = ".test[message.abc*='hello world!']:greater-than(END,50)";
-		Tokenizer tokenizer = new Tokenizer();
-		tokenizer.setDebugMode(true);
-		ArrayList<Token> list = tokenizer.tokenize(selector);
-		for(Token token : list){
-			System.out.println(token.getType()+"["+
-					token.getBeginIndex()+","+token.getEndIndex()
-					+"]"+token.source(selector));
-		}
-		
-	}
+	public void test_SpecialAttributeOperation() throws Exception {
+		runCase();
+		// 1. Get the monitored result through ZMonitor TestBase API.
+		MonitoredResult mResult = this.getMonitoredResult();
 
+		// 2. Use Selection API to manipulate the Monitor Point Sequence.
+		String selector = ".Service .Dao .getBean[message*='user']";
+//		String selector = ".BusinessObject .Dao:greater-than(END, 50)";
+		
+		
+		System.out.println(
+				"---------selector----------\n"+
+				selector+
+				"\n---------------------------");
+		
+		MonitorPointSelection mpSel = mResult.asSelection().select(selector);
+		
+		MonitorPoint mp;
+		StringBuffer sb = new StringBuffer(
+				"\n testSelection_SelectorPseudoClass: " + selector + "\n");
+		sb.append("--------------------\n");
+		EclipseConsoleMonitorSequenceHandler handler = ZMonitorManager
+				.getInstance().getBeanById("console-handler");
+		int counter = 0;
+		while (mpSel.hasNext()) {
+			counter++;
+			mp = mpSel.toNext();
+			Strings.appendln(sb, " Start printing from root:");
+			handler.writeRoot2MP(sb, mp, " ");
+			sb.append("--------------------\n");
+		}
+		System.out.println(sb);
+		Assert.assertEquals(1, counter);
+	}
+	
+	
+	@Test
+	public void test_ID() throws Exception {
+		runCase();
+		// 1. Get the monitored result through ZMonitor TestBase API.
+		MonitoredResult mResult = this.getMonitoredResult();
+
+		// 2. Use Selection API to manipulate the Monitor Point Sequence.
+		String selector = ".Service #Dao_getBean_27";
+//		String selector = ".BusinessObject .Dao:greater-than(END, 50)";
+		
+		
+		System.out.println(
+				"------------------------\n"+
+				"selector: "+selector+
+				"\n------------------------");
+		
+		MonitorPointSelection mpSel = mResult.asSelection().select(selector);
+		
+		MonitorPoint mp;
+		StringBuffer sb = new StringBuffer(
+				"\n testSelection_SelectorPseudoClass: " + selector + "\n");
+		sb.append("--------------------\n");
+		EclipseConsoleMonitorSequenceHandler handler = ZMonitorManager
+				.getInstance().getBeanById("console-handler");
+		int counter = 0;
+		while (mpSel.hasNext()) {
+			counter++;
+			mp = mpSel.toNext();
+			Strings.appendln(sb, " Start printing from root:");
+			handler.writeRoot2MP(sb, mp, " ");
+			sb.append("--------------------\n");
+		}
+		System.out.println(sb);
+		Assert.assertEquals(1, counter);
+	}
 }

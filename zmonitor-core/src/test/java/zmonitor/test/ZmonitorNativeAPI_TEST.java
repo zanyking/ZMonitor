@@ -6,6 +6,7 @@ package zmonitor.test;
 import org.junit.Test;
 import org.zmonitor.MonitorPoint;
 import org.zmonitor.ZMonitor;
+import org.zmonitor.ZMonitorManager;
 import org.zmonitor.handler.EclipseConsoleMonitorSequenceHandler;
 import org.zmonitor.selector.MonitorPointSelection;
 import org.zmonitor.test.junit.MonitoredResult;
@@ -83,7 +84,9 @@ public class ZmonitorNativeAPI_TEST extends TestBase {
 		
 		MonitorPoint mp;
 		StringBuffer sb = new StringBuffer("Selector:\""+selector+"\" \n");
-		EclipseConsoleMonitorSequenceHandler handler = new EclipseConsoleMonitorSequenceHandler();
+		EclipseConsoleMonitorSequenceHandler handler = 
+				ZMonitorManager.getInstance().getBeanById("console-handler");
+		
 		while(mpSel.hasNext()){
 			mp = mpSel.toNext();
 			handler.writeMP(sb, mp, " ");

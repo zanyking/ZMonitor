@@ -52,8 +52,7 @@ public class EclipseConsoleMonitorSequenceHandler extends ZMBeanBase
 		String indent = "    ";
 		StringBuffer sb = new StringBuffer();
 		
-		Strings.appendln(sb, "[ ",getHHmmssSSS_yyyy_MM_dd().format(new Date())," ] ",
-				root.getMonitorMeta().getTrackerName()," -> MONITOR_SEQUENCE DUMP BEGIN");
+		Strings.appendln(sb, root.getMonitorMeta().getTrackerName()," -> MONITOR_SEQUENCE DUMP BEGIN [ ",getHHmmssSSS_yyyy_MM_dd().format(new Date())," ] ");
 		
 		Strings.appendln(sb,"Total Elipsed Millis:\t",retrieveMillisToEnd(root));
 		Strings.appendln(sb,"Monitor Point Amount:\t",ms.getRecordAmount());
@@ -159,7 +158,7 @@ public class EclipseConsoleMonitorSequenceHandler extends ZMBeanBase
 	}
 
 	
-	private static List<MonitorPoint> getBloodline(MonitorPoint mp){
+	public static List<MonitorPoint> getBloodline(MonitorPoint mp){
 		LinkedList<MonitorPoint> bloodline = new LinkedList<MonitorPoint>();
 		bloodline.addFirst(mp);
 		mp = mp.getParent();

@@ -26,8 +26,6 @@ public interface MatchCtx<E>{
 	 */
 	public Entry<E> getEntry();
 	
-	
-	public MatchCtx<E> toNext();
 
 	/**
 	 * Return the child index of the Entry. If the Entry is one of the 

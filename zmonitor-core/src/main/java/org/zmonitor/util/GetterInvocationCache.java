@@ -33,7 +33,7 @@ public class GetterInvocationCache {
 	 * @param target the instance which will be invoked .
 	 * @return the value of the invocation.
 	 */
-	public Object invoke(String attribute, Object target){
+	public Result invoke(String attribute, Object target){
 		Arguments.checkNotNull(target);
 		Getter getter = get(target.getClass(), attribute);
 		return getter.invoke(target);
@@ -110,6 +110,9 @@ public class GetterInvocationCache {
 		public boolean hasError(){
 			return error!=null;
 		}
+		public boolean hasValue(){
+			return value!=null;
+		}
 	}
 	
 	
@@ -166,15 +169,21 @@ public class GetterInvocationCache {
 	
 	
 	
-	static void noSuchGetter(){}
+
 	
 	private static final Method NO_SUCH_GETTER ;
 	static {
 		try {
-			NO_SUCH_GETTER = GetterInvocationCache.class.getMethod("noSuchGetter");
-		} catch (Exception e) {//won't happen, just to avoid the checked Exception.
+			NO_SUCH_GETTER = NullMethod.class.getMethod("noSuchGetter");
+		} catch (Throwable e) {//won't happen, just to avoid the checked Exception.
+			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
 	}
 	
 }
+
+class NullMethod{
+	public void noSuchGetter(){}
+}
+  
