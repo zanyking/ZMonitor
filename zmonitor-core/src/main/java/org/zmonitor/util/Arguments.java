@@ -39,4 +39,14 @@ public class Arguments {
 		}
 	}
 
+	public static void checkInterval(int integer, int i, int j) {
+		if (i > j)
+			throw new IllegalArgumentException(
+					"The given conditions are incorrect: " + i + " > " + j);
+		if (integer < i || integer > j)
+			throw new IndexOutOfBoundsException(
+					"the given integer doesn't satisfy:[ <= " + i + ", >=" + j
+							+ "]");
+	}
+
 }

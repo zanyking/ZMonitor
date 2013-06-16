@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.zmonitor.selector.impl;
+package org.zmonitor.selector.impl.temp;
 
 import java.util.List;
 import java.util.Map;
@@ -10,8 +10,12 @@ import java.util.regex.Pattern;
 
 import org.zmonitor.selector.Entry;
 import org.zmonitor.selector.SelectorEvalException;
+import org.zmonitor.selector.impl.BasicPseudoClassDefs;
+import org.zmonitor.selector.impl.Parser;
+import org.zmonitor.selector.impl.PseudoClassDef;
 import org.zmonitor.selector.impl.model.Attribute;
 import org.zmonitor.selector.impl.model.PseudoClass;
+import org.zmonitor.selector.impl.model.Selector;
 import org.zmonitor.selector.impl.model.SimpleSelectorSequence;
 import org.zmonitor.util.Objects;
 import org.zmonitor.util.Strings;
@@ -23,8 +27,42 @@ import org.zmonitor.util.Strings;
  */
 public class EntryLocalProperties {
 	
+	/**
+	 * Returns true if the selector matches the given component. Combinators 
+	 * are not allowed.
+	 * @param entry
+	 * @param selector
+	 * @return
+	 */
+	public static<T> boolean match(Entry<T> entry, String selector) {
+		return match(entry, selector, null);
+	}
 	
+	/**
+	 * Returns true if the selector matches the given component. Combinators 
+	 * are not allowed. 
+	 * @param entry
+	 * @param selector
+	 * @param defs
+	 * @return
+	 */
+	public static<T> boolean match(Entry<T> entry, 
+			String selector,
+			Map<String, PseudoClassDef> defs) {
+		List<Selector> selectorList = new Parser().parse(selector);
+		MatchCtx<T> ctx = new MatchCtxImpl<T>(entry, selectorList);
+		for(Selector s : selectorList) {
+			if(s.size() > 1) continue;
+			if(match(ctx, s.get(0), defs)) return true;
+		}
+		return false;
+	}
 	
+	public static<T> boolean match(MatchCtx<T> context, 
+			SimpleSelectorSequence seq, 
+			Map<String, PseudoClassDef> defs){
+		return match(context.getEntry(), seq, defs);
+	}
 	
 	public static<T> boolean match(Entry<T> entry, 
 			SimpleSelectorSequence seq, 

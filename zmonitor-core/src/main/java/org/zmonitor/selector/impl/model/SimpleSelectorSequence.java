@@ -14,7 +14,7 @@ import org.zmonitor.selector.impl.model.Selector.Combinator;
 
 /**
  * The model representing a sequence of simple selectors.
- * @author simonpai
+ * @author simonpai, Ian YT Tsai
  */
 public class SimpleSelectorSequence {
 	
@@ -27,20 +27,42 @@ public class SimpleSelectorSequence {
 	
 	private Attribute _currAttribute;
 	private PseudoClass _currPseudoClass;
+	private final SimpleSelectorSequence _previous;
+	private SimpleSelectorSequence _next;
+	private int index;
 	
-	public SimpleSelectorSequence(){
+	/* package */SimpleSelectorSequence(SimpleSelectorSequence previous) {
 		_combinator = Combinator.DESCENDANT;
 		_classes = new HashSet<String>();
 		_attributes = new ArrayList<Attribute>();
 		_pseudoClasses = new ArrayList<PseudoClass>();
+		_previous = previous;
+		if (_previous != null) {// this sequence has previous.
+			_previous.setNext(this);// maintain a double liked list to forward
+									// and backward
+			index = _previous.index+1;
+		}else{
+			index = 0;
+		}
 	}
 	
-	public SimpleSelectorSequence(String type){
-		this();
-		_type = type;
+	
+	public int getIndex() {
+		return index;
+	}
+
+
+	public void setNext(SimpleSelectorSequence next){
+		_next = next;
 	}
 	
+	public SimpleSelectorSequence getNext(){
+		return _next;
+	}
 	
+	public SimpleSelectorSequence getPrevious(){
+		return _previous;
+	}
 	
 	// getter //
 	public Combinator getCombinator(){

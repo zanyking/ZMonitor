@@ -325,8 +325,9 @@ public class Parser {
 	
 	@Override
 	protected void onStart(Token input, Type inputClass, SubState landing){
-		_selector.add(_seq = new SimpleSelectorSequence());
-		if(inputClass == Type.IDENTIFIER) _seq.setType(input.source(_source));
+		_seq = _selector.appendNewSequnce();
+		if(inputClass == Type.IDENTIFIER) 
+			_seq.setType(input.source(_source));
 	}
 	
 	@Override
