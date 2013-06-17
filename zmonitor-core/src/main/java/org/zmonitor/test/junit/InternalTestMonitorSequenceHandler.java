@@ -16,23 +16,17 @@ import org.zmonitor.spi.MonitorSequenceHandler;
  */
 class InternalTestMonitorSequenceHandler extends ZMBeanBase 
 implements MonitorSequenceHandler {
-	private static final ThreadLocal<MonitoredResult> RESULT_REF = 
-			new InheritableThreadLocal<MonitoredResult>();
-	
+	final MonitoredResult repo =new MonitoredResult();
 	public MonitoredResult getMonitoredResult(){
-		MonitoredResult repo = RESULT_REF.get();
-		if(repo==null){
-			RESULT_REF.set(repo = new MonitoredResult());
-		}
 		return repo;
 	}
 	
 	public void handle(MonitorSequence mSequence) {
+		System.out.println("InternalTestMonitorSequenceHandler append new ms:"+mSequence);
 		getMonitoredResult().add(mSequence);
 	}
-
-	public void clear(){
-		RESULT_REF.remove();
-	}
 	
+	public InternalTestMonitorSequenceHandler(String id){
+		this.setId(id);
+	}
 }

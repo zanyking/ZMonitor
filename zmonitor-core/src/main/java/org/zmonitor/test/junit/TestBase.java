@@ -8,6 +8,8 @@ import java.net.URL;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.zmonitor.AlreadyStartedException;
 import org.zmonitor.InitFailureException;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.config.ConfigSource;
@@ -24,26 +26,18 @@ import org.zmonitor.util.Loader;
  */
 public abstract class TestBase {
 	
-	protected InternalTestMonitorSequenceHandler internalMSHandler;
-	
+	private static final String ID_INTERNAL_TEST_MS_HANDLER = "ID_INTERNAL_TEST_MS_HANDLER";
 	public TestBase(){
 		this(true);
 	}
 	public TestBase(boolean useInternalHandler){
-		if(useInternalHandler){
-			internalMSHandler = newInstance();
-		}
 	}
 	
 	protected InternalTestMonitorSequenceHandler newInstance(){
-		return new InternalTestMonitorSequenceHandler();
+		return new InternalTestMonitorSequenceHandler(ID_INTERNAL_TEST_MS_HANDLER);
 	}
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@Before
-	public void setUp() throws Exception {
-		if(ZMonitorManager.isInitialized())return;
+	
+	private void init() throws Exception{
 		ZMonitorManager aZMonitorManager = new ZMonitorManager();
 		
 		String packagePath = this.getClass().getPackage().getName().replace('.', '/');
@@ -68,11 +62,23 @@ public abstract class TestBase {
 		
 		aZMonitorManager.setLifecycleManager(lifecycleMgmt);
 		
-		if(internalMSHandler!=null)
-			aZMonitorManager.addMonitorSequenceHandler(internalMSHandler);
+		aZMonitorManager.addMonitorSequenceHandler(newInstance());
 		
 		ZMonitorManager.init(aZMonitorManager);
-		ZMLog.info(">> Ignit ZMonitor in: ",this.getClass().getCanonicalName());	
+		ZMLog.info(">> Ignit ZMonitor in: ",this.getClass().getCanonicalName());
+	}
+	/**
+	 * @throws java.lang.Exception
+	 */
+	@Before
+	public void setUp() throws Exception {
+		if(!ZMonitorManager.isInitialized()){
+			init();
+		}
+		runCase();
+	}
+	protected void runCase(){
+		//override by sub class...
 	}
 	
 
@@ -98,24 +104,19 @@ public abstract class TestBase {
 			url;
 	}
 
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@After
-	public void tearDown() throws Exception {
-		if(internalMSHandler!=null)
-			internalMSHandler.clear();
+	protected InternalTestMonitorSequenceHandler getInternalMSHandler(){
+		return ZMonitorManager.getInstance().getBeanById(ID_INTERNAL_TEST_MS_HANDLER);
 	}
 	
 	
 	/*========================================= */
 	
 	public MonitoredResult getMonitoredResult(){
-		if(internalMSHandler==null){
+		if(getInternalMSHandler()==null){
 			throw new IllegalStateException( 
 				"this test case didn't activate internalMSHandler, class:"+this.getClass());
 		}
-		return internalMSHandler.getMonitoredResult();
+		return getInternalMSHandler().getMonitoredResult();
 	}
 	
 	

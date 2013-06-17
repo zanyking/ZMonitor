@@ -138,7 +138,9 @@ public abstract class StateMachine<E, C, IN> {
 	 * This method is call at certain situations when debug mode is on.
 	 * @see #setDebugMode(boolean)
 	 */
-	protected void onDebug(String message){}
+	protected void onDebug(String message){
+		System.out.println(message);
+	}
 	
 	
 	

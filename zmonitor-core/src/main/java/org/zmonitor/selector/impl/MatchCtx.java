@@ -21,7 +21,9 @@ public interface MatchCtx<E>{
 	 */
 	public MatchCtx<E> getParent();
 	
-	public MatchCtx<E> getPreviousSibling();
+	public MatchCtx<E> toFirstChild();
+	
+	public MatchCtx<E> toNextSibling();
 	
 	public boolean isMatched();
 	

@@ -49,22 +49,26 @@ public class Selector extends ArrayList<SimpleSelectorSequence> {
 	public Combinator getCombinator(int index){
 		return get(index).getCombinator();
 	}
-//	/**
-
-//	 * 
-//	 * @author Ian YT Tsai(Zanyking)
-//	 * 
-//	 */
-//	public interface Transition {
-//		/**
-//		 * 
-//		 * @param seqMatcher
-//		 * @param seq
-//		 * @return
-//		 */
-//		SimpleSelectorSequence transit(SequenceMatcher seqMatcher,
-//				SimpleSelectorSequence seq);
-//	}
+	
+	/**
+	 * 
+	 * @param seqIdx
+	 * @param selector
+	 * @return
+	 * 
+	 */
+	public static SimpleSelectorSequence getIfAny(int seqIdx, Selector selector) {
+		return (seqIdx >= 0) ? selector.get(seqIdx) : null;
+	}
+	/**
+	 * 
+	 * @param seqIdx
+	 * @return
+	 * @throws IndexOutOfBoundsException when seqIdx is equals or greater than selector size.
+	 */
+	public SimpleSelectorSequence getIfAny(int seqIdx) {
+		return getIfAny(seqIdx, this);
+	}
 	/**
 	 * The model of selector is like this:<br>
 	 * 
@@ -76,68 +80,22 @@ public class Selector extends ArrayList<SimpleSelectorSequence> {
 	 * the new state need to know how it has been calculated and depends on what
 	 * kind of combinator.
 	 * </p>
-	 * 
-	 * <pre>
-	 * 
-	 * SUCCESS:
-	 * 
-	 * 	given: <div clz="a b c">
-	 * 	sel [-1]:            .a      .b      .c 
-	 * 	transition: [-1] -> [ 0] -> [ 1] -> [ 2]
-	 *  sel [-1]:            .a   >  .b      .c 
-	 * 	transition: [-1] -> [ 0]
-	 * 
-	 * 	given: <div clz="a b c">
-	 * 	sel [-1]:            .a      .b   >  .c 
-	 * 	transition: [-1] -> [ 0] -> [ 1]    [  ]
-	 * 
-	 * 	given: <div clz="a b c">
-	 *  sel [-1]:            .a      .b   +  .c 
-	 * 	transition: [-1] -> [ 0] -> [ 1]    [  ]
-	 * 
-	 * 	given: <div clz="a b c"> 
-	 * 	sel [-1]:            .a      .b   ~  .c
-	 * 	transition: [-1] -> [ 0] -> [ 1]    [  ]
-	 * 
-	 *  
-	 *  FAILED:
-	 *  
-	 *  given: <div clz="c">
-	 * 	sel [ 1]:            .x      .y      .z 
-	 * 	transition: [-1]    [ 0]    [ 1]    [  ]
-	 *  sel [ 0]:            .z      .b      .a 
-	 * 	transition: [  ]    [ 0] -> [ 1] -> [ 2]
-	 * 
-	 * 
-	 *  given: <div clz="c">
-	 * 	sel [ 1]:            .x   +  .y   +  .z 
-	 * 	transition: [  ]    [ 0] <- [ 1] <- [ X]
-	 *                |  <-   |  <-   |
-	 * 
-	 * 	sel [ 1]:            .x      .y   +  .z 
-	 * 	transition: [  ]    [  ]    [ 1] <- [ X]
-	 * 
-	 * </pre>
-	 * 
 	 * Represent the Combinator of selector.
 	 * 
 	 * @author simonpai, Ian YT Tsai
 	 */
 	public enum Combinator {
 		// <- failed success ->
-		DESCENDANT(" ", false, true), 
-		CHILD(" > ", false, false), 
-		ADJACENT_SIBLING(" + ", true, false), // NEXT_SIBLING
-		GENERAL_SIBLING(" ~ ", true, false);// REST_SIBLING
+		DESCENDANT(" ", false), 
+		CHILD(" > ", false), 
+		ADJACENT_SIBLING(" + ", true), // NEXT_SIBLING
+		GENERAL_SIBLING(" ~ ", true);// REST_SIBLING
 
 		private final String _str;
-		private final boolean _forwardWhileSuccess;
 		private final boolean _backwardWhileFailed;
 
-		Combinator(String str, boolean backwardWhileFailed,
-				boolean forwardWhileSuccess) {
+		Combinator(String str, boolean backwardWhileFailed) {
 			_str = str;
-			_forwardWhileSuccess = forwardWhileSuccess;
 			_backwardWhileFailed = backwardWhileFailed;
 		}
 
@@ -146,129 +104,11 @@ public class Selector extends ArrayList<SimpleSelectorSequence> {
 			return _str;
 		}
 
-		/**
-		 * 
-		 * @param seqMatcher
-		 * @param startSeq 
-		 * 	the seq which start from the next of current qualified to the end.
-		 * 
-		 * @return the current qualified sequence index. 
-		 */
-		public int matches(SequenceMatcher seqMatcher,
-				SimpleSelectorSequence startSeq) {
-
-			int presentQualifiedSeqIdx = startSeq.getIndex()-1;
-
-			SimpleSelectorSequence chainedSeq;
-			
-			boolean isMatch = seqMatcher.matches(startSeq);
-			
-			if (isMatch) {
-				presentQualifiedSeqIdx++;
-				chainedSeq = startSeq.getNext();
-				if(chainedSeq!=null)
-					presentQualifiedSeqIdx = 
-						forward(presentQualifiedSeqIdx, 
-								chainedSeq, seqMatcher);
-				
-			} else {// failed.
-				presentQualifiedSeqIdx = 
-					backward(presentQualifiedSeqIdx, 
-							startSeq.getPrevious());//present seq
-			}
-			return presentQualifiedSeqIdx;
-		}
-		
-		
-		private int forward(int idx, SimpleSelectorSequence seq, 
-				SequenceMatcher seqMatcher){
-			
-			boolean forward = shouldForward(seq);
-			
-			while(forward){
-				if(!seqMatcher.matches(seq)){//failed, stop here.
-					forward = false;
-				}
-				idx++;
-				seq = seq.getNext();
-				forward = (seq==null) ?// test if reach the selector end. 
-					false : shouldForward(seq);
-			}
-			return idx;
-		}
-		private boolean shouldForward(SimpleSelectorSequence seq){
-			if(seq==null)return false;
-			return seq.getCombinator()._forwardWhileSuccess;
-		}
-		private int backward(int idx, SimpleSelectorSequence seq){
-			boolean backward = shouldBackward(seq);
-			while(backward){
-				idx--;
-				seq = seq.getPrevious();
-				backward = (seq==null) ?// test if reach the selector head. 
-						false : shouldBackward(seq);
-			}
-			return idx;
-		}
-		private boolean shouldBackward(SimpleSelectorSequence seq){
-			if(seq==null)return false;
-			return seq.getCombinator()._backwardWhileFailed;
-		}
 		
 	}
 	
 	
-	/**
-	 * <pre>
-	 * PresentQualifiedSeqIdx
-	 *       |         
-	 *       |
-	 *      -1          0            1            2    
-	 *                 SEQ -> CB -> SEQ -> CB -> SEQ
-	 *       FAIELD <-  |  -> SUCCESS
-	 *                  |
-	 *              SeqMatcher
-	 *                
-	 * </pre>
-	 * 
-	 * 
-	 * 
-	 * 
-	 * <pre>
-	 * PresentQualifiedSeqIdx
-	 *       |         
-	 *       |
-	 *  -1   0            1            2    
-	 *      SEQ -> CB -> SEQ -> CB -> SEQ
-	 *         FAIELD <-  |  -> SUCCESS
-	 *                    |
-	 *                SeqMatcher
-	 *                
-	 * </pre>
-	 * @param seqenceIdx
-	 * @param seqMatcher
-	 * @return
-	 */
-	public int matches(int presentQualifiedSeqIdx, SequenceMatcher seqMatcher){
-		int size = this.size();
-		
-		Arguments.checkInterval(presentQualifiedSeqIdx, -1, size-1);
-		
-		// look up next seq to test current matcher.
-		int nextSeqIdx = presentQualifiedSeqIdx+1;
-		
-		if (nextSeqIdx == size) {// reach the end, no next matcher.
-			return presentQualifiedSeqIdx;
-			// TODO is this good? currently selector knows nothing about
-			// tree structure, so I think this is the best response.
-		} else {
-			SimpleSelectorSequence nextSeq = get(nextSeqIdx);
-			return nextSeq.getCombinator().matches(seqMatcher, nextSeq);
-		}
 
-	}
-	
-	
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
@@ -282,7 +122,87 @@ public class Selector extends ArrayList<SimpleSelectorSequence> {
 	}
 
 	public SimpleSelectorSequence appendNewSequnce() {
-		return new SimpleSelectorSequence(getLastSequence());
+		SimpleSelectorSequence newSeq = new SimpleSelectorSequence(getLastSequence());
+		this.add(newSeq);
+		return newSeq;
 	}
+	/**
+	 * <pre>
+	 * PresentQualifiedSeqIdx
+	 *       |         
+	 *       |
+	 *      -1          0            1            2    
+	 *                 SEQ -> CB -> SEQ -> CB -> SEQ -> CB
+	 *       FAIELD <-  |            |
+	 *                  |            |
+	 *              SeqMatcher      target
+	 *                
+	 * </pre>
+	 * 
+	 * 
+	 * 
+	 * 
+	 * <pre>
+	 * PresentQualifiedSeqIdx
+	 *       |         
+	 *       |
+	 *  -1   0            1            2    
+	 *      SEQ -> CB -> SEQ -> CB -> SEQ -> CB
+	 *         FAIELD <-  |            |
+	 *                    |            |
+	 *                SeqMatcher      target
+	 *                
+	 * </pre>
+	 * @param seqenceIdx
+	 * @param seqMatcher
+	 * @return
+	 */
+	public int matches(int inheritedSeqIdx, SequenceMatcher seqMatcher){
+		int size = this.size();
+		
+		Arguments.checkInterval(inheritedSeqIdx, -1, size-1);
+		
+		// look up inherited to test current matcher.
+		SimpleSelectorSequence inheritedSeq = this.getIfAny(inheritedSeqIdx);
+		
+		SimpleSelectorSequence nextSeq = inheritedSeq==null?
+				get(0): inheritedSeq.getNext();
+		
+		if (nextSeq==null) {// reach the end, no next matcher.
+			return inheritedSeqIdx;
+			// TODO is this good? currently selector knows nothing about
+			// tree structure, so I think this is the best response.
+		} else {
+			return matches0(seqMatcher, nextSeq, 
+					inheritedSeq==null? null : inheritedSeq);
+		}
+	}
+	
+	private int matches0(SequenceMatcher seqMatcher,
+			SimpleSelectorSequence startSeq,
+			SimpleSelectorSequence backwardSeq) {
+		
+		boolean isMatch = seqMatcher.matches(startSeq);
+		if (isMatch) {
+			return startSeq.getIndex();
+		} else {// failed, backward till reaching a Combinator which has
+				// valid relationship to current node.
+			return backward(backwardSeq);
+		}
+	}
+	private int backward(SimpleSelectorSequence seq){
+		boolean backward = shouldBackward(seq);
+		while(backward){
+			seq = seq.getPrevious();
+			backward = (seq==null) ?// test if reach the selector head. 
+					false : shouldBackward(seq);
+		}
+		return seq==null? -1: seq.getIndex();
+	}
+	private boolean shouldBackward(SimpleSelectorSequence seq){
+		if(seq==null)return false;
+		return seq.getCombinator()._backwardWhileFailed;
+	}
+	
 	
 }

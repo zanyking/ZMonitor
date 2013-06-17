@@ -3,13 +3,11 @@
  */
 package zmonitor.test;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.zmonitor.selector.impl.Parser;
-import org.zmonitor.selector.impl.Token;
-import org.zmonitor.selector.impl.Tokenizer;
 import org.zmonitor.selector.impl.model.Selector;
 import org.zmonitor.selector.impl.model.SimpleSelectorSequence;
 
@@ -20,41 +18,37 @@ import org.zmonitor.selector.impl.model.SimpleSelectorSequence;
 public class SelectorParser_TEST {
 
 	@Test
-	public void test_Tockenizer(){
-		String selector = ".test[message.abc*='hello world!']:greater-than(END,50)";
-		Tokenizer tokenizer = new Tokenizer();
-		tokenizer.setDebugMode(true);
-		ArrayList<Token> list = tokenizer.tokenize(selector);
-		for(Token token : list){
-			System.out.println(token.getType()+"["+
-					token.getBeginIndex()+","+token.getEndIndex()
-					+"]"+token.source(selector));
-		}
+	public void test_ComplexAttributeChain(){
+		printAllTockens(".a.test[message.abc*='hello world!']", 1);
 	}
 	@Test
-	public void test_SelectorParser(){
-		Parser parser = new Parser();
-//		parser.setDebugMode(true);
-		String query = ".A .B .C .test[message.abc*='hello world!']";
-		System.out.println("parse: "+query);
-		for(SimpleSelectorSequence sequence : parser.parse(query).get(0)){
-			System.out.println("sequence: "+sequence);
-		}
+	public void test_joinedClasses(){
+		printAllTockens(".A.B .C", 2);
 	}
 	@Test
-	public void test_SelectorSeperator(){
+	public void test_selectorSeperator(){
+		printAllTockens(".A, .B, .C, .test:greater-than(END,50)",1,1,1,1);
+	}
+	@Test
+	public void test_nextSiblings(){
+		printAllTockens(".A ~ .B + .C", 3);
+	}
+	
+	
+	private void printAllTockens(String selectorStr, int... selectorArr){
 		Parser parser = new Parser();
-//		parser.setDebugMode(true);
-		String query = ".A, .B, .C, .test[message.abc*='hello world!']";
-		System.out.println("parse: "+query);
-		List<Selector> selectors = parser.parse(query);
+		parser.setDebugMode(true);
+		System.out.println("parse: "+selectorStr);
+		List<Selector> selectors = parser.parse(selectorStr);
+		Assert.assertEquals(selectors.size(), selectorArr.length);
 		for(Selector selector : selectors){
 			System.out.println("selector:"+selector);
 			for(SimpleSelectorSequence sequence : selector){
-				System.out.println("\tsequence: "+sequence);
+				System.out.println("\tsequence: "+sequence+", cb:"+sequence.getCombinator());
 			}
+			Assert.assertEquals(selector.size(), selectorArr[selector.getSelectorIndex()]);
 		}
+		
 	}
-	
 	
 }

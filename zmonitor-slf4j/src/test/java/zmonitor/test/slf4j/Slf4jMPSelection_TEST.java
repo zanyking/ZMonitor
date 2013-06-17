@@ -3,8 +3,6 @@
  */
 package zmonitor.test.slf4j;
 
-import java.util.ArrayList;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -12,10 +10,11 @@ import org.slf4j.LoggerFactory;
 import org.zmonitor.MonitorPoint;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.handler.EclipseConsoleMonitorSequenceHandler;
+import org.zmonitor.selector.MPDefaultPseudoClassDefs;
 import org.zmonitor.selector.MonitorPointSelection;
-import org.zmonitor.selector.impl.Parser;
-import org.zmonitor.selector.impl.Token;
-import org.zmonitor.selector.impl.Tokenizer;
+import org.zmonitor.selector.impl.EntryIterator;
+import org.zmonitor.selector.impl.SelectorContext;
+import org.zmonitor.selector.impl.zm.MSWrapper;
 import org.zmonitor.test.junit.MonitoredResult;
 import org.zmonitor.test.junit.TestBase;
 import org.zmonitor.util.Strings;
@@ -28,21 +27,19 @@ import zmonitor.test.slf4j.clz.Dao;
  * @author Ian YT Tsai(Zanyking)
  * 
  */
-public class Slf4jSimple_TEST extends TestBase{
+public class Slf4jMPSelection_TEST extends TestBase{
 	private static final Logger logger = 
-			LoggerFactory.getLogger(Slf4jSimple_TEST.class);
+			LoggerFactory.getLogger(Slf4jMPSelection_TEST.class);
 	
-	private void runCase(){
+	protected void runCase(){
 		logger.info(">> start test case");
 		new BusinessObject().doBiz();
 		new Dao().getBean();
 		logger.info("<< end test case");
-		
 	}
 	
 	@Test
 	public void test_SimpleSlf4j() throws Exception {
-		runCase();
 		// 1. Get the monitored result through ZMonitor TestBase API.
 		MonitoredResult mResult = this.getMonitoredResult();
 
@@ -76,7 +73,6 @@ public class Slf4jSimple_TEST extends TestBase{
 	
 	@Test
 	public void test_SpecialAttributeOperation() throws Exception {
-		runCase();
 		// 1. Get the monitored result through ZMonitor TestBase API.
 		MonitoredResult mResult = this.getMonitoredResult();
 
@@ -110,25 +106,20 @@ public class Slf4jSimple_TEST extends TestBase{
 		Assert.assertEquals(1, counter);
 	}
 	
-	
-	@Test
-	public void test_ID() throws Exception {
-		runCase();
+	protected void testMPSSelectorFunc(String selector, int selectedMPs) throws Exception {
 		// 1. Get the monitored result through ZMonitor TestBase API.
 		MonitoredResult mResult = this.getMonitoredResult();
 
 		// 2. Use Selection API to manipulate the Monitor Point Sequence.
-		String selector = ".Service #Dao_getBean_27";
-//		String selector = ".BusinessObject .Dao:greater-than(END, 50)";
-		
-		
+		// String selector = ".BusinessObject .Dao:greater-than(END, 50)";
+
 		System.out.println(
-				"------------------------\n"+
-				"selector: "+selector+
+				"------------------------\n" + 
+				"selector: "+ selector + 
 				"\n------------------------");
-		
+
 		MonitorPointSelection mpSel = mResult.asSelection().select(selector);
-		
+
 		MonitorPoint mp;
 		StringBuffer sb = new StringBuffer(
 				"\n testSelection_SelectorPseudoClass: " + selector + "\n");
@@ -144,6 +135,8 @@ public class Slf4jSimple_TEST extends TestBase{
 			sb.append("--------------------\n");
 		}
 		System.out.println(sb);
-		Assert.assertEquals(1, counter);
+		Assert.assertEquals(selectedMPs, counter);
 	}
+	
+	
 }

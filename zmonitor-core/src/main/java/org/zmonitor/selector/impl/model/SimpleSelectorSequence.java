@@ -165,4 +165,8 @@ public class SimpleSelectorSequence {
 		return sb.toString();
 	}
 	
+	public static String toStringWithCB(SimpleSelectorSequence seq){
+		if(seq==null)return null;
+		return ""+seq._combinator.name()+seq;
+	}
 }

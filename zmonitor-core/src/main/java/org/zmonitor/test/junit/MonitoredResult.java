@@ -28,24 +28,18 @@ import org.zmonitor.util.Iterators;
  */
 public class MonitoredResult {
 	
-	LinkedList<MonitorSequence> mss = 
-			new LinkedList<MonitorSequence>();
+	private final List<MonitorSequence> mss = 
+			Collections.synchronizedList(new LinkedList<MonitorSequence>());
 
 	void add(MonitorSequence ms) {
 		mss.add(ms);
 	}
 	
-	public MonitorSequence peek(){
-		return mss.peek();
-	}
 	
 	public MonitorSequence get(int index){
 		return mss.get(index);
 	}
 	
-	public MonitorSequence poll(){
-		return mss.poll();
-	}
 	
 	public List<MonitorSequence> getAll(){
 		return new ArrayList<MonitorSequence>(mss);
@@ -80,6 +74,10 @@ public class MonitoredResult {
 			msws.add(new MSWrapper(ms));
 		}
 		return new MonitorPointSelectionBase(msws);
+	}
+
+	public int size() {
+		return mss.size();
 	}
 	
 

@@ -3,7 +3,6 @@
  */
 package org.zmonitor.selector.impl;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -13,8 +12,6 @@ import java.util.NoSuchElementException;
 import org.zmonitor.selector.Entry;
 import org.zmonitor.selector.EntryContainer;
 import org.zmonitor.selector.impl.model.Selector;
-import org.zmonitor.selector.impl.model.Selector.Combinator;
-import org.zmonitor.selector.impl.model.SimpleSelectorSequence;
 import org.zmonitor.util.Arguments;
 import org.zmonitor.util.Strings;
 
@@ -107,6 +104,7 @@ public class EntryIterator<E> implements Iterator<Entry<E>> {
 	private Entry<E> _next;
 	private int _index = -1;
 	
+	
 	/**
 	 * Return true if it has next component.
 	 */
@@ -157,7 +155,8 @@ public class EntryIterator<E> implements Iterator<Entry<E>> {
 	}
 	
 	private Entry<E> seekNext() {
-		_currCtx = _index < 0 ? buildRootCtx() : buildNextCtx();
+		_currCtx = _index < 0 ? 
+				buildRootCtx() : buildNextCtx();
 		
 		while (_currCtx != null && !_currCtx.isMatched()) {
 			_currCtx = buildNextCtx();
@@ -171,34 +170,24 @@ public class EntryIterator<E> implements Iterator<Entry<E>> {
 	}
 	
 	private static final boolean IS_DEBUG = true;
-	/*
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 */
-	private MatchCtxImpl<E> buildRootCtx() {
+
+	
+	private SelectorContext<E> buildRootCtx() {
 		Entry<E> rt = _root == null ? 
 				_container.getFirstRoot() : _root;
 		
-		MatchCtxImpl<E> ctx = new MatchCtxImpl<E>(rt, _selectorList);
+		SelectorContext<E> ctx = SelectorContext.toRoot(
+				rt, _selectorList, _localDefs);
 		
 		if(IS_DEBUG){
 			System.out.println(">>>>buildRootCtx()");
 			System.out.println(ctx); // TODO: debugger	
 			System.out.println("------------------------\n");
 		}
-		return ctx;
+		return _rootCtx = ctx;
 	}
 	
 	
-	/*
-	 * 
-	 * 
-	 * 
-	 * 
-	 */
 	private MatchCtx<E> buildNextCtx() {
 		
 		if (_currCtx.getEntry().getFirstChild() != null) 
@@ -212,15 +201,10 @@ public class EntryIterator<E> implements Iterator<Entry<E>> {
 		
 		return buildNextSiblingCtx(_currCtx);
 	}
-	/*
-	 * 
-	 * 
-	 * 
-	 */
-	private MatchCtxImpl<E> buildFirstChildCtx(MatchCtx<E> parent) {
+	 
+	private MatchCtx<E> buildFirstChildCtx(MatchCtx<E> parent) {
 		
-		MatchCtxImpl<E> ctx = new MatchCtxImpl<E>(
-				parent.getEntry().getFirstChild(), parent);
+		MatchCtx<E> ctx =parent.toFirstChild();
 		
 		if(IS_DEBUG){
 			System.out.println(">>>>buildFirstChildCtx()");
@@ -232,13 +216,27 @@ public class EntryIterator<E> implements Iterator<Entry<E>> {
 	}
 	
 	private MatchCtx<E> buildNextSiblingCtx(MatchCtx<E> ctx) {
-		
+		ctx = ctx.toNextSibling();
 		if(IS_DEBUG){
 			System.out.println(">>>>buildNextSiblingCtx()");
+			System.out.println("parent = "+ctx.getParent()); // TODO: debugger
+			System.out.println("preSib = "+((SelectorContext)ctx).getPreviousSibling()); // TODO: debugger
 			System.out.println(ctx); // TODO: debugger
 			System.out.println("------------------------\n");
 		}
 		return ctx;
 	}
+	
+	public String toString(){
+		StringBuffer sb = new StringBuffer();
+		return "EntryItor: current="+_currCtx.toString();
+	}
+	private SelectorContext<E> _rootCtx;
+	
+	//TODO for debug only...
+	public SelectorContext<E> getRoot(){
+		return _rootCtx;
+	}
+	
 	
 }

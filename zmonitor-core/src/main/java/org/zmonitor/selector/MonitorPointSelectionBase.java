@@ -7,8 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.zmonitor.MonitorPoint;
-import org.zmonitor.selector.impl.MatchCtx;
-import org.zmonitor.selector.impl.PseudoClassDef;
 import org.zmonitor.util.Predicate;
 import org.zmonitor.util.RangeRetriever;
 
@@ -21,97 +19,24 @@ public class MonitorPointSelectionBase extends SelectionEntryBase<MonitorPoint, 
 	
 	public MonitorPointSelectionBase(Entry<MonitorPoint> entry) {
 		super(entry);
-		initPseudoClassDefs();
+		super.pseudoClassDefs.putAll(MPDefaultPseudoClassDefs.getDefaults());
 	}
 
 	public MonitorPointSelectionBase(EntryContainer<MonitorPoint> container) {
 		super(container);
-		initPseudoClassDefs();
+		super.pseudoClassDefs.putAll(MPDefaultPseudoClassDefs.getDefaults());
 	}
 
 	public MonitorPointSelectionBase(Iterator<Entry<MonitorPoint>> itor) {
 		super(itor);
-		initPseudoClassDefs();
+		super.pseudoClassDefs.putAll(MPDefaultPseudoClassDefs.getDefaults());
 	}
 
 	public MonitorPointSelectionBase(List list) {
 		super(list);
-		initPseudoClassDefs();
+		super.pseudoClassDefs.putAll(MPDefaultPseudoClassDefs.getDefaults());
 	}
-	/**
-	 * for MPSelection specific pseudo class definition.
-	 */
-	private void initPseudoClassDefs(){
-		super.addPseudoClassDef(PSEUDO_CLASS_GREATER_THAN, new PseudoClassDef<MonitorPoint>() {
-			public boolean accept(Entry<MonitorPoint> ctx, String... parameters) {
-				if(parameters.length!=2)
-					throw new SelectorEvalException("must has two arguments! parameters:"+parameters);
-				RangeRetriever rr = null;
-				try{
-					rr = RangeRetriever.Default.valueOf(parameters[0]);
-				}catch(Exception e){
-					throw new SelectorEvalException("invalid RangeRetriever name:"+parameters[0], e);
-				}
-				if(rr==null)
-					throw new SelectorEvalException("invalid RangeRetriever name:"+parameters[0]);
-				try{
-					long millis = Long.parseLong(parameters[1]);
-					return rr.retrieve(ctx.getValue()).greaterThan(millis);
-				}catch(Exception e){
-					throw new SelectorEvalException("invalid millis:"+parameters[1]);
-				}
-			}
-		});
-		super.addPseudoClassDef(PSEUDO_CLASS_LESS_THAN, new PseudoClassDef<MonitorPoint>() {
-			public boolean accept(Entry<MonitorPoint> ctx, String... parameters) {
-				if(parameters.length!=2)
-					throw new SelectorEvalException("must has two arguments! parameters:"+parameters);
-				
-				RangeRetriever rr = null;
-				try{
-					rr = RangeRetriever.Default.valueOf(parameters[0]);
-				}catch(Exception e){
-					throw new SelectorEvalException("invalid RangeRetriever name:"+parameters[0], e);
-				}
-				if(rr==null)
-					throw new SelectorEvalException("invalid RangeRetriever name:"+parameters[0]);
-				try{
-					long millis = Long.parseLong(parameters[1]);
-					return rr.retrieve(ctx.getValue()).lessThan(millis);
-				}catch(Exception e){
-					throw new SelectorEvalException("invalid millis:"+parameters[1]);
-				}
-			}
-		});
-		super.addPseudoClassDef(PSEUDO_CLASS_BETWEEN, new PseudoClassDef<MonitorPoint>() {
-			public boolean accept(Entry<MonitorPoint> ctx, String... parameters) {
-				if(parameters.length!=3)
-					throw new SelectorEvalException("must has three arguments! parameters:"+parameters);
-				RangeRetriever rr = null;
-				try{
-					rr = RangeRetriever.Default.valueOf(parameters[0]);
-				}catch(Exception e){
-					throw new SelectorEvalException("invalid RangeRetriever name:"+parameters[0], e);
-				}
-				if(rr==null)
-					throw new SelectorEvalException("invalid RangeRetriever name:"+parameters[0]);
-				long startMillis = 0;
-				try{
-					startMillis = Long.parseLong(parameters[1]);
-				}catch(Exception e){
-					throw new SelectorEvalException("invalid start millis:"+parameters[1]);
-				}
-				long endMillis = 0;
-				try{
-					endMillis = Long.parseLong(parameters[2]);
-				}catch(Exception e){
-					throw new SelectorEvalException("invalid end millis:"+parameters[2]);
-				}
-				
-				return rr.retrieve(ctx.getValue()).between(startMillis, endMillis);
-			}
-		});
-	}
+
 
 	@Override
 	protected MonitorPointSelectionBase toSelection(

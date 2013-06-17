@@ -71,8 +71,8 @@ public class EntryLocalProperties {
 		//for any entry, 
 		//if any class from selector expression has no matches to entries classes declaration, return false.
 		boolean result = enClzes.containsAll(classes);
-//		System.out.println(">>>> [" +result+ "] Entry's ID: "+entry.getId());
-//		System.out.println("         Selectorclasses="+ classes);
+		System.out.println(">>>> [" +result+ "] Entry's ID: "+entry.getId());
+		System.out.println("         Selectorclasses="+ classes);
 		//System.out.println("            entryClasses="+ enClzes);
 		Pattern a;
 //		System.out.println("EntryLocalProperties:: Entry's classes: "+enClzes);

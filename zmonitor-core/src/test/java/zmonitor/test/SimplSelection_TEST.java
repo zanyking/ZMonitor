@@ -26,10 +26,7 @@ public class SimplSelection_TEST extends TestBase {
 
 	
 	
-	
-	
-	private void runCase(){
-		
+	protected void runCase(){
 		ZMonitor.push("this is a test mesg!", true);
 			new BusinessObject().doBiz();
 			new Dao().getBean();

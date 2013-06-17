@@ -3,6 +3,8 @@
  */
 package org.zmonitor.selector.impl;
 
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +14,7 @@ import org.zmonitor.selector.impl.model.Selector.Combinator;
 import org.zmonitor.selector.impl.model.SequenceMatcher;
 import org.zmonitor.selector.impl.model.SimpleSelectorSequence;
 import org.zmonitor.util.Arguments;
+import org.zmonitor.util.Strings;
 
 /**
  * 
@@ -22,17 +25,24 @@ import org.zmonitor.util.Arguments;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class SelectorContext<E> implements SequenceMatcher{
+public class SelectorContext<E> implements SequenceMatcher, MatchCtx<E>{
 	
 	
 	private final List<Selector> selectors;
 	private final Map<String, PseudoClassDef> defs;
 	private final SelectorContext<E> parent;
-	private final SelectorContext<E> previousSibling;
-	private Entry<E> entry;
+	
+	private final Entry<E> entry;
 	
 	private final int[] qualifiedSeqIdxArray;	
 	
+	
+	@Override
+	public String toString() {
+		return Arrays.toString(qualifiedSeqIdxArray) +
+				", entry=" + entry ;
+	}
+
 	/**
 	 * 
 	 * @param selectors
@@ -42,9 +52,11 @@ public class SelectorContext<E> implements SequenceMatcher{
 	private SelectorContext(List<Selector> selectors, 
 			Map<String, PseudoClassDef> defs, 
 			Entry<E> entry) {//Root
-
+		Arguments.checkNotNull(entry);
 		Arguments.checkNotNull(selectors);
 		Arguments.checkNotNull(defs);
+		
+		this.entry = entry;
 		
 		this.selectors = selectors;
 		int selectorAmount = selectors.size();
@@ -61,280 +73,241 @@ public class SelectorContext<E> implements SequenceMatcher{
 			int[] qualifiedSeqIdxArray,
 			SelectorContext<E> parent,
 			SelectorContext<E> previousSibling) {//others
+		Arguments.checkNotNull(entry);
+		this.entry = entry;
 		this.parent = parent;
 		this.previousSibling = previousSibling;
 		this.selectors = parent.selectors;
 		this.defs = parent.defs;
 		this.qualifiedSeqIdxArray = qualifiedSeqIdxArray;
 	}
+
 	
+	public SelectorContext<E> getParent() {
+		return parent;
+	}
+	
+	private final SelectorContext<E> previousSibling;//for debug only.
+	private SelectorContext<E> firstChild;// for debug only.
+	private SelectorContext<E> nextSibling;// for debug only.
+
+	public SelectorContext<E> getFirstChild() {
+		return firstChild;
+	}
+
+	public SelectorContext<E> getNextSibling() {
+		return nextSibling;
+	}
+	public SelectorContext<E> getPreviousSibling() {
+		return previousSibling;
+	}
+
 	/**
 	 * TO_ROOT:
 	 * parentCtx is null, preSiblingCtx is null.
 	 * 
-	 * TO_FIRST_CHILD: 
-	 * 	parentCtx has value, preSiblingCtx is null.
-	 * 
-	 * TO_NEXT_SIBLING:
-	 *  parentCtx has value, preSiblingCtx has value.
-	 *  
 	 * @param entry
-	 * @param previousSiblingCtx
+	 * @param selectors
+	 * @param defs
 	 * @return
 	 */
-
-	
-	public SelectorContext<E> toFirstChild(){// this is parent
-		
-		Entry<E> firstChild = entry.getFirstChild();
-		if(firstChild==null)
-			return null;
-		
-		int[] qualifiedSeqIdxArray = this.qualifiedSeqIdxArray;
-		SelectorContext<E> parent = this;
-
-		// TODO
-		int selIdx = -1;
-		// for each Selector
-		for (Selector selector : selectors) {
-			selIdx = selector.getSelectorIndex();
-			int currentSeqIdx = qualifiedSeqIdxArray[selIdx];
-
-			int newIdx = this.newQualifiedIdx(currentSeqIdx, selector);
-			qualifiedSeqIdxArray[selIdx] = newIdx;
-		}
-		
-		
-		SelectorContext<E> childCtx = new SelectorContext<E>(
-				firstChild, qualifiedSeqIdxArray, parent, null);
-		
-		return childCtx;
-		
-	}
-
-	public SelectorContext<E> toNextSibling(){// this is previous sibling
-		Entry<E> nextSibling = entry.getNextSibling();
-		if(nextSibling==null)
-			return null;
-		
-		int[] pArr = parent.qualifiedSeqIdxArray;
-		int[] sArr = this.qualifiedSeqIdxArray;
-
-		// TODO 
-		int selIdx = -1;
-		// for each Selector
-		for (Selector selector : selectors) {
-			
-			selIdx = selector.getSelectorIndex();
-			int currentSeqIdx = pArr[selIdx];
-
-			int newIdx = this.newQualifiedIdx(currentSeqIdx, selector);
-			pArr[selIdx] = newIdx;
-		}
-		
-		
-		SelectorContext<E> childCtx = new SelectorContext<E>(
-				nextSibling, pArr, parent, this);
-		
-		return childCtx;
-		
-	}
-	
-	
 	public static<E> SelectorContext<E> toRoot(Entry<E> entry, 
 			List<Selector> selectors, 
 			Map<String, PseudoClassDef> defs){
-		SelectorContext<E> root = new SelectorContext<E>(
+		SelectorContext<E> rootCtx = new SelectorContext<E>(
 				selectors, defs, entry);
-		return root;
+		//TODO apply selector...
+		int selIdx = -1;
+		int seqIdx = -1;
+		for (Selector selector : selectors) {
+			selIdx = selector.getSelectorIndex();
+			//perform matching and retrieve new seqIdx.
+			rootCtx.updateQualifiedIdx(selIdx, seqIdx, selector);
+		}
+		return rootCtx;
 	}
 	
 	
 	
-	
-	private int newQualifiedIdx( int seqQualifiedIdx, Selector selector) {
-		int candidateIdx = 0;
-		if (seqQualifiedIdx > 0) {
-			candidateIdx = seqQualifiedIdx;
+	/**
+	 * 
+	 * TO_FIRST_CHILD: 
+	 * 	parentCtx has value, preSiblingCtx is null.
+	 * @return
+	 */
+	public SelectorContext<E> toFirstChild(){// this is parent
+		
+		Entry<E> firstChildEntry = entry.getFirstChild();
+		if(firstChildEntry==null)
+			return null;// this is leaf...
+
+		int[] childQSIArray = new int[this.qualifiedSeqIdxArray.length];
+		for(int i=0;i<childQSIArray.length;i++){
+			childQSIArray[i] = -1;
 		}
-		candidateIdx = selector.matches(candidateIdx, this);
-		// have to get state from parent or previous sibling.
-		return candidateIdx;
+		
+		int selIdx = -1;
+		int seqIdx = -1;
+		// for each Selector
+		SelectorContext<E> childCtx = new SelectorContext<E>(
+				firstChildEntry, childQSIArray, this, null);
+		
+		for (Selector selector : selectors) {
+			selIdx = selector.getSelectorIndex();
+			
+			//retrieve initial seqIdx of this node.
+			seqIdx = initChildSeqIdx(qualifiedSeqIdxArray[selIdx], 
+					selector);
+			
+			//perform matching and retrieve new seqIdx.
+			childCtx.updateQualifiedIdx(selIdx, seqIdx, selector);
+		}
+		
+		return this.firstChild = childCtx;
+	}
+	
+	/**
+	 * get a proper initial Idx for first child.
+	 * <pre>
+	 * node
+	 *  |-node
+	 *  |-node		PARENT
+	 *      |- node	CURRENT
+	 * <pre>
+	 * @param parentSeqIdx
+	 * @param selector
+	 * @return
+	 */
+	private static int initChildSeqIdx(final int parentSeqIdx, Selector selector){
+		
+		SimpleSelectorSequence parentSeq = selector.getIfAny(parentSeqIdx);
+		
+		//has no match, or already matched.
+		if(parentSeq==null || parentSeq.getNext()==null) 
+			return -1;
+		else
+			return parentSeq.getIndex();
+	}
+	
+	
+	/**
+	 * TO_NEXT_SIBLING:
+	 *  parentCtx has value, preSiblingCtx has value.
+	 * 
+	 * @return
+	 */
+	public SelectorContext<E> toNextSibling(){// this is previous sibling
+		Entry<E> nextSiblingEntry = entry.getNextSibling();
+		if(nextSiblingEntry==null)
+			return null;
+
+		int[] pArr = parent.qualifiedSeqIdxArray;
+		int[] sArr = this.qualifiedSeqIdxArray;
+		
+		int[] childQSIArray = Arrays.copyOf(pArr, pArr.length); 
+		
+		SelectorContext<E> childCtx = new SelectorContext<E>(
+				nextSiblingEntry, childQSIArray, parent, this);
+		
+		int selIdx = -1;
+		SimpleSelectorSequence s_seq;
+		
+		for (Selector selector : selectors) {// for each Selector
+			selIdx = selector.getSelectorIndex();
+			s_seq = selector.getIfAny(sArr[selIdx]);
+			
+			int currentSeqIdx = -1;
+			boolean isNextCBAboutSibling = isSeqCbIn(s_seq, 
+					Combinator.ADJACENT_SIBLING, 
+					Combinator.GENERAL_SIBLING);
+			
+			System.out.println("isNextCBAboutSibling="+isNextCBAboutSibling+", seq:"+
+					SimpleSelectorSequence.toStringWithCB(s_seq) );
+			
+			if(s_seq!=null && isNextCBAboutSibling){
+				currentSeqIdx = s_seq.getIndex();	
+			}else{
+				currentSeqIdx = initChildSeqIdx(pArr[selIdx], selector);
+			}
+
+			childCtx.updateQualifiedIdx(selIdx, currentSeqIdx, selector);
+		}
+		
+		return nextSibling = childCtx;
+		
+	}
+	
+	private static boolean isSeqCbIn(SimpleSelectorSequence seq, Combinator...cbs){
+		if(seq==null)return false;
+		for(Combinator cb : cbs){
+			if(seq.getCombinator()==cb)return true;
+		}
+		return false;
+	}
+	
+	private void updateQualifiedIdx(int selIdx, int seqQualifiedIdx, Selector selector) {
+		int candidateIdx = selector.matches(seqQualifiedIdx, this);
+		qualifiedSeqIdxArray[selIdx] = candidateIdx;
 	}
 
 
 	public boolean matches(SimpleSelectorSequence sequence) {
 		return EntryLocalProperties.match(entry, sequence, defs);
 	}
-	
-	
-	
-	
-	
-	private SequenceMatcher getSequenceMatcher(Combinator cb){
-		switch (cb) {
-		/*
-		 * DESCENDANT .a .b .c
-		 *
-		 * always the first combinator.
-		 * TO_FIRST_CHILD
-		 *  <div> [-1] -> [-1]
-		 *    <div clz="a"> P[-1] -> [ 0]
-		 *      <div clz="b"> P[ 0] -> [ 1]
-		 *        <div> P[ 1]
-		 *          <div> P[ 1]
-		 *            <div clz="c"> P[ 1] -> [ 2]
-		 *            	<div clz="x"> P[ 2]
-		 *            	<div clz="y"> P[ 2]
-		 *            	<div clz="z"> P[ 2]
-		 *        <div clz="c"> P[ 1] -> [ 2]
-		 *    <div clz="a b c"> P[-1] -> [ 0] -> [ 1] -> [ 2]
-		 *        <div > P[ 2]
-		 * 
-		 * 
-		 * TO_NEXT_SIBLING
-		 *  <div> [-1]
-		 *    <div clz="a"> P[-1] -> [ 0]
-		 *    <div clz="c"> P[-1] -> [-1] 
-		 *    <div clz="a"> P[-1] -> [ 0]
-		 *    	<div clz="b c"> P[ 0] -> [ 1] -> [ 2]
-		 * 
-		 *  Both use the same strategy:
-		 * 	inherit the state from parent.
-		 * 		if(current Entry has matches to current seq)
-		 *			seqQualifiedIdx++.
-		 *		else 
-		 *			do nothing.  
-		 * 
-		 */
-		case DESCENDANT:
-			
-			//TODO
-		/* 
-		 * CHILD  .a > .b > .c
-		 *
-		 * TO_FIRST_CHILD
-		 *   <div> [-1]
-		 *    <div clz="a"> P[-1] -> [ 0]
-		 *      <div> P[ 0] -> [-1]
-		 *      <div clz="b"> P[0] -> [ 1]
-		 *        <div clz="c"> P[ 1] -> [ 2]
-		 *        <div > P[ 1] -> [ 0] -> [ -1]
-		 *        <div> P[ 1] -> [ 0] [-1]
-		 *          <div> p[-1]
-		 *            <div clz="c"> p[-1]
-		 *        
-		 * TO_NEXT_SIBLING
-		 *  <div> [-1]
-		 *    <div clz="a"> P[-1] -> [ 0]
-		 *      <div clz="c"> P[ 0] -> [-1] 
-		 *      <div clz="b"> P[ 0] -> [ 1]
-		 *    <div clz="c"> P[-1] -> [-1] 
-		 *    <div clz="a"> P[-1] -> [ 0]
-		 *    
-		 * Both use the same strategy:
-		 * 	
-		 * inherit the state from parent.(not pre-sibling)
-		 *	if(current Entry has matches to current seq)
-		 *		seqQualifiedIdx++.
-		 *	else 
-		 *		seqQualifiedIdx = -1.  
-		 * 
-		 * 
-		 */
-		case CHILD:
-			
-			//TODO
-			
-			break;
-		/* 
-		 * ADJACENT_SIBLING 
-		 * 
-		 * TO_FIRST_CHILD .a  .b + .c
-		 *   <div> [-1]
-		 *    <div clz="a"> [ 0] first-child
-		 *      <div> [ 0]
-		 *      <div clz="b"> [ 1]
-		 *        <div clz="c"> [ 0] first-child
-		 *        <div> [ 1]
-		 *          <div> [ 1]
-		 *            <div clz="c"> [ 1]
-		 *    <div clz="b"> [-1]
-		 * 	
-		 * inherit the state from parent: if parent's seq combinator is not ADJACENT_SIBLING
-		 * start a new state: 
-		 * there's no previous sibling.
-		 * 	if(current Entry has matches to current seq)
-		 *		seqQualifiedIdx++.
-		 *	else 
-		 *		seqQualifiedIdx--.  
-		 *
-		 * TO_FIRST_CHILD .a + .b + .c
-		 *   <div> [-1]
-		 *    <div clz="a"> p[-1] -> [ 0] first-child
-		 *    <div clz="b"> S[ 0] -> [ 1]
-		 *    <div clz="C"> S[ 1] -> [ 2]
-		 *      <div> [-1] new child without a match has to deduct.
-		 *      <div clz="a"> [ 0]
-		 *      <div clz="b"> [ 1]
-		 *        <div> [-1]
-		 *          <div> [ 1]
-		 *            <div clz="c"> [ 1]
-		 *    
-		 *    
-		 *    
-		 *            
-		 * TO_NEXT_SIBLING .a + .b + .c
-		 *   <div> [-1]
-		 *    <div clz="a"> [ 0]
-		 *    	  <div clz="a"> [ 0] fc
-		 *        <div clz="b"> [ 1]
-		 *        <div> [-1]  fc
-		 *    <div clz="b"> [ 1]
-		 *      <div clz="b"> [-1]  parent=1, preSibling=null, 
-		 *        <div clz="a"> [ 0]  fc
-		 *        <div clz="b"> [ 1]
-		 *        <div> [-1]
-		 *    <div clz="c"> [ 2]
-		 *  1 match
-		 * 
-		 * 
-		 * 
-		 */
-		case ADJACENT_SIBLING:
-			
-			//TODO
-			
-			break;
-		/* 
-		 * GENERAL_SIBLING .a .b ~ .c
-		 *  very hard to satisfy, because to support this we have to do BFS rather then DFS to Entry Tree.
-		 * 
-		 * 
-		 * TO_FIRST_CHILD
-		 * TO_NEXT_SIBLING
-		 * 
-		 *  <div clz="a">[100]
-		 * 	  <div clz="b">[110]
-		 * 	    <div >[000]
-		 * 	      <div clz="c">[000]
-		 *        <div clz="a">[100]
-		 *          <div clz="b">[110]
-		 *      <div clz="c">[111]
-		 *  1 match
-		 * 
-		 * 
-		 * 
-		 */		
-		case GENERAL_SIBLING:
-			
-			//TODO
-			
-			break;
+
+	public boolean isMatched() {
+		for(int i=0, j=qualifiedSeqIdxArray.length;i<j;i++){
+			if(qualifiedSeqIdxArray[i]==selectors.get(i).size()-1)
+				return true;
 		}
-		throw new IllegalArgumentException();
+		return false;
+	}
+
+	public Entry<E> getEntry() {
+		return entry;
 	}
 	
-
+	
+	
+	@SuppressWarnings("rawtypes")
+	public static void printTree(SelectorContext current, String indent){
+		
+		StringBuffer sb = new StringBuffer();
+		int lv = 0;
+		
+		SelectorContext next = current;
+		
+		AD:
+		while(next!=null){//DFS
+			Strings.appendln(sb, toIndent(lv, indent), next);
+			
+			if(next.getFirstChild()!=null){//search child first
+				next = next.getFirstChild();
+				lv++;
+			}else{//no child, search next sibling.
+				while(next.getNextSibling()==null){
+					next = next.getParent();
+					lv--;
+					if(next==null || next==current)
+						break AD;
+				}
+				next = next.getNextSibling();
+			}
+		}
+		
+		System.out.println("---------------------------------");
+		System.out.println(sb);
+		System.out.println("---------------------------------");
+	}
+	
+	private static String toIndent(int lv, String indent){
+		if(lv==0)return "";
+		StringBuffer sb = new StringBuffer();
+		for(int i = 1;i<=lv;i++){
+			sb.append(indent);
+		}
+		return sb.toString();
+	}
+	
 
 }
