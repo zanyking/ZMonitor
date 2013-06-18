@@ -77,12 +77,6 @@ public final class ZMonitor {
 		
 	}
 	
-
-	
-	private static MonitorLifecycle getLifecycle(){
-		return ZMonitorManager.getInstance().getMonitorLifecycle();
-	}
-	
 	/* **********************************
 	 * Profilers utility methods.
 	 * **********************************/
@@ -91,7 +85,7 @@ public final class ZMonitor {
 	 * @return true if there's a monitor sequence instance and which is started.
 	 */
 	public static boolean isMonitoring(){
-		return getLifecycle().isMonitorStarted();
+		return ZMonitorManager.getInstance().getMonitorLifecycle().isMonitorStarted();
 	}
 	
 	/**

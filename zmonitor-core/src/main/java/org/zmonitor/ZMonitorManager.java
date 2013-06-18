@@ -37,7 +37,7 @@ public final class ZMonitorManager {
 	private static volatile ZMonitorManager sZMM = NOOP;
 	
 	/**
-	 * without ignition, the default instance is a NULL object with noop implementaiton.
+	 * without ignition, the default instance is a NULL object with no-operation implementation.
 	 * @return the current ZMonitorManager instance.
 	 * 
 	 */

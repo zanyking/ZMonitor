@@ -35,45 +35,23 @@ public class Slf4jMPSelector_TEST  extends TestBase{
 	
 	@Test
 	public void test_PseudoClass() throws Exception {
-		testEntryIterator(".BusinessObject .Dao:greater-than(END, 50)", 1);
+		Slf4jTestUtils.testEntryIterator(".BusinessObject .Dao:greater-than(END, 50)", 1, 
+				this.getMonitoredResult());
 	}
 	@Test
 	public void test_PseudoClass2() throws Exception {
-		testEntryIterator(".Dao.getBean:greater-than(END, 50)", 2);
+		Slf4jTestUtils.testEntryIterator(".Dao.getBean:greater-than(END, 50)", 2, 
+				this.getMonitoredResult());
+	}
+	@Test
+	public void test_Attribute() throws Exception {
+		Slf4jTestUtils.testEntryIterator("[message.0*='Ian']", 2, 
+				this.getMonitoredResult());
+	}
+	@Test
+	public void test_Attribute2() throws Exception {
+		Slf4jTestUtils.testEntryIterator(".BusinessObject [message.1=12]", 1, 
+				this.getMonitoredResult());
 	}
 	
-	/**
-	 * 
-	 * @param selector
-	 * @param cond
-	 * @throws Exception
-	 */
-	private void testEntryIterator(String selector, int cond) throws Exception{
-		
-		//1. Get the monitored result through ZMonitor TestBase API.
-		MonitoredResult mResult = this.getMonitoredResult();
-		
-		//2. Use Selection API to manipulate the Monitor Point Sequence. 
-		EntryIterator<MonitorPoint> itor = 
-				new EntryIterator<MonitorPoint>(
-						new MSWrapper(mResult.get(0)), 
-						selector, 
-						MPDefaultPseudoClassDefs.getDefaults());
-
-		StringBuffer sb = new StringBuffer(
-				"testSelection_Selector: " +selector+"\n");
-		sb.append("--------------------\n");
-		int counter = 0;
-		while(itor.hasNext()){
-			counter++;
-			itor.next();
-			sb.append(itor.toString());
-			sb.append("--------------------\n");
-		}
-		System.out.println(sb);		
-
-		SelectorContext.printTree(itor.getRoot(), "   ");
-		
-		Assert.assertEquals(cond, counter);
-	}
 }

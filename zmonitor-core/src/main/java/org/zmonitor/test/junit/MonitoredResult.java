@@ -5,22 +5,14 @@ package org.zmonitor.test.junit;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.zmonitor.MonitorPoint;
 import org.zmonitor.MonitorSequence;
-import org.zmonitor.selector.Entry;
 import org.zmonitor.selector.MonitorPointSelection;
 import org.zmonitor.selector.MonitorPointSelectionBase;
-import org.zmonitor.selector.SelectionEntryBase;
-import org.zmonitor.selector.Selection;
-import org.zmonitor.selector.Selectors;
-import org.zmonitor.selector.impl.EntryIterator;
-import org.zmonitor.selector.impl.zm.MPWrapper;
 import org.zmonitor.selector.impl.zm.MSWrapper;
-import org.zmonitor.util.Iterators;
+import org.zmonitor.util.Arguments;
 
 /**
  * @author Ian YT Tsai(Zanyking)
@@ -31,9 +23,26 @@ public class MonitoredResult {
 	private final List<MonitorSequence> mss = 
 			Collections.synchronizedList(new LinkedList<MonitorSequence>());
 
+	
+	private final Class testCaseClass;
+	public MonitoredResult(Class testCaseClass) {
+		super();
+		this.testCaseClass = testCaseClass;
+	}
+	
 	void add(MonitorSequence ms) {
 		mss.add(ms);
 	}
+	
+	
+
+	/**
+	 * 
+	 * @param ms
+	 * @return
+	 */
+//	protected abstract String retrieveId(MonitorSequence ms);
+	
 	
 	
 	public MonitorSequence get(int index){
@@ -80,7 +89,11 @@ public class MonitoredResult {
 		return mss.size();
 	}
 	
-
+	/**
+	 */
+	public interface MonitorResultFac{
+		MonitoredResult create();
+	}
 
 }//end of class...
 

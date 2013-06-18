@@ -19,8 +19,6 @@ public class MonitorSequence implements Serializable{
 	
 	private static final long serialVersionUID = -9139648113614382065L;
 	
-	
-	
 	protected MonitorPoint root;
 	
 	//TODO: state object while recording, should be moved to life-cycle.
@@ -89,6 +87,12 @@ public class MonitorSequence implements Serializable{
 		return currentDepth;
 	}
 
+	public Class getRootTrackerClass() throws ClassNotFoundException{
+		if(!isStarted())
+			throw new IllegalStateException("hasn't started yet.");
+		MonitorMeta meta = root.getMonitorMeta();
+		return Class.forName(meta.getClassName());
+	}
 	
 	/**
 	 * 

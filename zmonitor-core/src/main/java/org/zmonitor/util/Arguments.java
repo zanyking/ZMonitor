@@ -50,4 +50,20 @@ public class Arguments {
 							+ "]");
 	}
 
+	public static void checkEquals(Object obj1, Object obj2, String... errMesgs) {
+		if(obj1==null && obj2==null){
+			return;// both are null...
+		}
+		if(obj1==null){
+			StringBuffer sb = new StringBuffer();
+			Strings.append(sb, errMesgs);
+			Strings.append(sb, ", obj1 is null but obj2 has value, obj2:",obj2);
+			throw new IllegalArgumentException(sb.toString());
+		}else if(!obj1.equals(obj2)){
+			throw new IllegalArgumentException(
+					"obj1 is not equals to obj2: obj1=" + obj1 + ", obj2="
+							+ obj2);
+		}
+	}
+
 }

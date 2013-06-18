@@ -48,7 +48,8 @@ public class Token {
 		NTN_ID, NTN_CLASS, NTN_PSDOCLS,
 		
 		// attribute boolean operator //
-		ATTR_GETTER, OP_EQUAL, OP_BEGIN_WITH, OP_END_WITH, OP_CONTAIN,
+		ATTR_GETTER, OP_EQUAL, OP_BEGIN_WITH, OP_END_WITH, OP_CONTAIN, 
+		OP_TYPE_OF,//TODO might need this for more precise matcher.
 		
 		// pairwise //
 		SINGLE_QUOTE, DOUBLE_QUOTE, 

@@ -4,19 +4,25 @@
  */
 package org.zmonitor.test.junit;
 
+import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.zmonitor.AlreadyStartedException;
 import org.zmonitor.InitFailureException;
+import org.zmonitor.MonitorMeta;
+import org.zmonitor.MonitorSequence;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.config.ConfigSource;
 import org.zmonitor.config.URLConfigSource;
 import org.zmonitor.impl.MSPipe.Mode;
 import org.zmonitor.impl.ThreadLocalMonitorLifecycleManager;
 import org.zmonitor.impl.ZMLog;
+import org.zmonitor.spi.MonitorLifecycle;
+import org.zmonitor.test.junit.MonitoredResult.MonitorResultFac;
 import org.zmonitor.util.Loader;
 
 
@@ -26,18 +32,27 @@ import org.zmonitor.util.Loader;
  */
 public abstract class TestBase {
 	
+	
+	
+	private static String getMsRunCaseId(Class testCaseClass){
+		try {
+			Method runCaseMethod = testCaseClass.getDeclaredMethod("runCase");
+			MonitorSequenceId msIdAnno = runCaseMethod.getAnnotation(MonitorSequenceId.class);
+			return (msIdAnno==null)? null : msIdAnno.value();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		} 
+	}
+	
 	private static final String ID_INTERNAL_TEST_MS_HANDLER = "ID_INTERNAL_TEST_MS_HANDLER";
-	public TestBase(){
-		this(true);
-	}
-	public TestBase(boolean useInternalHandler){
-	}
 	
 	protected InternalTestMonitorSequenceHandler newInstance(){
-		return new InternalTestMonitorSequenceHandler(ID_INTERNAL_TEST_MS_HANDLER);
+		return new InternalTestMonitorSequenceHandler(
+				ID_INTERNAL_TEST_MS_HANDLER);
+		
 	}
 	
-	private void init() throws Exception{
+	protected void init() throws Exception{
 		ZMonitorManager aZMonitorManager = new ZMonitorManager();
 		
 		String packagePath = this.getClass().getPackage().getName().replace('.', '/');
@@ -63,8 +78,10 @@ public abstract class TestBase {
 		aZMonitorManager.setLifecycleManager(lifecycleMgmt);
 		
 		aZMonitorManager.addMonitorSequenceHandler(newInstance());
-		
-		ZMonitorManager.init(aZMonitorManager);
+
+		ZMonitorManager.init(aZMonitorManager); // this step makes the given
+												// ZMonitorManager became
+												// default in ClassLoader. 
 		ZMLog.info(">> Ignit ZMonitor in: ",this.getClass().getCanonicalName());
 	}
 	/**
@@ -75,10 +92,17 @@ public abstract class TestBase {
 		if(!ZMonitorManager.isInitialized()){
 			init();
 		}
+		
+		//TODO: see if there's any alternative to do this part...
 		runCase();
+		
+		MonitorLifecycle lifecycle = ZMonitorManager.getInstance().getLifecycleManager().getLifecycle();
+		if(lifecycle.isMonitorStarted()&&!lifecycle.isFinished())
+			lifecycle.finish();//force flush current monitorSequence.
 	}
-	protected void runCase(){
-		//override by sub class...
+	
+	
+	protected void runCase(){//override this method.
 	}
 	
 
@@ -116,7 +140,7 @@ public abstract class TestBase {
 			throw new IllegalStateException( 
 				"this test case didn't activate internalMSHandler, class:"+this.getClass());
 		}
-		return getInternalMSHandler().getMonitoredResult();
+		return getInternalMSHandler().getMonitoredResult(this.getClass());
 	}
 	
 	

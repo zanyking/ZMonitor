@@ -30,13 +30,17 @@ public class Slf4jMPVariableResolver extends DefaultMPVariableResolver {
 	}
 	
 	protected Result recursive(Object target, String[] attrs, int idx){
+		
+		
 		if(target instanceof Message){
-			Message mesg = (Message) target;
-			try{
-				Integer.parseInt(attrs[idx]);
-				return recursiveArray(mesg.toArray(), attrs, idx);
-			}catch(NumberFormatException e){
-				//do nothing...
+			Object[] arr = ((Message) target).toArray();
+			if(arr.length>0){
+				try{
+					Integer.parseInt(attrs[idx]);
+					return recursiveArray(arr, attrs, idx);
+				}catch(NumberFormatException e){
+					//do nothing...
+				}	
 			}
 			return recursiveBean(target, attrs, idx);
 		}

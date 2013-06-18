@@ -20,6 +20,7 @@ import org.zmonitor.util.Strings;
 public class DefaultMPVariableResolver {
 
 	protected MonitorPoint mp;
+	protected static final Result NULL_OBJECT = new Result(null, null);
 	
 	/**
 	 * 
@@ -95,7 +96,10 @@ public class DefaultMPVariableResolver {
 		Getter getter = toGetter(attrs[idx], target);
 		
 		if(!getter.exist()){
-			return null;// no possible getter for this attribute of current target.
+			return new Result(null, new AttributeResolveException(Strings.append(
+					"not able to find getter according to attribute name:\"",
+					toString(attrs, idx),
+					"\" getter:", getter)));// no possible getter for this attribute of current target.
 		}
 			
 		
@@ -142,11 +146,12 @@ public class DefaultMPVariableResolver {
 	protected Result recursiveMap(Map map, String[] attrs, int idx ){
 		Object value = map.get(attrs[idx]);
 		
-		if((attrs.length-idx)<=1 ){
-			return new Result(value, null);
+		if((attrs.length-idx)<=1 ){//reach the end
+			return (value==null) ?
+					NULL_OBJECT : new Result(value, null);
 		}else if(value!=null){
 			return recursive(value, attrs, idx + 1);
-		}else{
+		}else{// hasn't reach the end, but is not able to continue due to mid-getter returned null.
 			return new Result(null, new AttributeResolveException(Strings.append(
 					"the getter chain evaluation is faild due to bean:\"",
 					toString(attrs, idx),
@@ -166,6 +171,7 @@ public class DefaultMPVariableResolver {
 	 */
 	protected Result recursiveArray(Object[] array, String[] attrs, int idx ){
 
+		if(array.length==0)return NULL_OBJECT;
 		int listIdx = -1;
 		try{
 			listIdx = Integer.parseInt(attrs[idx]);
