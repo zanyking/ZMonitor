@@ -19,7 +19,6 @@ public class Log4JTestBase extends TestBase {
 
 	
 	public Log4JTestBase(boolean useInternalHandler) {
-		super(useInternalHandler);
 	}
 
 	@Before

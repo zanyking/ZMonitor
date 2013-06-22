@@ -6,7 +6,7 @@ package org.zmonitor.selector.impl;
 import java.util.Map;
 
 import org.zmonitor.selector.Entry;
-import org.zmonitor.selector.impl.model.SimpleSelectorSequence;
+import org.zmonitor.selector.impl.model.SelSequence;
 
 /**
  * A wrapper of Entry, providing a context for selector matching algorithm.

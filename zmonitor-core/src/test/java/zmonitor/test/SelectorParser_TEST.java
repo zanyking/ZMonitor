@@ -9,7 +9,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.zmonitor.selector.impl.Parser;
 import org.zmonitor.selector.impl.model.Selector;
-import org.zmonitor.selector.impl.model.SimpleSelectorSequence;
+import org.zmonitor.selector.impl.model.SelSequence;
 
 /**
  * @author Ian YT Tsai(Zanyking)
@@ -34,6 +34,29 @@ public class SelectorParser_TEST {
 		printAllTockens(".A ~ .B + .C", 3);
 	}
 	
+	@Test
+	public void test_complex(){
+		printAllTockens(".A .B ~ .C", 3);
+	}
+	
+	@Test
+	public void test_complex2(){
+		printAllTockens("A + C + B > C ~ A + B", 6);
+	}
+	
+	@Test
+	public void test_complex3(){
+		printAllTockens("A  C ~ B > C  A + B", 6);
+	}
+	@Test
+	public void test_complex4(){
+		printAllTockens("A  C + B  C + A + B", 6);
+	}
+	
+	@Test
+	public void test_complex5(){
+		printAllTockens("A  C ~ B  C + A ~ B + D", 7);
+	}
 	
 	private void printAllTockens(String selectorStr, int... selectorArr){
 		Parser parser = new Parser();
@@ -43,8 +66,12 @@ public class SelectorParser_TEST {
 		Assert.assertEquals(selectors.size(), selectorArr.length);
 		for(Selector selector : selectors){
 			System.out.println("selector:"+selector);
-			for(SimpleSelectorSequence sequence : selector){
-				System.out.println("\tsequence: "+sequence+", cb:"+sequence.getCombinator());
+			for(SelSequence sequence : selector){
+				System.out.println("\tseq[" +sequence.getIndex()+"]: "+sequence+
+						", cb:"+sequence.getCombinator()+
+						", transitableIdx:"+sequence.getTransitableIdx()+
+						", inheritableIdx:"+sequence.getInheritableIdx()
+						);
 			}
 			Assert.assertEquals(selector.size(), selectorArr[selector.getSelectorIndex()]);
 		}

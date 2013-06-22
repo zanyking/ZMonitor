@@ -7,8 +7,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.zmonitor.MonitorPoint;
 import org.zmonitor.ZMonitor;
-import org.zmonitor.ZMonitorManager;
-import org.zmonitor.handler.EclipseConsoleMonitorSequenceHandler;
 import org.zmonitor.selector.impl.EntryIterator;
 import org.zmonitor.selector.impl.SelectorContext;
 import org.zmonitor.selector.impl.zm.MSWrapper;

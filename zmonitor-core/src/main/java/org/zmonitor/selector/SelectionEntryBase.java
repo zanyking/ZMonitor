@@ -14,7 +14,6 @@ import org.zmonitor.selector.impl.PseudoClassDef;
 import org.zmonitor.util.Arguments;
 import org.zmonitor.util.Iterators;
 import org.zmonitor.util.Predicate;
-import org.zmonitor.util.Strings;
 
 
 /**
@@ -26,7 +25,7 @@ import org.zmonitor.util.Strings;
 public class SelectionEntryBase<T , R extends Selection<T, R>> implements Selection<T, R>, Iterator<Entry<T>>{
 
 	protected final Iterator<Entry<T>> itor;
-	protected Map<String, PseudoClassDef<T>> pseudoClassDefs;
+	final protected Map<String, PseudoClassDef<T>> pseudoClassDefs = new HashMap<String, PseudoClassDef<T>>();
 	
 	/**
 	 * 
@@ -36,9 +35,6 @@ public class SelectionEntryBase<T , R extends Selection<T, R>> implements Select
 	public void addPseudoClassDef(String name, PseudoClassDef<T> pseudoClassDef) {
 		Arguments.checkNotEmpty(name, "the name of PseudoClassDef cannot be empty!");
 		
-		if(pseudoClassDefs==null){ 
-			pseudoClassDefs = new HashMap<String, PseudoClassDef<T>>();
-		}
 		pseudoClassDefs.put(name, pseudoClassDef);
 	}
 	/**

@@ -10,11 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.zmonitor.MonitorPoint;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.handler.EclipseConsoleMonitorSequenceHandler;
-import org.zmonitor.selector.MPDefaultPseudoClassDefs;
 import org.zmonitor.selector.MonitorPointSelection;
-import org.zmonitor.selector.impl.EntryIterator;
-import org.zmonitor.selector.impl.SelectorContext;
-import org.zmonitor.selector.impl.zm.MSWrapper;
 import org.zmonitor.test.junit.MonitoredResult;
 import org.zmonitor.test.junit.TestBase;
 import org.zmonitor.util.Strings;
@@ -44,7 +40,7 @@ public class Slf4jMPSelection_TEST extends TestBase{
 		MonitoredResult mResult = this.getMonitoredResult();
 
 		// 2. Use Selection API to manipulate the Monitor Point Sequence.
-		String selector = ".BusinessObject .Service .Dao .lookUpDB[message*='hello world!']:greater-than(END,50)";
+		String selector = ".BusinessObject .Service .Dao.lookUpDB[message*='hello world!']:greater-than(END,50)";
 
 		MonitorPointSelection mpSel = mResult.asSelection().select(selector);
 

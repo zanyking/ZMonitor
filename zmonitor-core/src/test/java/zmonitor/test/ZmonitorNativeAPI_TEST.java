@@ -22,7 +22,6 @@ import zmonitor.test.clz.BusinessObject;
 public class ZmonitorNativeAPI_TEST extends TestBase {
 
 	public ZmonitorNativeAPI_TEST() {
-		super(true);
 	}
 	private static void method1() throws Exception{
 		ZMonitor.push("start method 1", true);

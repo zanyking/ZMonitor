@@ -12,7 +12,7 @@ import org.zmonitor.util.Arguments;
  * The model representing a selector.
  * @author simonpai
  */
-public class Selector extends ArrayList<SimpleSelectorSequence> {
+public class Selector extends ArrayList<SelSequence> {
 	
 	private static final long serialVersionUID = -9125226126564264333L;
 	
@@ -38,7 +38,7 @@ public class Selector extends ArrayList<SimpleSelectorSequence> {
 		return _selectorIndex;
 	}
 	
-	public SimpleSelectorSequence getLastSequence(){
+	public SelSequence getLastSequence(){
 		return(isEmpty())? 
 				null : get(size()-1);
 	}
@@ -57,7 +57,7 @@ public class Selector extends ArrayList<SimpleSelectorSequence> {
 	 * @return
 	 * 
 	 */
-	public static SimpleSelectorSequence getIfAny(int seqIdx, Selector selector) {
+	public static SelSequence getIfAny(int seqIdx, Selector selector) {
 		return (seqIdx >= 0) ? selector.get(seqIdx) : null;
 	}
 	/**
@@ -66,7 +66,7 @@ public class Selector extends ArrayList<SimpleSelectorSequence> {
 	 * @return
 	 * @throws IndexOutOfBoundsException when seqIdx is equals or greater than selector size.
 	 */
-	public SimpleSelectorSequence getIfAny(int seqIdx) {
+	public SelSequence getIfAny(int seqIdx) {
 		return getIfAny(seqIdx, this);
 	}
 	/**
@@ -103,7 +103,10 @@ public class Selector extends ArrayList<SimpleSelectorSequence> {
 		public String toString() {
 			return _str;
 		}
-
+		
+		public boolean shouldBackward(){
+			return _backwardWhileFailed;
+		}
 		
 	}
 	
@@ -114,95 +117,19 @@ public class Selector extends ArrayList<SimpleSelectorSequence> {
 		StringBuffer sb = new StringBuffer();
 		int size = size();
 		for(int i=0; i<size; i++){
-			SimpleSelectorSequence seq = get(i);
+			SelSequence seq = get(i);
 			sb.append(seq);
 			if(i < size-1) sb.append(seq.getCombinator());
 		}
 		return sb.toString();
 	}
 
-	public SimpleSelectorSequence appendNewSequnce() {
-		SimpleSelectorSequence newSeq = new SimpleSelectorSequence(getLastSequence());
+	public SelSequence appendNewSequnce() {
+		SelSequence newSeq = new SelSequence(getLastSequence());
 		this.add(newSeq);
 		return newSeq;
 	}
-	/**
-	 * <pre>
-	 * PresentQualifiedSeqIdx
-	 *       |         
-	 *       |
-	 *      -1          0            1            2    
-	 *                 SEQ -> CB -> SEQ -> CB -> SEQ -> CB
-	 *       FAIELD <-  |            |
-	 *                  |            |
-	 *              SeqMatcher      target
-	 *                
-	 * </pre>
-	 * 
-	 * 
-	 * 
-	 * 
-	 * <pre>
-	 * PresentQualifiedSeqIdx
-	 *       |         
-	 *       |
-	 *  -1   0            1            2    
-	 *      SEQ -> CB -> SEQ -> CB -> SEQ -> CB
-	 *         FAIELD <-  |            |
-	 *                    |            |
-	 *                SeqMatcher      target
-	 *                
-	 * </pre>
-	 * @param seqenceIdx
-	 * @param seqMatcher
-	 * @return
-	 */
-	public int matches(int inheritedSeqIdx, SequenceMatcher seqMatcher){
-		int size = this.size();
-		
-		Arguments.checkInterval(inheritedSeqIdx, -1, size-1);
-		
-		// look up inherited to test current matcher.
-		SimpleSelectorSequence inheritedSeq = this.getIfAny(inheritedSeqIdx);
-		
-		SimpleSelectorSequence nextSeq = inheritedSeq==null?
-				get(0): inheritedSeq.getNext();
-		
-		if (nextSeq==null) {// reach the end, no next matcher.
-			return inheritedSeqIdx;
-			// TODO is this good? currently selector knows nothing about
-			// tree structure, so I think this is the best response.
-		} else {
-			return matches0(seqMatcher, nextSeq, 
-					inheritedSeq==null? null : inheritedSeq);
-		}
-	}
 	
-	private int matches0(SequenceMatcher seqMatcher,
-			SimpleSelectorSequence startSeq,
-			SimpleSelectorSequence backwardSeq) {
-		
-		boolean isMatch = seqMatcher.matches(startSeq);
-		if (isMatch) {
-			return startSeq.getIndex();
-		} else {// failed, backward till reaching a Combinator which has
-				// valid relationship to current node.
-			return backward(backwardSeq);
-		}
-	}
-	private int backward(SimpleSelectorSequence seq){
-		boolean backward = shouldBackward(seq);
-		while(backward){
-			seq = seq.getPrevious();
-			backward = (seq==null) ?// test if reach the selector head. 
-					false : shouldBackward(seq);
-		}
-		return seq==null? -1: seq.getIndex();
-	}
-	private boolean shouldBackward(SimpleSelectorSequence seq){
-		if(seq==null)return false;
-		return seq.getCombinator()._backwardWhileFailed;
-	}
 	
 	
 }

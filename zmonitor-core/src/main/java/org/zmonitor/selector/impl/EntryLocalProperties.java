@@ -12,7 +12,7 @@ import org.zmonitor.selector.Entry;
 import org.zmonitor.selector.SelectorEvalException;
 import org.zmonitor.selector.impl.model.Attribute;
 import org.zmonitor.selector.impl.model.PseudoClass;
-import org.zmonitor.selector.impl.model.SimpleSelectorSequence;
+import org.zmonitor.selector.impl.model.SelSequence;
 import org.zmonitor.util.Objects;
 import org.zmonitor.util.Strings;
 
@@ -27,7 +27,7 @@ public class EntryLocalProperties {
 	
 	
 	public static<T> boolean match(Entry<T> entry, 
-			SimpleSelectorSequence seq, 
+			SelSequence seq, 
 			Map<String, PseudoClassDef> defs){
 		
 		boolean matchType = matchType(entry, seq.getType()) ;
@@ -36,15 +36,17 @@ public class EntryLocalProperties {
 		boolean matchAttributes = matchAttributes(entry, seq.getAttributes()) ;
 		boolean matchPseudoClasses = matchPseudoClasses(entry, seq.getPseudoClasses(), defs);
 		
-		System.out.println(Strings.append(
-				">>>",
-				"[", 
-				matchType?1:0,", ",
-				matchID?1:0,", ",
-				matchClasses?1:0,", ",
-				matchAttributes?1:0,", ",
-				matchPseudoClasses?1:0,
-				"], seq@ ",seq," @ ",entry.getId(),", [T, id, clz, attr, psuClz]"));
+		if(EntryIterator.IS_DEBUG){
+			System.out.println(Strings.append(
+					">>>",
+					"[", 
+					matchType?1:0,", ",
+					matchID?1:0,", ",
+					matchClasses?1:0,", ",
+					matchAttributes?1:0,", ",
+					matchPseudoClasses?1:0,
+					"], seq@ ",seq," @ ",entry.getId(),", [T, id, clz, attr, psuClz]"));
+		}
 		
 		return matchType
 				&& matchID
@@ -71,12 +73,10 @@ public class EntryLocalProperties {
 		//for any entry, 
 		//if any class from selector expression has no matches to entries classes declaration, return false.
 		boolean result = enClzes.containsAll(classes);
-		System.out.println(">>>> [" +result+ "] Entry's ID: "+entry.getId());
-		System.out.println("         Selectorclasses="+ classes);
-		//System.out.println("            entryClasses="+ enClzes);
-		Pattern a;
-//		System.out.println("EntryLocalProperties:: Entry's classes: "+enClzes);
-//		System.out.println("EntryLocalProperties:: Selector classes: "+classes);
+		if(EntryIterator.IS_DEBUG){
+			System.out.println(">>>> [" +result+ "] Entry's ID: "+entry.getId());
+			System.out.println("         Selectorclasses="+ classes);	
+		}
 		return result;
 	}
 	
@@ -87,7 +87,6 @@ public class EntryLocalProperties {
 			List<Attribute> attributes){
 		if(attributes == null || attributes.isEmpty()) return true;
 		/*
-		 * TODO: support attr name: a.b.c
 		 */
 		for(Attribute attr : attributes)
 			if(!matchValue(getValue(entry, attr.getName()), attr)) 

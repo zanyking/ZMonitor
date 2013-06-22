@@ -16,17 +16,16 @@ import zmonitor.test.slf4j.clz.node.C;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class NodeSlf4jMPSelector_TEST extends TestBase{
-	
+public class NodeSlf4jSelectorCombinator_TEST  extends TestBase{
 	private static final Logger logger = 
 			LoggerFactory.getLogger(NodeSlf4jMPSelector_TEST.class);
-	
-	protected void runCase(){
+	@Test
+	public void test_siblingParentPriority() throws Exception {
 		logger.info(">> start test case");
 		A root = new A();
 		root.toFirstChild(B.B_FAC)
-			.toNextSibling(B.B_FAC)
-				.toFirstChild(C.C_FAC.toCFac(
+				.toFirstChild(B.B_FAC)
+				.toNextSibling(C.C_FAC.toCFac(
 						"test message, ID:{}, isEngineer:{}, name:{}, assignment:{}", 
 						7, true,"Robbie Cheng", "Client Side Engine enhancement"))
 				.toNextSibling(C.C_FAC.toCFac(
@@ -40,20 +39,8 @@ public class NodeSlf4jMPSelector_TEST extends TestBase{
 			.toNextSibling(A.A_FAC);
 		root.doNode();
 		logger.info("<< end test case");
+	
+		Slf4jTestUtils.testEntryIterator(".A .B + .C", 1, 
+				this.getMonitoredResult());//[message.0=9][message.2*='Ian']
 	}
-	
-	
-	@Test
-	public void test_attributeArray() throws Exception {
-		Slf4jTestUtils.testEntryIterator(".B .C[message.1=true]", 3, 
-				this.getMonitoredResult());
-	}
-	@Test
-	public void test_multipleAttributeMapping() throws Exception {
-		Slf4jTestUtils.testEntryIterator(".B .C[message.0=9][message.2*='Ian']", 1, 
-				this.getMonitoredResult());
-	}
-	
-	
-	
 }

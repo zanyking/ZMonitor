@@ -16,7 +16,7 @@ import org.zmonitor.selector.impl.model.Selector.Combinator;
  * The model representing a sequence of simple selectors.
  * @author simonpai, Ian YT Tsai
  */
-public class SimpleSelectorSequence {
+public class SelSequence {
 	
 	private Combinator _combinator;
 	private String _type;
@@ -27,11 +27,21 @@ public class SimpleSelectorSequence {
 	
 	private Attribute _currAttribute;
 	private PseudoClass _currPseudoClass;
-	private final SimpleSelectorSequence _previous;
-	private SimpleSelectorSequence _next;
+	private final SelSequence _previous;
+	private SelSequence _next;
 	private int index;
 	
-	/* package */SimpleSelectorSequence(SimpleSelectorSequence previous) {
+	/**
+	 * 
+	 */
+	private int inheritableIdx = -1;
+	/**
+	 * whether there's a match to this seq or not, the   
+	 */
+	private int transitableIdx = -1;
+	
+	
+	/* package */SelSequence(SelSequence previous) {
 		_combinator = Combinator.DESCENDANT;
 		_classes = new HashSet<String>();
 		_attributes = new ArrayList<Attribute>();
@@ -41,26 +51,50 @@ public class SimpleSelectorSequence {
 			_previous.setNext(this);// maintain a double liked list to forward
 									// and backward
 			index = _previous.index+1;
+			inheritableIdx = _previous.inheritableIdx;
+			
+//			int tempTransitableIdx =
+			if(Direction.INHERIT.isCbInSameDirection(_previous)){
+				transitableIdx = _previous.inheritableIdx;
+			}else{
+				transitableIdx = _previous.transitableIdx;
+			}
+//			if(transitableIdx<_previous.inheritableIdx){
+//				
+//			}
+			
 		}else{
 			index = 0;
 		}
 	}
 	
 	
+	public int getInheritableIdx() {
+		return inheritableIdx;
+	}
+
+
+	public int getTransitableIdx() {
+		return transitableIdx;
+	}
+
+
 	public int getIndex() {
 		return index;
 	}
-
-
-	public void setNext(SimpleSelectorSequence next){
+	
+	
+	public void setNext(SelSequence next){
+		if(Direction.INHERIT.isTransitive(_combinator))
+			inheritableIdx = index;//lat decided...
 		_next = next;
 	}
 	
-	public SimpleSelectorSequence getNext(){
+	public SelSequence getNext(){
 		return _next;
 	}
 	
-	public SimpleSelectorSequence getPrevious(){
+	public SelSequence getPrevious(){
 		return _previous;
 	}
 	
@@ -94,6 +128,11 @@ public class SimpleSelectorSequence {
 	// setter //
 	public void setCombinator(Combinator combinator){
 		_combinator = combinator;
+		if(Direction.INHERIT.isTransitive(combinator)){
+			inheritableIdx = this.index;
+		}else if(Direction.SIBLING.isTransitive(combinator)){
+			transitableIdx = this.index;
+		}
 	}
 	
 	public void setType(String type){
@@ -140,6 +179,9 @@ public class SimpleSelectorSequence {
 		_currPseudoClass.addParameter(parameter);
 	}
 	
+	public static int getIndex(SelSequence seq){
+		return seq==null? -1 : seq.getIndex();
+	}
 	@Override
 	public String toString() {
 		if(_type == null && _id == null && _classes.isEmpty() && 
@@ -165,8 +207,21 @@ public class SimpleSelectorSequence {
 		return sb.toString();
 	}
 	
-	public static String toStringWithCB(SimpleSelectorSequence seq){
+	public static String toStringWithCB(SelSequence seq){
 		if(seq==null)return null;
-		return ""+seq._combinator.name()+seq;
+		return seq+", CB:"+seq._combinator.name();
+	}
+	
+	public static boolean greaterThan(SelSequence seq, SelSequence seq2){
+		int seqIdx = seq==null? -1 : seq.getIndex();
+		int seq2Idx = seq2==null? -1 : seq2.getIndex();
+		
+		return seqIdx > seq2Idx;
+	}
+	
+	public static boolean reachedEnd(SelSequence seq){
+		if(seq==null)return false;
+		return seq.getNext()==null;
 	}
 }
+

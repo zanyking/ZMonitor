@@ -169,7 +169,7 @@ public class EntryIterator<E> implements Iterator<Entry<E>> {
 		return null;
 	}
 	
-	private static final boolean IS_DEBUG = true;
+	public static final boolean IS_DEBUG = true;
 
 	
 	private SelectorContext<E> buildRootCtx() {
@@ -216,7 +216,9 @@ public class EntryIterator<E> implements Iterator<Entry<E>> {
 	}
 	
 	private MatchCtx<E> buildNextSiblingCtx(MatchCtx<E> ctx) {
+		
 		ctx = ctx.toNextSibling();
+		
 		if(IS_DEBUG){
 			System.out.println(">>>>buildNextSiblingCtx()");
 			System.out.println("parent = "+ctx.getParent()); // TODO: debugger

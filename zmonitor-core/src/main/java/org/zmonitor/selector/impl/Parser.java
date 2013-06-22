@@ -11,7 +11,7 @@ import org.zmonitor.selector.impl.Token.Type;
 import org.zmonitor.selector.impl.model.Attribute.Operator;
 import org.zmonitor.selector.impl.model.Selector;
 import org.zmonitor.selector.impl.model.Selector.Combinator;
-import org.zmonitor.selector.impl.model.SimpleSelectorSequence;
+import org.zmonitor.selector.impl.model.SelSequence;
 import org.zmonitor.util.fsm.MacroStateCtx;
 import org.zmonitor.util.fsm.StateCtx;
 import org.zmonitor.util.fsm.StateCtx.TransitionListener;
@@ -172,7 +172,7 @@ public class Parser {
 	
 	private Selector _selector;
 	private String _source;
-	private SimpleSelectorSequence _seq;
+	private SelSequence _seq;
 	
 	public InSequenceStateMachine setSource(String source){
 		_source = source;

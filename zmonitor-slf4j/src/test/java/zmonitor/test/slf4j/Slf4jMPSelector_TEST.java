@@ -3,16 +3,9 @@
  */
 package zmonitor.test.slf4j;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.zmonitor.MonitorPoint;
-import org.zmonitor.selector.MPDefaultPseudoClassDefs;
-import org.zmonitor.selector.impl.EntryIterator;
-import org.zmonitor.selector.impl.SelectorContext;
-import org.zmonitor.selector.impl.zm.MSWrapper;
-import org.zmonitor.test.junit.MonitoredResult;
 import org.zmonitor.test.junit.TestBase;
 
 import zmonitor.test.slf4j.clz.BusinessObject;
@@ -35,12 +28,17 @@ public class Slf4jMPSelector_TEST  extends TestBase{
 	
 	@Test
 	public void test_PseudoClass() throws Exception {
-		Slf4jTestUtils.testEntryIterator(".BusinessObject .Dao:greater-than(END, 50)", 1, 
+		Slf4jTestUtils.testEntryIterator(".BusinessObject .Dao.getBean:greater-than(END, 50)", 1, 
 				this.getMonitoredResult());
 	}
 	@Test
 	public void test_PseudoClass2() throws Exception {
 		Slf4jTestUtils.testEntryIterator(".Dao.getBean:greater-than(END, 50)", 2, 
+				this.getMonitoredResult());
+	}
+	@Test
+	public void test_P2() throws Exception {
+		Slf4jTestUtils.testEntryIterator(".Service .Dao.getBean[message*='user']", 1, 
 				this.getMonitoredResult());
 	}
 	@Test
