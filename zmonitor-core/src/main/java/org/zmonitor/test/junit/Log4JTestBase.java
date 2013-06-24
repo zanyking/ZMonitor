@@ -17,9 +17,6 @@ import org.zmonitor.util.Loader;
  */
 public class Log4JTestBase extends TestBase {
 
-	
-	public Log4JTestBase(boolean useInternalHandler) {
-	}
 
 	@Before
 	public void doLog4jConfig(){

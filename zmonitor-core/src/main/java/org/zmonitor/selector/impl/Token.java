@@ -68,4 +68,8 @@ public class Token {
 	public String toString(){
 		return _type + " [" + _begin + ", " + _end + "]";
 	}
+	
+	public String toString(String src){
+		return _type + " [" + _begin + ", " + _end + "]= "+source(src);
+	}
 }

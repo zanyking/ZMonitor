@@ -24,32 +24,32 @@ import org.zmonitor.selector.impl.model.Selector;
  */
 public class MatchState {
 	
-	private final SelSequence lvSeq;
-	private SelSequence inheritedSeq;
+	private final SelSequence presentSeq;
+	private SelSequence inheritableSeq;
 	private final Selector selector;
 	
 	private MatchState(
 			SelSequence lvSeq,
 			SelSequence inheritedSeq, 
 			Selector selector) {
-		this.lvSeq = lvSeq;
-		this.inheritedSeq = inheritedSeq;
+		this.presentSeq = lvSeq;
+		this.inheritableSeq = inheritedSeq;
 		this.selector = selector;
 	}
 	
 	
 
 	public boolean isMatched(){
-		if(lvSeq==null)return false;
-		return lvSeq.getNext()==null;
+		if(presentSeq==null)return false;
+		return SelSequence.reachedEnd(presentSeq);
 	}
 
 
 	public String toString(){
-		int lvSeqIdx = lvSeq==null? -1 : lvSeq.getIndex();
-		int inheritedSeqIdx = inheritedSeq==null? -1 : inheritedSeq.getIndex();
+		int pSeqIdx = presentSeq==null? -1 : presentSeq.getIndex();
+		int inheritedSeqIdx = inheritableSeq==null? -1 : inheritableSeq.getIndex();
 		
-		return "["+lvSeqIdx+":"+inheritedSeqIdx+"]";
+		return "["+pSeqIdx+":"+inheritedSeqIdx+"]";
 	}
 
 	/**
@@ -62,14 +62,16 @@ public class MatchState {
 		
 		SelSequence firstSeq = selector.get(0);
 		boolean isMatches = selCtx.isEntryMatches(firstSeq); 
-		SelSequence rootSeq = 
+		
+		SelSequence rootPresentSeq = 
 				isMatches ? firstSeq : null;
 		
 		SelSequence inheritedSeq = 
-				Direction.INHERIT.isCbInSameDirection(rootSeq)?
-				rootSeq : null; 
+				Direction.INHERIT.isCbInSameDirection(rootPresentSeq)?
+				!SelSequence.reachedEnd(rootPresentSeq)?		
+				rootPresentSeq : null : null; 
 		
-		MatchState rootMCtx = new MatchState( rootSeq, 
+		MatchState rootMCtx = new MatchState( rootPresentSeq, 
 				inheritedSeq, 
 				selector);
 		
@@ -79,24 +81,25 @@ public class MatchState {
 	 *   CHILD - next level only
 	 *   DECENDENT - rest level
 	 * 
-	 * @param lvSeq
+	 * @param presentSeq
 	 * @return
 	 */
 	public<E> MatchState toFirstChild(
 			SelectorContext<E> newCtx){
 		
-		Result res = forward(Direction.INHERIT, inheritedSeq, newCtx, selector);
+		Result res = forward(Direction.INHERIT, inheritableSeq, newCtx, selector);
 		SelSequence firstChildPresentSeq;
 		SelSequence firstChildInheritableSeq;
-		if(res.isForward){
-			firstChildPresentSeq = res.nextSeq;
-			firstChildInheritableSeq =
-				selector.getIfAny( res.nextSeq.getInheritableIdx()); 
-		}else{
-			firstChildPresentSeq = inheritedSeq;
-			firstChildInheritableSeq = inheritedSeq ==null? 
-				inheritedSeq : selector.getIfAny(inheritedSeq.getInheritableIdx());
-		}
+		
+		
+		firstChildPresentSeq = res.isForwarded ? 
+			res.nextSeq : // got a match.  
+			inheritableSeq; // at least to be inherited
+		
+		firstChildInheritableSeq = firstChildPresentSeq ==null? 
+			firstChildPresentSeq : 
+			selector.getIfAny(firstChildPresentSeq.getInheritableIdx());
+		
 		return new MatchState( firstChildPresentSeq, firstChildInheritableSeq , selector);
 	}
 	/**
@@ -108,31 +111,28 @@ public class MatchState {
 	 */
 	public<E> MatchState toNextSibling(SelectorContext<E> newCtx){
 
-		SelSequence parentInheritedSeq = 
-				newCtx.getParent().getMatchState(selector.getSelectorIndex()).inheritedSeq;
+		SelSequence parentInheritableSeq = 
+				newCtx.getParent().getMatchState(
+						selector.getSelectorIndex()).inheritableSeq;
 		
 		SelSequence nextSibPresentSeq = null;
 		SelSequence nextSibInheritableSeq = null;
 		Result res;
-		SelSequence targetSeq = SelSequence.reachedEnd(lvSeq)?
-				Direction.SIBLING.backward(lvSeq, selector) : lvSeq;
+		SelSequence targetSeq = SelSequence.reachedEnd(presentSeq)?
+				Direction.SIBLING.backward(presentSeq, selector) : 
+				presentSeq;
 		
-		if(Direction.SIBLING.hasNext(targetSeq)){// use lvSeq
+		if(Direction.SIBLING.hasNext(targetSeq)){// use previous sibling's present Seq first.
 			res = forward(Direction.SIBLING, targetSeq, newCtx, selector);
 		}else{// from parent direction to bean...
-			res = forward(Direction.INHERIT, parentInheritedSeq, newCtx, selector);
+			res = forward(Direction.INHERIT, parentInheritableSeq, newCtx, selector);
 		}
 		nextSibPresentSeq =
-				SelSequence.greaterThan(res.nextSeq, parentInheritedSeq)?
-					res.nextSeq : parentInheritedSeq;
-		
-		if(res.isForward){
-			nextSibInheritableSeq =nextSibPresentSeq==null? null:
-				selector.getIfAny( nextSibPresentSeq.getInheritableIdx()); 
-		}else{
-			nextSibInheritableSeq =parentInheritedSeq==null? null:
-				selector.getIfAny( parentInheritedSeq.getInheritableIdx());
-		}
+				SelSequence.greaterThan(res.nextSeq, parentInheritableSeq)?
+					res.nextSeq : parentInheritableSeq;
+
+		nextSibInheritableSeq =nextSibPresentSeq==null? null:
+			selector.getIfAny( nextSibPresentSeq.getInheritableIdx());
 		
 		
 		MatchState mState = new MatchState( nextSibPresentSeq, nextSibInheritableSeq , selector);
@@ -159,11 +159,11 @@ public class MatchState {
 class Result{
 	final SelSequence nextSeq;
 	
-	final boolean isForward;
+	final boolean isForwarded;
 	public Result(SelSequence nextSeq, boolean isForward) {
 		super();
 		this.nextSeq = nextSeq;
-		this.isForward = isForward;
+		this.isForwarded = isForward;
 	}
 	
 }

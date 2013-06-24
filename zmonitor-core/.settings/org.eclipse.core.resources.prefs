@@ -1,2 +1,2 @@
 eclipse.preferences.version=1
-encoding//src/main/java/org/zmonitor/logger/log4j/ZMonitorAppender.java=UTF-8
+encoding//src/main/java/org/zmonitor/logger/log4j/ZMonitorNDCAppender.java=UTF-8

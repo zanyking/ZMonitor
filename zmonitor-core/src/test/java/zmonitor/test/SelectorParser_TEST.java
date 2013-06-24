@@ -58,6 +58,11 @@ public class SelectorParser_TEST {
 		printAllTockens("A  C ~ B  C + A ~ B + D", 7);
 	}
 	
+	@Test
+	public void test_attr_complexValue(){
+		printAllTockens("A[attr1='\\[\\]']", 1);
+	}
+	
 	private void printAllTockens(String selectorStr, int... selectorArr){
 		Parser parser = new Parser();
 		parser.setDebugMode(true);

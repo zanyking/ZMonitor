@@ -83,6 +83,15 @@ public class SelSequence {
 		return index;
 	}
 	
+	public void setToEnd(){
+		if(inheritableIdx==index) inheritableIdx--;
+		if(transitableIdx==index) transitableIdx--;
+	}
+	
+	public boolean isEnd(){
+		return this._next==null;
+	}
+	
 	
 	public void setNext(SelSequence next){
 		if(Direction.INHERIT.isTransitive(_combinator))

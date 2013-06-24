@@ -21,6 +21,7 @@ System Execution Monitoring :
 	|				[ N/A] To extract Monitor Sequence from call sequence by leveraging log4j.
 	|				[ N/A] To extract Monitor Sequence from call sequence by leveraging Lobgback.
 	|				[ N/A] provide push, pop, record control through message pattern.
+	|					[N/A] extract the machenism form Slf4j impl as a general solution.
 	|
 	|-> combind with JUnit
 	|		|

@@ -3,15 +3,11 @@
  */
 package org.zmonitor.web;
 
-import static org.zmonitor.impl.XMLConfigs.applyAttributesToBean;
-import static org.zmonitor.impl.XMLConfigs.getTextFromAttrOrContent;
-
-import org.w3c.dom.Node;
 import org.zmonitor.CustomConfigurable;
 import org.zmonitor.bean.ZMBeanBase;
 import org.zmonitor.config.ConfigContext;
-import org.zmonitor.config.Configs;
 import org.zmonitor.config.ConfigContext.Visitor;
+import org.zmonitor.config.Configs;
 import org.zmonitor.spi.Configurator;
 import org.zmonitor.util.PropertySetter;
 import org.zmonitor.web.filter.Condition;
@@ -24,9 +20,15 @@ import org.zmonitor.web.filter.UrlFilter;
  */
 public class WebConfigurator extends ZMBeanBase implements Configurator {
 	
-	public static final String REL_WEB_CONF = "web-conf";
+	private static final String REL_WEB_CONF = "web-conf";
 	private static final String REL_URL_FILTER = "url-filer";
 	private static final String REL_CONDITION = "condition";
+	private static final String ID_ZMBEAN_WEB_CONF = REL_WEB_CONF;
+	
+	public WebConfigurator(){
+		this.setId(ID_ZMBEAN_WEB_CONF);
+	}
+	
 
 	private UrlFilter filter;
 	

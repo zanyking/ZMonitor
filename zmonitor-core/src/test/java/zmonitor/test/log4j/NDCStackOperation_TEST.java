@@ -6,10 +6,15 @@ package zmonitor.test.log4j;
 
 import java.io.IOException;
 
+
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
+import org.junit.Assert;
 import org.junit.Test;
+import org.zmonitor.MonitorPoint;
+import org.zmonitor.selector.MonitorPointSelection;
 import org.zmonitor.test.junit.Log4JTestBase;
+import org.zmonitor.test.junit.MonitoredResult;
 
 /**
  * @author Ian YT Tsai(Zanyking)
@@ -17,9 +22,6 @@ import org.zmonitor.test.junit.Log4JTestBase;
  */
 public class NDCStackOperation_TEST extends Log4JTestBase {
 
-	public NDCStackOperation_TEST(boolean useInternalHandler) {
-		super(true);
-	}
 
 	protected static Logger getLogger(){ 
 		return Logger.getLogger(NDCStackOperation_TEST.class);
@@ -45,6 +47,17 @@ public class NDCStackOperation_TEST extends Log4JTestBase {
 		logger.info("ndc["+NDC.getDepth()+"] After Sleep...");
 		NDC.remove();
 		logger.info("ndc["+NDC.getDepth()+"] after NDC remove...");
+		
+		MonitoredResult result = this.getMonitoredResult();
+		MonitorPointSelection selection = result.asSelection().select(
+			".normalLog4jUsage:greater-than(NEXT, 1000)");
+		MonitorPoint mp;
+		int counter = 0;
+		while(selection.hasNext()){
+			mp = selection.toNext();
+			counter++;
+		}
+		Assert.assertEquals(1, counter);
 	}
 	
 	
@@ -62,6 +75,15 @@ public class NDCStackOperation_TEST extends Log4JTestBase {
 		NDC.remove();
 		logger.info("ndc["+NDC.getDepth()+"] after NDC remove...");
 		
+		MonitoredResult result = this.getMonitoredResult();
+		MonitorPointSelection selection = result.asSelection().select(
+			".testSimple[message*='ndc[1]']:greater-than(END, 1000)");
+		int counter = 0;
+		while(selection.hasNext()){
+			selection.toNext();
+			counter++;
+		}
+		Assert.assertEquals(1, counter);
 	}
 	
 	private void doA(){

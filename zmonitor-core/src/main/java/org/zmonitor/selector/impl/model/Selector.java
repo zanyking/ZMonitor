@@ -129,6 +129,11 @@ public class Selector extends ArrayList<SelSequence> {
 		this.add(newSeq);
 		return newSeq;
 	}
+
+	
+	public void finish() {
+		this.getLastSequence();
+	}
 	
 	
 	

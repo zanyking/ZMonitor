@@ -51,7 +51,7 @@ public enum Direction {
 	}
 	public boolean hasNext(SelSequence seq){
 		if(seq==null)return true;
-		if(seq.getNext()==null)return false;
+		if(seq.isEnd())return false;
 		return isCbInSameDirection(seq);
 	}
 	public SelSequence getNext(SelSequence seq, Selector selector){

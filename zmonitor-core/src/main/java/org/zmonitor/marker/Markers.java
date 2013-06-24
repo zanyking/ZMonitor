@@ -18,7 +18,6 @@ public class Markers {
 	public static final Marker MK_RECORD_ZM;
 	public static final Marker MK_END_ZM;
 	public static final String TRACKER_NAME_ZM = "zmonitor";
-	
 	static{
 		MK_ZM = MarkerFactory.getMarker("zm");
 		MK_PUSH_ZM = MarkerFactory.getMarker("push");
@@ -37,7 +36,6 @@ public class Markers {
 	public static final Marker MK_RECORD_ZM_WEB;
 	public static final Marker MK_END_ZM_WEB;
 	public static final String TRACKER_NAME_ZM_WEB = "web";
-	
 	static{
 		MK_ZM_WEB = MarkerFactory.getMarker(TRACKER_NAME_ZM_WEB);
 		MK_PUSH_ZM_WEB  = MarkerFactory.getMarker("web-push");

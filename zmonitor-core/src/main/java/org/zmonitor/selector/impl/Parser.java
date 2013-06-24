@@ -115,6 +115,7 @@ public class Parser {
 		private void flushCurrentSelector(){
 			// flush current selector
 			_selectorSet.add(_selector = new Selector(_selectorSet.size()));
+			
 			_submachine.setSelector(_selector);
 		}
 		
@@ -125,14 +126,22 @@ public class Parser {
 	}
 	
 	public List<Selector> parse(List<Token> tokens, String source){
+		if(_debugMode){
+			int counter = 0;
+			for(Token tkn : tokens){
+				System.out.println("["+counter++ +"]"+tkn.toString(source));
+			}
+		}
 		_source = source;
 		_selectorSet.clear();
 		_selectorSet.add(_selector = new Selector(0));
 		_machine.start(tokens.iterator());
 		return _selectorSet;
 	}
+	private boolean _debugMode;
 	
 	public void setDebugMode(boolean mode){
+		_debugMode = mode;
 		_machine.setDebugMode(mode);
 		_submachine.setDebugMode(mode);
 	}
@@ -180,6 +189,9 @@ public class Parser {
 	}
 	
 	public InSequenceStateMachine setSelector(Selector selector){
+		if(_selector!=null)
+			_selector.finish();
+		
 		_selector = selector;
 		return this;
 	}
