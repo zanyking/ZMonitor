@@ -2,7 +2,7 @@
  * 2011/10/24
  * 
  */
-package zmonitor.test.log4j;
+package zmonitor.test.log4j.ndc_ex;
 
 import java.io.IOException;
 
@@ -32,9 +32,9 @@ public class NDCStackOperation_TEST extends Log4JTestBase {
 		Logger logger = getLogger();
 		
 		NDC.push("TIMELINE");
-		logger.info("ndc["+NDC.getDepth()+"]");
+		logger.info(">> ndc["+NDC.getDepth()+"]");
 		
-		logger.debug("ndc["+NDC.getDepth()+"] >>> DEBUG,DEBUG,DEBUG,DEBUG,DEBUG,DEBUG,DEBUG,");
+		logger.debug(" ndc["+NDC.getDepth()+"] DEBUG,DEBUG,DEBUG,DEBUG,DEBUG,DEBUG,DEBUG,");
 		logger.info("ndc["+NDC.getDepth()+"] before doA()");
 		doA();
 		logger.info("ndc["+NDC.getDepth()+"] After doA()");
@@ -66,7 +66,7 @@ public class NDCStackOperation_TEST extends Log4JTestBase {
 		Logger logger = getLogger();
 		
 		NDC.push("start new Stack!");
-		logger.info("ndc["+NDC.getDepth()+"]");
+		logger.info("ndc["+NDC.getDepth()+"]"+NDC.peek());
 		try {
 			Thread.sleep(1234);
 		} catch (InterruptedException e) {

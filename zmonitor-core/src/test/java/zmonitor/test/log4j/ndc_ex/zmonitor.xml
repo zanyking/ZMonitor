@@ -4,9 +4,11 @@
 	<monitor-sequence-handler name="console-LOG4J" 
 		class="org.zmonitor.handler.EclipseConsoleMonitorSequenceHandler"/>
 	
-	
+	<!-- -->
 	<log4j-conf autoHookUp="true">
-		
+		<appender class="org.zmonitor.logger.log4j.ZMonitorNDCAppender" 
+			embedded="true" 
+			inTestMode="true"/>
+	</log4j-conf> 
 	
-	</log4j-conf>
 </zmonitor>

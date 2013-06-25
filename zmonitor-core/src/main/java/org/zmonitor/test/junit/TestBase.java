@@ -4,17 +4,11 @@
  */
 package org.zmonitor.test.junit;
 
-import java.lang.reflect.Method;
 import java.net.URL;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.zmonitor.AlreadyStartedException;
 import org.zmonitor.InitFailureException;
-import org.zmonitor.MonitorMeta;
-import org.zmonitor.MonitorSequence;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.config.ConfigSource;
 import org.zmonitor.config.URLConfigSource;
@@ -22,7 +16,6 @@ import org.zmonitor.impl.MSPipe.Mode;
 import org.zmonitor.impl.ThreadLocalMonitorLifecycleManager;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.spi.MonitorLifecycle;
-import org.zmonitor.test.junit.MonitoredResult.MonitorResultFac;
 import org.zmonitor.util.Loader;
 
 
@@ -34,15 +27,15 @@ public abstract class TestBase {
 	
 	
 	
-	private static String getMsRunCaseId(Class testCaseClass){
-		try {
-			Method runCaseMethod = testCaseClass.getDeclaredMethod("runCase");
-			MonitorSequenceId msIdAnno = runCaseMethod.getAnnotation(MonitorSequenceId.class);
-			return (msIdAnno==null)? null : msIdAnno.value();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		} 
-	}
+//	private static String getMsRunCaseId(Class testCaseClass){
+//		try {
+//			Method runCaseMethod = testCaseClass.getDeclaredMethod("runCase");
+//			MonitorSequenceId msIdAnno = runCaseMethod.getAnnotation(MonitorSequenceId.class);
+//			return (msIdAnno==null)? null : msIdAnno.value();
+//		} catch (Exception e) {
+//			throw new RuntimeException(e);
+//		} 
+//	}
 	
 	private static final String ID_INTERNAL_TEST_MS_HANDLER = "ID_INTERNAL_TEST_MS_HANDLER";
 	
@@ -89,16 +82,26 @@ public abstract class TestBase {
 	 */
 	@Before
 	public void setUp() throws Exception {
+		beforeZmonitorManagerInit();
 		if(!ZMonitorManager.isInitialized()){
 			init();
 		}
-		
+		afterZmonitorManagerInit();
 		//TODO: see if there's any alternative to do this part...
 		runCase();
 		
-		MonitorLifecycle lifecycle = ZMonitorManager.getInstance().getLifecycleManager().getLifecycle();
-		if(lifecycle.isMonitorStarted()&&!lifecycle.isFinished())
-			lifecycle.finish();//force flush current monitorSequence.
+		finishMonitorLifecycle();
+	}
+	@After
+	public void dispose()throws Exception {
+		ZMonitorManager.dispose();
+	}
+	
+	protected void beforeZmonitorManagerInit(){
+		//for sub-class implementation
+	}
+	protected void afterZmonitorManagerInit(){
+		//for sub-class implementation
 	}
 	
 	
@@ -106,6 +109,11 @@ public abstract class TestBase {
 	}
 	
 
+	protected void finishMonitorLifecycle(){
+		MonitorLifecycle lifecycle = ZMonitorManager.getInstance().getLifecycleManager().getLifecycle();
+		if(lifecycle.isMonitorStarted()&&!lifecycle.isFinished())
+			lifecycle.finish();//force flush current monitorSequence.
+	}
 
 	/**
 	 * a.b -> a/b/zm.xml

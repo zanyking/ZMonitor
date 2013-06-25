@@ -3,34 +3,29 @@
  */
 package org.zmonitor.logger.log4j;
 
-import org.apache.log4j.Logger;
 import org.zmonitor.MonitorPoint;
 import org.zmonitor.ZMonitorManager;
-import org.zmonitor.bean.ZMBeanBase;
 import org.zmonitor.config.ConfigContext;
-import org.zmonitor.config.WrongConfigurationException;
 import org.zmonitor.impl.DefaultMPVariableResolver;
 import org.zmonitor.impl.DefaultSelectorAdaptation;
-import org.zmonitor.spi.Configurator;
-import org.zmonitor.util.Arguments;
-import org.zmonitor.util.PropertySetter;
+import org.zmonitor.impl.ZMLog;
+import org.zmonitor.logger.ConfiguratorBase;
 
 /**
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class Log4jConfigurator extends ZMBeanBase implements Configurator {
+public class Log4jConfigurator extends ConfiguratorBase {
 	
 	private static final String REL_LOG4J_CONF = "log4j-conf";
 	private static final String REL_APPENDER = "appender";
-	private static final String ID_ZMBEAN_LOG4J_CONF = REL_LOG4J_CONF;
 	
 	public Log4jConfigurator() {
-		this.setId(ID_ZMBEAN_LOG4J_CONF);
+		super(REL_LOG4J_CONF, REL_LOG4J_CONF, new AppenderTracker());
 	}
 
-	public void configure(ConfigContext configCtx) {
-		ZMonitorManager manager = configCtx.getManager();
+	@Override
+	protected void configureDefault(ZMonitorManager manager) {
 		manager.getSelectorAdaptor().addSupport(Markers.TRACKER_NAME_LOG4J, 
 				new DefaultSelectorAdaptation() {
 			public String retrieveType(MonitorPoint mp) {
@@ -39,37 +34,38 @@ public class Log4jConfigurator extends ZMBeanBase implements Configurator {
 			public Object resolveAttribute(String varName, MonitorPoint mp) {
 				return new DefaultMPVariableResolver(mp).resolveVariable(varName);
 			}
-		});
-		ConfigContext log4jConfCtx = configCtx.toNode(REL_LOG4J_CONF);
-		if (log4jConfCtx.getNode() == null) {// no <log4j-conf> element has been
-												// found in zmonitor.xml, use
-												// default setting.
-			return;
-		}
-		log4jConfCtx.applyAttributes(new PropertySetter(this), "class");
-		prepareLog4jCustomAppender(autoHookUp, appenderClass, log4jConfCtx.toNode(REL_APPENDER));
+		});		
+	}
+
+	@Override
+	protected void configureByContext(ConfigContext log4jConfCtx) {
+		/*
+		 * <appender class="org.zmonitor.logger.log4j.ZMonitorAppender">
+		 * the given class must extends org.zmonitor.logger.log4j.ZMonitorAppenderBase.
+		 */
+		prepareLog4jCustomAppender(autoHookUp, 
+				log4jConfCtx.toNode(REL_APPENDER));
 	}
 	/*
 	 * 
 	 */
 	private static void prepareLog4jCustomAppender(boolean autoHookUp, 
-			Class<?> appenderClz,
 			ConfigContext appenderCtx) {
+		
+		// TODO: prepare detailed appender settings here, appender will gather
+		// these info while working. 
+		
 		if(!autoHookUp)return;
-		Logger root = Logger.getRootLogger();
-		ZMonitorAppenderBase log4jAppender;
-		if(appenderCtx.getNode()==null){
-			//use default setting... 
-			log4jAppender = new ZMonitorAppender();
-			
-		}else{
-			//use custom setting...
-			//TODO: more detailed configuration of custom log4j appender.
-			
-			// must extends ZMonitorAppenderBase...
-			log4jAppender = appenderCtx.newBean(ZMonitorAppender.class, false);
+		
+		try {
+			Driver.hookUpCustomAppender( appenderCtx);
+		} catch (NoClassDefFoundError e) {// NoClassDefFoundError:
+								// org/apache/log4j/AppenderSkeleton
+			e.printStackTrace();
+			ZMLog.info("cannot init Custom Appender for Log4j, " +
+					"application doesn't use log4j.");
 		}
-		root.addAppender(log4jAppender);
+		
 	}
 
 
@@ -110,39 +106,6 @@ public class Log4jConfigurator extends ZMBeanBase implements Configurator {
 	public void setAutoHookUp(boolean autoHookUp) {
 		this.autoHookUp = autoHookUp;
 	}
-	
-	
-	private Class<?> appenderClass = ZMonitorAppender.class;
-	public String getAppenderClass() {
-		return appenderClass.getName();
-	}
 
-	/**
-	 * <p>
-	 * if autoHookUp is true, this class will be used to create the appender
-	 * instance.
-	 * 
-	 * @param appenderClassName
-	 */
-	public void setAppenderClass(String appenderClassName) {
-		Class<?> temp;
-		try {
-			Arguments.checkNotEmpty(appenderClassName,"appenderClassName cannot be set to empty!");
-			temp = Class.forName(appenderClassName);
-		} catch (Exception e) {
-			throw new WrongConfigurationException(
-					"Appender class has not been found: " + appenderClassName,
-					e);
-		}
-		try{
-			temp.getConstructor();
-		}catch (Exception e) {
-			throw new WrongConfigurationException(
-					"no default constructor of appender classes implementation: " + appenderClassName,
-					e);
-		}
-		this.appenderClass = temp;
-	}
-	
 	
 }

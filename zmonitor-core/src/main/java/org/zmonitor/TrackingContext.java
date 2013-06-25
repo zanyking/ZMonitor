@@ -22,6 +22,11 @@ public interface TrackingContext {
 	Object getMessage();
 	/**
 	 * 
+	 * @param message
+	 */
+	void setMessage(Object message);
+	/**
+	 * 
 	 * @return
 	 */
 	String getTrackerName();

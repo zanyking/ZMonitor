@@ -3,28 +3,14 @@
  */
 package org.zmonitor.logger.log4j;
 
-import java.io.IOException;
-
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
-import org.apache.log4j.spi.LocationInfo;
 import org.apache.log4j.spi.LoggingEvent;
-import org.zmonitor.AlreadyStartedException;
-import org.zmonitor.InitFailureException;
-import org.zmonitor.MarkerFactory;
 import org.zmonitor.MonitorSequence;
 import org.zmonitor.TrackingContext;
 import org.zmonitor.ZMonitor;
 import org.zmonitor.ZMonitorManager;
-import org.zmonitor.config.ConfigSource;
-import org.zmonitor.config.ConfigSources;
-import org.zmonitor.impl.MonitorMetaBase;
-import org.zmonitor.impl.ThreadLocalMonitorLifecycleManager;
-import org.zmonitor.impl.TrackingContextBase;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.logger.log4j.NdcContext.NdcObj;
-import org.zmonitor.marker.Marker;
 import org.zmonitor.spi.MonitorLifecycle;
 import org.zmonitor.util.Strings;
 
@@ -35,7 +21,6 @@ import org.zmonitor.util.Strings;
  *
  */
 public class ZMonitorNDCAppender extends ZMonitorAppenderBase {
-
 
 	/*(non-Javadoc)
 	 * @see org.apache.log4j.AppenderSkeleton#append(org.apache.log4j.spi.LoggingEvent)
@@ -97,7 +82,7 @@ public class ZMonitorNDCAppender extends ZMonitorAppenderBase {
 	    	}else if(depth>0){
 	    		if(ZMonitor.isMonitoring()){
 	    			tracking(event, depth, lfc, ndcStr);
-	    		}else if(isIgnitBySelf ||  testMode){
+	    		}else if(isInitByAppender ||  inTestMode){
 	    			// if the ms life-cycle is controlled by others, log4j should never take over the control.   
 	    			// be cause we'd never know if log4j's logging methods will be called inside a managed thread. 
 	    			start(event, depth, lfc, ndcStr);
@@ -137,7 +122,7 @@ public class ZMonitorNDCAppender extends ZMonitorAppenderBase {
 //				"ZMonitor Log4j stack Operation Logic Error or forget to cleanup the state.");			
 //		}
 
-		ndcCtxt.doStart(newTrackingContext(event, ndcStr), ndcStr, depth);
+		ndcCtxt.doStart(newTrackingContext(event, Markers.MK_PUSH_LOG4J), ndcStr, depth);
 //		System.out.printf("ZMonitorAppender::start() ndcStr=%1$2s ,NdcObj=%2$2s, isMonitorStarted=%3$b\n" ,
 //				ndcStr, ndcCtxt.getNdcObj(), lfc.isMonitorStarted());
 	}
@@ -199,22 +184,22 @@ public class ZMonitorNDCAppender extends ZMonitorAppenderBase {
 //				ndcStr, last);
 		
 		if(last==null){
-			ndcCtxt.doRecord(newTrackingContext(event, null), ndcDepth);
+			ndcCtxt.doRecord(newTrackingContext(event, Markers.MK_RECORD_LOG4J), ndcDepth);
 			return;
 		}
 		
 		if(ndcDepth > last.depth){
-			ndcCtxt.doStart(newTrackingContext(event, null), ndcStr, ndcDepth);
+			ndcCtxt.doStart(newTrackingContext(event, Markers.MK_PUSH_LOG4J), ndcStr, ndcDepth);
 			
 		}else if(ndcDepth == last.depth){
-			ndcCtxt.doRecord(newTrackingContext(event, null), ndcDepth);
+			ndcCtxt.doRecord(newTrackingContext(event, Markers.MK_RECORD_LOG4J), ndcDepth);
 			
 		}else{//if( ndcDepth < last.depth )
 			if(ndcDepth == last.previous.depth){
-				ndcCtxt.doEnd(newTrackingContext(event, "LOG4J_END"));
+				ndcCtxt.doEnd(newTrackingContext(event, Markers.MK_END_LOG4J));
 				
 			}else if(ndcDepth > last.previous.depth){
-				ndcCtxt.doRecord(newTrackingContext(event, null), ndcDepth);
+				ndcCtxt.doRecord(newTrackingContext(event, Markers.MK_RECORD_LOG4J), ndcDepth);
 				
 			}else{// if(ndcDepth < last.previous.depth)
 				autoEnd(ndcCtxt, event);
@@ -242,7 +227,7 @@ public class ZMonitorNDCAppender extends ZMonitorAppenderBase {
 			autoEnd(ndcCtxt, event);
 			currentTlDepth = getCurrentTlDepth(lfc);
 		}
-		TrackingContext jName = newTrackingContext(event, "END");
+		TrackingContext jName = newTrackingContext(event, Markers.MK_END_LOG4J);
 		ndcCtxt.doEnd(jName);
 	}
 	
@@ -254,7 +239,7 @@ public class ZMonitorNDCAppender extends ZMonitorAppenderBase {
 				(last==null? 0 : last.ndcStr),
 				"], recursive Ending...");
 		
-		ndcCtxt.doEnd(newTrackingContext(event, "L4J_FORCE_END", 
+		ndcCtxt.doEnd(newTrackingContext(event, Markers.MK_END_LOG4J, 
 				sb.toString()));
 	}
 	
@@ -269,7 +254,13 @@ public class ZMonitorNDCAppender extends ZMonitorAppenderBase {
 		return (tl==null)? -1 : tl.getCurrentDepth();
 	}
 	
+	protected static final String KEY_CONTROLLED_BY_SELF = "KEY_CONTROLLED_BY_SELF";
 	
-
+	protected static boolean isControlledBySelf(MonitorLifecycle lfc){
+		return lfc.getAttribute(KEY_CONTROLLED_BY_SELF)!=null;
+	}
+	protected static void setControlledBySelf(MonitorLifecycle lfc){
+		lfc.setAttribute(KEY_CONTROLLED_BY_SELF, KEY_CONTROLLED_BY_SELF);
+	}
 	
 }

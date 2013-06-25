@@ -8,19 +8,20 @@
 			<param name="ConversionPattern" value="%d{ABSOLUTE} %5p %c{1}:%L - %m%n"/>
 		</layout>
 	</appender>
-	<!-- ZMonitor as a Log4j appender  
+	<!-- ZMonitor as a Log4j appender 
 	<appender name="ZMonitorIgnition" 
 		class="org.zmonitor.logger.log4j.ZMonitorNDCAppender">
 		<param name="embedded" value="true"/>
+		<param name="inTestMode" value="true"/>
 	</appender>
-		-->
+		 -->
 		
 	<root>
 		<priority value="debug" />
 		<appender-ref ref="stdout" />
-		<!-- 
+		<!--  
 		<appender-ref ref="ZMonitorIgnition" />
-		 -->
+		-->
 	</root>
 
 </log4j:configuration>

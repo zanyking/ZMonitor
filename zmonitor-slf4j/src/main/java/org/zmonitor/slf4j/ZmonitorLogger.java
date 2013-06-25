@@ -4,20 +4,15 @@
 package org.zmonitor.slf4j;
 
 import java.io.Serializable;
-import java.util.concurrent.Callable;
 
 import org.slf4j.Logger;
 import org.slf4j.Marker;
-import org.slf4j.helpers.FormattingTuple;
-import org.slf4j.helpers.MarkerIgnoringBase;
-import org.slf4j.helpers.MessageFormatter;
-import org.slf4j.spi.LocationAwareLogger;
 import org.zmonitor.HasNotInitializedException;
-import org.zmonitor.ZMonitor;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.impl.TrackingContextBase;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.logger.LoggerMonitorMeta;
+import org.zmonitor.logger.TrackerBase;
 import org.zmonitor.util.CallerStackTraceElementFinder;
 
 /**
@@ -34,8 +29,7 @@ public class ZMonitorLogger implements Logger, Serializable{
 	
 //	private static class Not
 	/**
-	 * a smart reference to Slf4jConfigurator (borrow the
-	 * {@link java.util.concurrent.Callable<T>} interface)
+	 * a smart reference to Slf4jConfigurator
 	 */
 	private static class ConfigRef{
 		private Slf4jConfigurator slf4jConfig = null;
@@ -144,16 +138,23 @@ public class ZMonitorLogger implements Logger, Serializable{
 		tCtx.setMessage(mt);
 		tCtx.setMonitorMeta(new LoggerMonitorMeta(
 				adapt(marker), tCtx.getTrackerName(), ST_ELEMENT_FINDER.find(), level.toString()));
-		
-		try {
-			configRef.get().tracking(tCtx);
-		} catch (HasNotInitializedException e) {
-			ZMLog.warn(e, "getCurrentLogLevel() ",
-					"has been called while ZMonitorManager hasn't been started yet.");
-			//do nothing because ZMonitor is not ready to serve...
-		}
+		getTracker().tracking(tCtx);
 	}
 	
+	private TrackerBase slf4jTracker; 
+	private TrackerBase getTracker(){
+		if(slf4jTracker==null){
+			try {
+				slf4jTracker = configRef.get().getTracker();
+			} catch (HasNotInitializedException e) {
+				ZMLog.warn(e, "getCurrentLogLevel() ",
+						"has been called while ZMonitorManager hasn't been started yet.");
+				//do nothing because ZMonitor is not ready to serve...
+				return TrackerBase.NULL_TRACKER;//do nothing...
+			}	
+		}
+		return slf4jTracker;
+	}
 	
 	protected org.zmonitor.marker.Marker adapt(Marker mk){
 		return (org.zmonitor.marker.Marker) mk;

@@ -18,8 +18,7 @@ import org.zmonitor.util.Loader;
 public class Log4JTestBase extends TestBase {
 
 
-	@Before
-	public void doLog4jConfig(){
+	protected void beforeZmonitorManagerInit(){
 		String packagePath = this.getClass().getPackage().getName().replace('.', '/');
 		URL url = Loader.getResource(packagePath+"/log4j.xml");
 		 new DOMConfigurator().doConfigure(url, 

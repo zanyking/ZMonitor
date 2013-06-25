@@ -18,11 +18,9 @@ public class ZMonitorAppender extends ZMonitorAppenderBase {
 
 	@Override
 	protected void append(LoggingEvent event) {
-		String ndcStr = null;
-		int depth = -1;
 		{//IMPORTANT: this section is something MUST be called!
-			ndcStr = event.getNDC();
-		    depth = NDC.getDepth();
+			event.getNDC();
+		    NDC.getDepth();
 		    event.getThreadName();
 		    // Get a copy of this thread's MDC.
 		    event.getMDCCopy();
@@ -36,9 +34,9 @@ public class ZMonitorAppender extends ZMonitorAppenderBase {
 	    	event.getThrowableStrRep();
 	    	MonitorLifecycle lfc = ZMonitorManager.getInstance().getMonitorLifecycle();
 	    	if(ZMonitor.isMonitoring()){
-	    		
+	    		//TODO
 	    	}else{
-	    		// start new life-cycle ? 
+	    		//TODO start new life-cycle ? 
 	    	}
 	    }
 	}

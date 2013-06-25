@@ -13,7 +13,6 @@ import org.zmonitor.selector.Entry;
 import org.zmonitor.selector.EntryContainer;
 import org.zmonitor.selector.impl.model.Selector;
 import org.zmonitor.util.Arguments;
-import org.zmonitor.util.Strings;
 
 /**
  * An implementation of Iterator&lt;Component> that realizes the selector matching
@@ -169,7 +168,7 @@ public class EntryIterator<E> implements Iterator<Entry<E>> {
 		return null;
 	}
 	
-	public static final boolean IS_DEBUG = true;
+	public static final boolean IS_DEBUG = false;
 
 	
 	private SelectorContext<E> buildRootCtx() {

@@ -114,7 +114,8 @@ public class XMLConfigs {
 			return (T) clazz.newInstance();
 			
 		} catch (ClassNotFoundException e) {
-			throw new WrongConfigurationException(e);
+			throw new WrongConfigurationException(Strings.append(
+					"class [",clazz,"] not exist. "),e);
 		}catch (InstantiationException e) {
 			throw new WrongConfigurationException(Strings.append(
 					"class [",clazz,"] must has default Constructor! "), e);

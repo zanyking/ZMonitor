@@ -11,7 +11,6 @@ import org.apache.log4j.spi.LocationInfo;
 import org.apache.log4j.spi.LoggingEvent;
 import org.zmonitor.AlreadyStartedException;
 import org.zmonitor.InitFailureException;
-import org.zmonitor.MarkerFactory;
 import org.zmonitor.TrackingContext;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.config.ConfigSource;
@@ -21,7 +20,6 @@ import org.zmonitor.impl.ThreadLocalMonitorLifecycleManager;
 import org.zmonitor.impl.TrackingContextBase;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.marker.Marker;
-import org.zmonitor.spi.MonitorLifecycle;
 
 /**
  * @author Ian YT Tsai(Zanyking)
@@ -30,24 +28,6 @@ import org.zmonitor.spi.MonitorLifecycle;
 public abstract class ZMonitorAppenderBase extends AppenderSkeleton{
 	protected boolean javaSourceLocationInfo = true;
 	
-	
-	private static ZMonitorAppenderBase singleton;
-	
-	public ZMonitorAppenderBase(){
-		this.name = "ZMonitor";
-		synchronized (ZMonitorNDCAppender.class) {
-			if(singleton ==null)
-				singleton = this;
-		}
-	}
-	protected boolean testMode;
-	
-	public boolean isTestMode(){
-		return testMode;
-	}
-	public void setTestMode(boolean b) {
-		testMode = b;
-	}
 	protected boolean embedded;//default is false
 	public boolean isEmbedded() {
 		return embedded;
@@ -56,12 +36,13 @@ public abstract class ZMonitorAppenderBase extends AppenderSkeleton{
 		this.embedded = embedded;
 	}
 	
-	/**
-	 * 
-	 * @return
-	 */
-	public static ZMonitorAppenderBase getInstance(){
-		return singleton;
+	protected boolean inTestMode;
+	
+	public boolean isInTestMode() {
+		return inTestMode;
+	}
+	public void setInTestMode(boolean inTestMode) {
+		this.inTestMode = inTestMode;
 	}
 	/**
 	 * Gets whether the location of the logging request call should be captured.
@@ -92,7 +73,7 @@ public abstract class ZMonitorAppenderBase extends AppenderSkeleton{
 	public boolean requiresLayout() {
 		return false;
 	}
-	protected boolean isIgnitBySelf;
+	protected boolean isInitByAppender;
 
 	/*
 	 * Sub class should never interfere this part, no guarantee for another
@@ -111,13 +92,23 @@ public abstract class ZMonitorAppenderBase extends AppenderSkeleton{
 				aZMonitorManager.performConfiguration(configSrc);
 			}
 			ZMonitorManager.init(aZMonitorManager);
-			aZMonitorManager.setLifecycleManager(new ThreadLocalMonitorLifecycleManager());
-			isIgnitBySelf = true;
-			ZMLog.info(">> Ignite ZMonitor in: ",ZMonitorAppenderBase.class.getCanonicalName());
+			aZMonitorManager.setLifecycleManager(
+					new ThreadLocalMonitorLifecycleManager());
+			
+			isInitByAppender = true;
+			ZMLog.info(">> Ignite ZMonitor in: ",
+				ZMonitorAppenderBase.class.getCanonicalName());
+			
 		} catch (IOException e) {
 			throw new InitFailureException(e);
 		} catch (AlreadyStartedException e) {
 			ZMLog.info("ZMonitorManager is already initialized");
+		}
+	}
+	
+	public void close() {
+		if(isInitByAppender){
+			ZMonitorManager.dispose();
 		}
 	}
 	/**
@@ -127,7 +118,7 @@ public abstract class ZMonitorAppenderBase extends AppenderSkeleton{
 	 * @param message
 	 * @return
 	 */
-	protected TrackingContext newTrackingContext(LoggingEvent event, String markerName, String message){
+	protected TrackingContext newTrackingContext(LoggingEvent event,  Marker marker, String message){
 		TrackingContextBase ctx = new TrackingContextBase(Markers.TRACKER_NAME_LOG4J);
 		ctx.setMessage(message);
 		if (javaSourceLocationInfo) {
@@ -139,8 +130,6 @@ public abstract class ZMonitorAppenderBase extends AppenderSkeleton{
 				lineNum = Integer.parseInt(locInfo.getLineNumber());
 			} catch (Exception e) {
 			}// line number is not applicable, ignore it.
-			Marker marker = markerName==null? 
-					null:MarkerFactory.getMarker(markerName);
 			
 			MonitorMetaBase cInfo = new MonitorMetaBase(marker,
 					ctx.getTrackerName(),
@@ -156,19 +145,12 @@ public abstract class ZMonitorAppenderBase extends AppenderSkeleton{
 		}
 		return ctx;
 	}
-	public void close() {
-		if(isIgnitBySelf){
-			ZMonitorManager.dispose();
-		}
-	}
 	
-	protected static final String KEY_CONTROLLED_BY_SELF = "KEY_CONTROLLED_BY_SELF";
 	
-	protected static boolean isControlledBySelf(MonitorLifecycle lfc){
-		return lfc.getAttribute(KEY_CONTROLLED_BY_SELF)!=null;
-	}
-	protected static void setControlledBySelf(MonitorLifecycle lfc){
-		lfc.setAttribute(KEY_CONTROLLED_BY_SELF, KEY_CONTROLLED_BY_SELF);
+
+	protected Log4jConfigurator getConfig(){
+		return ZMonitorManager.getInstance().getBeanIfAny(
+				Log4jConfigurator.class);
 	}
 	/**
 	 * 
@@ -176,8 +158,8 @@ public abstract class ZMonitorAppenderBase extends AppenderSkeleton{
 	 * @param markerName
 	 * @return
 	 */
-	protected TrackingContext newTrackingContext(LoggingEvent event, String markerName) {
-		return newTrackingContext(event, markerName, event.getRenderedMessage());
+	protected TrackingContext newTrackingContext(LoggingEvent event, Marker marker) {
+		return newTrackingContext(event, marker, event.getRenderedMessage());
 	}
 	
 	/**
