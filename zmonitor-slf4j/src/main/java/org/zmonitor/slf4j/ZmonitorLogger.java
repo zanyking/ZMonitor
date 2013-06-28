@@ -12,6 +12,7 @@ import org.zmonitor.ZMonitorManager;
 import org.zmonitor.impl.TrackingContextBase;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.logger.LoggerMonitorMeta;
+import org.zmonitor.logger.MessageTuple;
 import org.zmonitor.logger.TrackerBase;
 import org.zmonitor.util.CallerStackTraceElementFinder;
 
@@ -82,20 +83,6 @@ public class ZMonitorLogger implements Logger, Serializable{
 	public String getName() {
 		return name;
 	}
-	
-	private static final Throwable getThrowableCandidate(Object[] argArray) {
-		if (argArray == null || argArray.length == 0) {
-			return null;
-		}
-
-		final Object lastEntry = argArray[argArray.length - 1];
-		if (lastEntry instanceof Throwable) {
-			return (Throwable) lastEntry;
-		}
-		return null;
-	}
-	
-
 	private static Object[] trimmedCopy(Object[] argArray) {
 		if (argArray == null || argArray.length == 0) {
 			throw new IllegalStateException(
@@ -115,7 +102,17 @@ public class ZMonitorLogger implements Logger, Serializable{
 		}
 		return new MessageTuple(messagePattern, argArray, throwable);
 	}
-	
+	private static final Throwable getThrowableCandidate(Object[] argArray) {
+		if (argArray == null || argArray.length == 0) {
+			return null;
+		}
+
+		final Object lastEntry = argArray[argArray.length - 1];
+		if (lastEntry instanceof Throwable) {
+			return (Throwable) lastEntry;
+		}
+		return null;
+	}
 	/**
 	 * Responsibility:
 	 * <ol>
@@ -137,8 +134,11 @@ public class ZMonitorLogger implements Logger, Serializable{
 		TrackingContextBase tCtx = new TrackingContextBase("slf4j");
 		tCtx.setMessage(mt);
 		tCtx.setMonitorMeta(new LoggerMonitorMeta(
-				adapt(marker), tCtx.getTrackerName(), ST_ELEMENT_FINDER.find(), level.toString()));
-		getTracker().tracking(tCtx);
+				adapt(marker), 
+				tCtx.getTrackerName(), 
+				ST_ELEMENT_FINDER.find(), 
+				level.toString()));
+		getTracker().doTrack(tCtx);
 	}
 	
 	private TrackerBase slf4jTracker; 

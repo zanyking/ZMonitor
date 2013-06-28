@@ -12,13 +12,13 @@ import org.zmonitor.util.PropertySetter;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class Driver {
+public class Driver implements org.zmonitor.logger.Driver{
 	
 	/**
 	 * 
 	 * @param appenderCtx
 	 */
-	public static void hookUpCustomAppender(ConfigContext appenderCtx){
+	public void hookUpCustomAppender(ConfigContext appenderCtx){
 		Logger root = Logger.getRootLogger();
 		ZMonitorAppenderBase log4jAppender;//default appender class
 		if(appenderCtx.getNode()==null){

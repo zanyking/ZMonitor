@@ -13,7 +13,7 @@ import org.zmonitor.marker.Marker;
 public abstract class TrackerBase {
 
 	public static final TrackerBase NULL_TRACKER = new TrackerBase() {
-		public void tracking(TrackingContext tCtx) {
+		public void doTrack(TrackingContext tCtx) {
 			//DO nothing...
 		}
 	};
@@ -69,6 +69,6 @@ public abstract class TrackerBase {
 	 * 
 	 * @param tCtx
 	 */
-	public abstract void tracking(TrackingContext tCtx) ;
+	public abstract void doTrack(TrackingContext tCtx) ;
 	
 }

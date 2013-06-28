@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- do not use Id here, let TestBase generate the ID by class name -->
+<zmonitor>
+	<monitor-sequence-handler name="console-LOG4J" 
+		class="org.zmonitor.handler.EclipseConsoleMonitorSequenceHandler"/>
+	
+	<!-- -->
+	<log4j-conf autoHookUp="false">
+		<appender class="org.zmonitor.logger.log4j.ZMonitorNDCAppender" 
+			embedded="true" 
+			inTestMode="true"/>
+	</log4j-conf> 
+	
+</zmonitor>

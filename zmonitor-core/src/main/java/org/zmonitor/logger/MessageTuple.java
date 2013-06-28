@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.zmonitor.slf4j;
+package org.zmonitor.logger;
 
 import java.text.MessageFormat;
 import java.util.Collections;

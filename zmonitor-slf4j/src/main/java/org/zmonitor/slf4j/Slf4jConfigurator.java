@@ -8,13 +8,11 @@ import java.util.Map;
 
 import org.zmonitor.MonitorPoint;
 import org.zmonitor.ZMonitorManager;
-import org.zmonitor.bean.ZMBeanBase;
 import org.zmonitor.config.ConfigContext;
 import org.zmonitor.impl.DefaultSelectorAdaptation;
 import org.zmonitor.logger.ConfiguratorBase;
-import org.zmonitor.logger.TrackerBase;
+import org.zmonitor.logger.MessageTupleTracker;
 import org.zmonitor.slf4j.marker.AdaptiveMarkerFactory;
-import org.zmonitor.spi.Configurator;
 import org.zmonitor.util.PropertySetter;
 import org.zmonitor.util.PropertySetterException;
 import org.zmonitor.util.Strings;
@@ -31,7 +29,7 @@ public class Slf4jConfigurator extends ConfiguratorBase{
 	private LogLevel defaultLogLevel = LogLevel.TRACE;
 	
 	public Slf4jConfigurator() {
-		super(REL_SLF4J_CONF, REL_SLF4J_CONF, new Slf4jTracker());
+		super(REL_SLF4J_CONF, REL_SLF4J_CONF, new MessageTupleTracker());
 	}
 	
 	

@@ -33,7 +33,7 @@ public class ZMonitorAppender extends ZMonitorAppenderBase {
 //	    	MonitorLifecycle lfc = ZMonitorManager.getInstance().getMonitorLifecycle();
 	    	TrackerBase tracker = Log4jConfigurator.getInstance().getTracker();
 	    	
-	    	tracker.tracking(newTrackingContext(event, null));
+	    	tracker.doTrack(newTrackingContext(event, null));
 	    	
 	    }
 	}

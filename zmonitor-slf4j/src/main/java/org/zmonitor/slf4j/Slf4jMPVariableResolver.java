@@ -8,6 +8,7 @@ import java.util.Map;
 import org.zmonitor.MonitorPoint;
 import org.zmonitor.impl.AttributeResolveException;
 import org.zmonitor.impl.DefaultMPVariableResolver;
+import org.zmonitor.logger.Message;
 import org.zmonitor.util.Arguments;
 import org.zmonitor.util.GetterInvocationCache;
 import org.zmonitor.util.GetterInvocationCache.Getter;

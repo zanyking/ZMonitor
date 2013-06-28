@@ -1,19 +1,20 @@
 /**
  * 
  */
-package org.zmonitor.slf4j;
+package org.zmonitor.logger;
 
 import org.zmonitor.TrackingContext;
 import org.zmonitor.ZMonitor;
+import org.zmonitor.logger.MessageTuple;
 import org.zmonitor.logger.TrackerBase;
 
 /**
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class Slf4jTracker extends TrackerBase {
+public class MessageTupleTracker extends TrackerBase {
 
-	public void tracking(TrackingContext tCtx) {
+	public void doTrack(TrackingContext tCtx) {
 		MessageTuple mt = (MessageTuple) tCtx.getMessage();
 		String mesg = mt.getMessagePattern();
 		

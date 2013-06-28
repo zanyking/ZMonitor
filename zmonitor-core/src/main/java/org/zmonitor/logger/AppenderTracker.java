@@ -1,9 +1,8 @@
-package org.zmonitor.logger.log4j;
+package org.zmonitor.logger;
 
 import org.zmonitor.MonitorMeta;
 import org.zmonitor.TrackingContext;
 import org.zmonitor.ZMonitor;
-import org.zmonitor.logger.TrackerBase;
 import org.zmonitor.marker.Marker;
 
 /**
@@ -14,7 +13,7 @@ import org.zmonitor.marker.Marker;
 public class AppenderTracker extends TrackerBase {
 
 	@Override
-	public void tracking(TrackingContext tCtx) {
+	public void doTrack(TrackingContext tCtx) {
 		String message = (String) tCtx.getMessage();
 		if(message==null||message.isEmpty()){	
 			//No info to identify what's going on, should not 
