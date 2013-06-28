@@ -54,6 +54,10 @@ public enum Direction {
 		if(seq.isEnd())return false;
 		return isCbInSameDirection(seq);
 	}
+	public boolean matchNext(SelSequence seq){
+		if(seq==null)return false;
+		return nextCb == seq.getCombinator();
+	}
 	public SelSequence getNext(SelSequence seq, Selector selector){
 		if(seq==null)return selector.get(0);
 		return seq.getNext();

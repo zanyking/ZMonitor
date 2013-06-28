@@ -5,10 +5,8 @@ package org.zmonitor.logger.log4j;
 
 import org.apache.log4j.NDC;
 import org.apache.log4j.spi.LoggingEvent;
-import org.zmonitor.ZMonitor;
-import org.zmonitor.ZMonitorManager;
 import org.zmonitor.impl.ZMLog;
-import org.zmonitor.spi.MonitorLifecycle;
+import org.zmonitor.logger.TrackerBase;
 
 /**
  * @author Ian YT Tsai(Zanyking)
@@ -32,12 +30,11 @@ public class ZMonitorAppender extends ZMonitorAppenderBase {
 	    {//IMPORTANT: this section is something MUST be called!
 	    	String mesg = event.getRenderedMessage();
 	    	event.getThrowableStrRep();
-	    	MonitorLifecycle lfc = ZMonitorManager.getInstance().getMonitorLifecycle();
-	    	if(ZMonitor.isMonitoring()){
-	    		//TODO
-	    	}else{
-	    		//TODO start new life-cycle ? 
-	    	}
+//	    	MonitorLifecycle lfc = ZMonitorManager.getInstance().getMonitorLifecycle();
+	    	TrackerBase tracker = Log4jConfigurator.getInstance().getTracker();
+	    	
+	    	tracker.tracking(newTrackingContext(event, null));
+	    	
 	    }
 	}
 	

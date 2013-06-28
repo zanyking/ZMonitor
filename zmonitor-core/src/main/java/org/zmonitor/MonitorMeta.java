@@ -57,4 +57,9 @@ public interface MonitorMeta extends Serializable, Cloneable {
 	 * @return
 	 */
 	Marker getMarker();
+	/**
+	 * 
+	 * @param marker
+	 */
+	void setMarker(Marker marker);
 }

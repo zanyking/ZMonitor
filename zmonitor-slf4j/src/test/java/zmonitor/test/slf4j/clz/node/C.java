@@ -6,11 +6,13 @@ package zmonitor.test.slf4j.clz.node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import zmonitor.test.clz.node.TestNode;
+
 /**
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class C extends Slf4jTestNode {
+public class C extends TestNode {
 	private static final Logger logger = LoggerFactory.getLogger(C.class);
 	
 	private String doC_mesgPtn;
@@ -18,7 +20,7 @@ public class C extends Slf4jTestNode {
 	
 	
 	
-	public C(Slf4jTestNode parent, Slf4jTestNode previousSibling,
+	public C(TestNode parent, TestNode previousSibling,
 			String doC_mesgPtn, Object[] doC_Arguments) {
 		super(parent, previousSibling);
 		this.doC_mesgPtn = doC_mesgPtn;
@@ -60,8 +62,8 @@ public class C extends Slf4jTestNode {
 			doC_mesgPtn = "doC() arg1:{}, arg2:{}";
 			doC_Arguments = new Object[]{"Ian Tsai", 32};
 		}
-		public Slf4jTestNode newNode(Slf4jTestNode parent,
-				Slf4jTestNode previousSibling) {
+		public TestNode newNode(TestNode parent,
+				TestNode previousSibling) {
 			return new C(parent, previousSibling, doC_mesgPtn, doC_Arguments);
 		}
 		

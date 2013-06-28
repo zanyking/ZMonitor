@@ -16,7 +16,7 @@
 		showId="true"
 		showType="false"
 		showClass="true"
-		showMessage="false">
+		showMessage="true">
 		
 	</monitor-sequence-handler>
 	

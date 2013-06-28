@@ -72,14 +72,6 @@ public class ZmonitorNativeAPI_TEST extends TestBase {
 			.select(selector) //Use JQuery Selector
 			.greaterThan(RangeRetriever.Default.END, 200L)		 
 			;
-		 
-//		 boolean anyPushMpWithException = mpSel.any(new Predicate<MonitorPoint>() {
-//				public boolean apply(MonitorPoint mp) {
-//					//TODO see if any message starts with "hello";
-//					return mp.getMessage().toString().indexOf("exception") >= 0;
-//				}
-//			});
-		
 		
 		MonitorPoint mp;
 		StringBuffer sb = new StringBuffer("Selector:\""+selector+"\" \n");

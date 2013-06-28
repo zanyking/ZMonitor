@@ -88,17 +88,19 @@ public class MatchState {
 			SelectorContext<E> newCtx){
 		
 		Result res = forward(Direction.INHERIT, inheritableSeq, newCtx, selector);
-		SelSequence firstChildPresentSeq;
-		SelSequence firstChildInheritableSeq;
 		
 		
-		firstChildPresentSeq = res.isForwarded ? 
+		SelSequence firstChildPresentSeq = res.isForwarded ? 
 			res.nextSeq : // got a match.  
 			inheritableSeq; // at least to be inherited
 		
-		firstChildInheritableSeq = firstChildPresentSeq ==null? 
-			firstChildPresentSeq : 
-			selector.getIfAny(firstChildPresentSeq.getInheritableIdx());
+		SelSequence firstChildInheritableSeq = null;
+		if(firstChildPresentSeq !=null){
+			firstChildInheritableSeq = 
+				(Direction.INHERIT.matchNext(firstChildPresentSeq))?
+				firstChildPresentSeq :
+				selector.getIfAny(firstChildPresentSeq.getInheritableIdx());
+		}
 		
 		return new MatchState( firstChildPresentSeq, firstChildInheritableSeq , selector);
 	}
@@ -115,8 +117,7 @@ public class MatchState {
 				newCtx.getParent().getMatchState(
 						selector.getSelectorIndex()).inheritableSeq;
 		
-		SelSequence nextSibPresentSeq = null;
-		SelSequence nextSibInheritableSeq = null;
+		
 		Result res;
 		SelSequence targetSeq = SelSequence.reachedEnd(presentSeq)?
 				Direction.SIBLING.backward(presentSeq, selector) : 
@@ -127,12 +128,17 @@ public class MatchState {
 		}else{// from parent direction to bean...
 			res = forward(Direction.INHERIT, parentInheritableSeq, newCtx, selector);
 		}
-		nextSibPresentSeq =
+		SelSequence nextSibPresentSeq =
 				SelSequence.greaterThan(res.nextSeq, parentInheritableSeq)?
 					res.nextSeq : parentInheritableSeq;
 
-		nextSibInheritableSeq =nextSibPresentSeq==null? null:
-			selector.getIfAny( nextSibPresentSeq.getInheritableIdx());
+		SelSequence nextSibInheritableSeq = null;		
+		if(nextSibPresentSeq !=null){
+			nextSibInheritableSeq = 
+				(Direction.INHERIT.matchNext(nextSibPresentSeq))?
+						nextSibPresentSeq :
+				selector.getIfAny(nextSibPresentSeq.getInheritableIdx());
+		}
 		
 		
 		MatchState mState = new MatchState( nextSibPresentSeq, nextSibInheritableSeq , selector);

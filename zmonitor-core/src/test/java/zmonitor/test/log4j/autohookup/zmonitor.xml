@@ -5,6 +5,9 @@
 		class="org.zmonitor.handler.EclipseConsoleMonitorSequenceHandler"/>
 	
 	
-	<log4j-conf></log4j-conf>
+	<log4j-conf autoHookUp="true">
+		<appender class="org.zmonitor.logger.log4j.ZMonitorAppender"
+			/>
 	
+	</log4j-conf>
 </zmonitor>

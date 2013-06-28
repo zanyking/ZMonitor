@@ -46,7 +46,6 @@ public class SimplSelection_TEST extends TestBase {
 	@Test
 	public void testSelection_Traverse() throws Exception{
 	
-		runCase();
 		
 		//1. Get the monitored result through ZMonitor TestBase API.
 		MonitoredResult mResult = this.getMonitoredResult();
@@ -75,7 +74,6 @@ public class SimplSelection_TEST extends TestBase {
 	
 	@Test
 	public void testSelection_Traverse$GreaterThan() throws Exception{
-		runCase();
 		
 		//1. Get the monitored result through ZMonitor TestBase API.
 		MonitoredResult mResult = this.getMonitoredResult();

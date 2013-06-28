@@ -118,7 +118,7 @@ public abstract class ZMonitorAppenderBase extends AppenderSkeleton{
 	 * @param message
 	 * @return
 	 */
-	protected TrackingContext newTrackingContext(LoggingEvent event,  Marker marker, String message){
+	protected TrackingContextBase newTrackingContext(LoggingEvent event,  Marker marker, String message){
 		TrackingContextBase ctx = new TrackingContextBase(Markers.TRACKER_NAME_LOG4J);
 		ctx.setMessage(message);
 		if (javaSourceLocationInfo) {
@@ -158,7 +158,7 @@ public abstract class ZMonitorAppenderBase extends AppenderSkeleton{
 	 * @param markerName
 	 * @return
 	 */
-	protected TrackingContext newTrackingContext(LoggingEvent event, Marker marker) {
+	protected TrackingContextBase newTrackingContext(LoggingEvent event, Marker marker) {
 		return newTrackingContext(event, marker, event.getRenderedMessage());
 	}
 	

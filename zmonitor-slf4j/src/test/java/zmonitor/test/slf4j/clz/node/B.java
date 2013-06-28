@@ -6,14 +6,16 @@ package zmonitor.test.slf4j.clz.node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import zmonitor.test.clz.node.TestNode;
+
 
 /**
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class B extends Slf4jTestNode {
+public class B extends TestNode {
 	private static final Logger logger = LoggerFactory.getLogger(B.class);
-	public B(Slf4jTestNode parent, Slf4jTestNode previousSibling) {
+	public B(TestNode parent, TestNode previousSibling) {
 		super(parent, previousSibling);
 	}
 
@@ -38,7 +40,7 @@ public class B extends Slf4jTestNode {
 	}
 	
 	public static final NodeFac B_FAC = new NodeFac(){
-		public Slf4jTestNode newNode(Slf4jTestNode parent, Slf4jTestNode previousSibling) {
+		public TestNode newNode(TestNode parent, TestNode previousSibling) {
 			return new B(parent, previousSibling);
 		}
 

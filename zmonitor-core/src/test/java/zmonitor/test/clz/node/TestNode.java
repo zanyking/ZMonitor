@@ -3,6 +3,7 @@
  */
 package zmonitor.test.clz.node;
 
+
 /**
  * @author Ian YT Tsai(Zanyking)
  *
@@ -36,7 +37,8 @@ public abstract class TestNode {
 		TestNode node = nodeFac.newNode(parent, previousSibling);
 		this.nextSibling = node;
 		return node;
-	}
+	}
+
 	public TestNode toFirstChild(NodeFac nodeFac){
 		TestNode node = nodeFac.newNode(this, null);
 		this.firstChild = node;
@@ -44,16 +46,20 @@ public abstract class TestNode {
 	}
 	
 	public void doNode(){
-		selfTask();
+		selfStart();
 		if(firstChild!=null){
 			firstChild.doNode();
-		}else if(nextSibling!=null){
+		}
+		selfEnd();
+		
+		if(nextSibling!=null){
 			nextSibling.doNode();
 		}
 	}
 	
 	
-	protected abstract void selfTask() ;
+	protected abstract void selfStart() ;
+	protected abstract void selfEnd() ;
 
 
 	/**

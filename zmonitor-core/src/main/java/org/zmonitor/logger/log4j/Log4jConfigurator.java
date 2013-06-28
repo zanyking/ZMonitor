@@ -1,3 +1,4 @@
+
 /**
  * 
  */
@@ -22,6 +23,13 @@ public class Log4jConfigurator extends ConfiguratorBase {
 	
 	public Log4jConfigurator() {
 		super(REL_LOG4J_CONF, REL_LOG4J_CONF, new AppenderTracker());
+		tracker.setPushMarcker(Markers.MK_PUSH_LOG4J);
+		tracker.setPopMarcker(Markers.MK_END_LOG4J);
+		tracker.setTrackingMarcker(Markers.MK_RECORD_LOG4J);
+	}
+	
+	public static Log4jConfigurator getInstance(){
+		return ZMonitorManager.getInstance().getBeanIfAny(Log4jConfigurator.class);
 	}
 
 	@Override

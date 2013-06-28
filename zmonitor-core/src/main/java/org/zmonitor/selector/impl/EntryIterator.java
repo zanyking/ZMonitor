@@ -104,12 +104,18 @@ public class EntryIterator<E> implements Iterator<Entry<E>> {
 	private int _index = -1;
 	
 	
+	private boolean printed;
 	/**
 	 * Return true if it has next component.
 	 */
 	public boolean hasNext() {
 		loadNext();
-		return _next != null;
+		boolean hasNext =  _next != null;
+		if(IS_DEBUG && !hasNext && !printed){
+			SelectorContext.printTree(_rootCtx, "  ");
+			printed = true;
+		}
+		return hasNext;
 	}
 	
 	/**
@@ -168,7 +174,7 @@ public class EntryIterator<E> implements Iterator<Entry<E>> {
 		return null;
 	}
 	
-	public static final boolean IS_DEBUG = false;
+	public static boolean IS_DEBUG = false;
 
 	
 	private SelectorContext<E> buildRootCtx() {

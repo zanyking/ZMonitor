@@ -4,6 +4,7 @@
 package org.zmonitor.logger;
 
 import org.zmonitor.TrackingContext;
+import org.zmonitor.marker.Marker;
 
 /**
  * @author Ian YT Tsai(Zanyking)
@@ -19,6 +20,32 @@ public abstract class TrackerBase {
 	protected String pushOp = ">>";
 	protected String popOp = "<<";
 	protected boolean eatOperator = true;
+	
+	
+	protected Marker pushMarcker;
+	protected Marker popMarcker;
+	protected Marker trackingMarcker;
+	
+	
+	
+	public Marker getPushMarcker() {
+		return pushMarcker;
+	}
+	public void setPushMarcker(Marker pushMarcker) {
+		this.pushMarcker = pushMarcker;
+	}
+	public Marker getPopMarcker() {
+		return popMarcker;
+	}
+	public void setPopMarcker(Marker popMarcker) {
+		this.popMarcker = popMarcker;
+	}
+	public Marker getTrackingMarcker() {
+		return trackingMarcker;
+	}
+	public void setTrackingMarcker(Marker recordMarcker) {
+		this.trackingMarcker = recordMarcker;
+	}
 	
 	public String getPushOp() {
 		return pushOp;

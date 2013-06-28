@@ -4,7 +4,6 @@
 package org.zmonitor.logger.log4j;
 
 import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.zmonitor.config.ConfigContext;
 import org.zmonitor.util.PropertySetter;
@@ -21,7 +20,7 @@ public class Driver {
 	 */
 	public static void hookUpCustomAppender(ConfigContext appenderCtx){
 		Logger root = Logger.getRootLogger();
-		ZMonitorAppenderBase log4jAppender;
+		ZMonitorAppenderBase log4jAppender;//default appender class
 		if(appenderCtx.getNode()==null){
 			//use default setting... 
 			log4jAppender = new ZMonitorAppender();
@@ -35,6 +34,11 @@ public class Driver {
 		}
 		log4jAppender.setThreshold(Level.DEBUG);
 		root.addAppender(log4jAppender);
+		// developer might want to implement an appender which is also a ZMBean.
+		// by now there's no benefit for this because there's no big
+		// infra-services that ZM provided.
+		
+//		ZMonitorManager.getInstance().accept(log4jAppender);
 	}
 	
 	
