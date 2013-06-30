@@ -1,10 +1,14 @@
 /**
  * 
  */
-package zmonitor.test.clz.node;
+package zmonitor.test.log4j.clz.node;
 
 import org.apache.log4j.Logger;
 import org.zmonitor.util.Strings;
+
+import zmonitor.test.clz.node.MessageFac;
+import zmonitor.test.clz.node.MessageTestNode;
+import zmonitor.test.clz.node.TestNode;
 
 
 /**

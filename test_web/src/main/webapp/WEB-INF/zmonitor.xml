@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<zmonitor uuid="manual_web_client_01">
+<zmonitor >
 	 
 
 	<agent-conf masterHost="localhost" masterPort="8799">
 	</agent-conf>
 	
-
-	<servlet-container-conf>
+	<log4j-conf autoHookUp="true">
+		<appender class="org.zmonitor.logger.log4j.ZMonitorAppender"/>	
+	</log4j-conf>
+	<web-conf>
 		<url-filer rule="not" mode="or">
 			<condition match="endWith" pattern=".dsp" />
 			<condition match="contains" pattern="/images/" />
@@ -22,28 +24,11 @@
 			<condition match="endWith" pattern=".gif" />
 			<condition match="endWith" pattern=".txt" />
 		</url-filer>
-	</servlet-container-conf>
-	<!--
-	 zk-interceptor-conf is used to configure the ZK Interceptor 
-	 if you are using ZK Framework in your Java web application. 
-	 -->
-	<!-- class="org.zkoss.monitor.web.zk.ZKInterceptorConfiguration" -->
-	<zk-interceptor-conf>
-		<property name="renderURIIntercepter" value="true"/>
-		<property name="renderExecutionInit" value="true"/>
-		<property name="renderBeforeSendEvent" value="true"/>
-		<property name="renderBeforePostEvent" value="true"/>
-		<property name="renderProcessEvent" value="true"/>
-		<property name="renderMonitorAsyncUpdate" value="true"/>
-	</zk-interceptor-conf>
-
-
-	<!-- *********** Java Object Socket streaming *********** -->
-	<!----> 	 
-	<timeline-handler name="transmission" 
-		class="org.zkoss.monitor.handler.TransmissionTimelineHandler"/>
-	 	
-
+	</web-conf>
+	
+	<monitor-sequence-handler name="console-handler" 
+		class="org.zmonitor.handler.EclipseConsoleMonitorSequenceHandler"/>
+	
 
 
 

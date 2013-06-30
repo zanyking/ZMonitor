@@ -51,8 +51,10 @@ public class ConfigSources {
 	 */
 	public static ConfigSource loadForJavaEEWebApp(ServletContext servCtx) throws IOException{
 		InputStreamConfigSource confSrc = new WebConfigSource(servCtx);
-		if(!confSrc.hasConfiguration())return confSrc;
-		return loadFromDefaultClassPath();
+		if(confSrc.hasConfiguration())
+			return confSrc;
+		else
+			return loadFromDefaultClassPath();
 	}
 	
 	/**

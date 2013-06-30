@@ -53,4 +53,14 @@
     <welcome-file>default.jsp</welcome-file>
     <welcome-file>index.zul</welcome-file>
   </welcome-file-list>
+  <servlet>
+    <description></description>
+    <display-name>DemoSevlet</display-name>
+    <servlet-name>DemoSevlet</servlet-name>
+    <servlet-class>webtest.demo.DemoSevlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>DemoSevlet</servlet-name>
+    <url-pattern>/DemoSevlet</url-pattern>
+  </servlet-mapping>
 </web-app>

@@ -106,8 +106,9 @@ public class ZMonitorServletFilter implements Filter {
 						new MonitorMetaBase(
 							MarkerFactory.getMarker("REQUEST_END"), TRACKER_NAME)));	
 			}finally{
-				if(isIgnitBySelf){// force end...
-					hReqMSLfManager.finishRequest((HttpServletRequest) req);
+				if (isIgnitBySelf) {// force ending, the monitoring suppose to
+									// be ended by previous pop...
+					hReqMSLfManager.finishRequestIfAny((HttpServletRequest) req);
 					HttpRequestContexts.dispose();	
 				}
 			}

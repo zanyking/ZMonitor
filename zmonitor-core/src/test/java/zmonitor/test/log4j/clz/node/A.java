@@ -1,9 +1,12 @@
 /**
  * 
  */
-package zmonitor.test.clz.node;
+package zmonitor.test.log4j.clz.node;
 
 import org.apache.log4j.Logger;
+
+import zmonitor.test.clz.node.TestNode;
+import zmonitor.test.clz.node.TestNode.NodeFac;
 
 /**
  * @author Ian YT Tsai(Zanyking)

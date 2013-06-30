@@ -52,9 +52,9 @@ public class HttpRequestMonitorLifecycleManager  implements MonitorLifecycleMana
 					this, req.getRequestURL().toString()));
 	}
 	
-	public void finishRequest(HttpServletRequest req){
+	public void finishRequestIfAny(HttpServletRequest req){
 		MonitorLifecycle lfcycle = (MonitorLifecycle) req.getAttribute(KEY_REQ_MSL);
-		if(lfcycle!=null && !lfcycle.isFinished()){
+		if(lfcycle!=null && !lfcycle.isFinished() && lfcycle.isMonitorStarted()){
 			lfcycle.finish();
 		}
 		req.removeAttribute(KEY_REQ_MSL);

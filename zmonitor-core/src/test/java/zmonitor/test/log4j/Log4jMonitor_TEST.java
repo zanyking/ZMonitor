@@ -17,9 +17,9 @@ import org.zmonitor.selector.impl.EntryIterator;
 import org.zmonitor.test.junit.Log4JTestBase;
 
 import zmonitor.test.TestUtils;
-import zmonitor.test.clz.node.A;
-import zmonitor.test.clz.node.D;
-import zmonitor.test.clz.node.E;
+import zmonitor.test.log4j.clz.node.A;
+import zmonitor.test.log4j.clz.node.D;
+import zmonitor.test.log4j.clz.node.E;
 
 /**
  * @author Ian YT Tsai(Zanyking)
@@ -44,7 +44,7 @@ public class Log4jMonitor_TEST extends Log4JTestBase{
 	 * |- A END
 	 * 
 	 */
-	protected void runCase() {
+	public void runCase() {
 		logger.debug(">> start testing...");
 		A root = new A();
 		root.toFirstChild(D.D_FAC.newFac(

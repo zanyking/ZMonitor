@@ -4,7 +4,4 @@
 	<monitor-sequence-handler name="console-LOG4J" 
 		class="org.zmonitor.handler.EclipseConsoleMonitorSequenceHandler"/>
 	
-	<logback-conf autoHookUp="true">
-		<appender class="zmonitor.test.logback.autohookup.DemoAppender" />
-	</logback-conf>
 </zmonitor>
