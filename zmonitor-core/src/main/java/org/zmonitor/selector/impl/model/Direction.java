@@ -15,19 +15,8 @@ import org.zmonitor.selector.impl.model.Selector.Combinator;
  *
  */
 public enum Direction {
-	INHERIT(CHILD, DESCENDANT) {// toFirstChild failed
-		public <E> SelSequence backward(SelSequence seq,  Selector selector) {
-			if(seq==null)return seq;
-			return selector.getIfAny(seq.getInheritableIdx());
-		}
-	},
-	SIBLING(ADJACENT_SIBLING, GENERAL_SIBLING) {// toNextSibling failed
-		public <E> SelSequence backward(SelSequence seq, Selector selector) {
-			if(seq==null)return seq;
-			return selector.getIfAny(seq.getTransitableIdx());
-		}
-		
-	};
+	INHERIT(CHILD, DESCENDANT),
+	SIBLING(ADJACENT_SIBLING, GENERAL_SIBLING);
 	
 	private Combinator nextCb;
 	private Combinator restCb;
@@ -62,11 +51,5 @@ public enum Direction {
 		if(seq==null)return selector.get(0);
 		return seq.getNext();
 	}
-	/**
-	 * 
-	 * @param seq
-	 * @param selector
-	 * @return
-	 */
-	public abstract<E> SelSequence backward(SelSequence seq, Selector selector);
+	
 }

@@ -13,11 +13,5 @@ import zmonitor.test.log4j.Log4jMonitor_TEST;
 		ZmonitorNativeAPI_TEST.class,
 		Log4jMonitor_TEST.class})
 public class AllTests {
-
-	
-	
-	
-	
-	
 	
 }

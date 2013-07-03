@@ -63,32 +63,7 @@ public class ParameterizedEntryIterator_TEST  extends TestBase {
 		
 		//1. Get the monitored result through ZMonitor TestBase API.
 		MonitoredResult mResult = this.getMonitoredResult();
-		
-		//2. Use Selection API to manipulate the Monitor Point Sequence. 
-		System.out.println("CURRENT SELECTOR is:"+selector);
-		System.out.println("mResult size:"+mResult.size());
-		MonitorSequence ms = mResult.get(0);
-		
-		EntryIterator<MonitorPoint> itor = 
-				new EntryIterator<MonitorPoint>(new MSWrapper(ms), selector, 
-						MPDefaultPseudoClassDefs.getDefaults());
-		
-		StringBuffer sb = new StringBuffer("testSelection_Selector: " +selector+
-				"\n");
-		sb.append("--------------------\n");
-		
-		int counter = 0;
-		while(itor.hasNext()){
-			counter++;
-			itor.next();
-			sb.append(itor.toString());
-			sb.append("--------------------\n");
-		}
-		System.out.println(sb);		
-		
-		SelectorContext.printTree(itor.getRoot(), "   ");
-		
-		Assert.assertEquals(selected, counter);
+		TestUtils.assertEntrySelector(selector, selected, mResult);
 	}
 
 	

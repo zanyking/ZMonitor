@@ -29,10 +29,10 @@ public class MatchState {
 	private final Selector selector;
 	
 	private MatchState(
-			SelSequence lvSeq,
+			SelSequence presentSeq,
 			SelSequence inheritedSeq, 
 			Selector selector) {
-		this.presentSeq = lvSeq;
+		this.presentSeq = presentSeq;
 		this.inheritableSeq = inheritedSeq;
 		this.selector = selector;
 	}
@@ -87,23 +87,48 @@ public class MatchState {
 	public<E> MatchState toFirstChild(
 			SelectorContext<E> newCtx){
 		
-		Result res = forward(Direction.INHERIT, inheritableSeq, newCtx, selector);
+		Result res = forwardToNext(Direction.INHERIT, inheritableSeq, newCtx, selector);
 		
 		
 		SelSequence firstChildPresentSeq = res.isForwarded ? 
 			res.nextSeq : // got a match.  
 			inheritableSeq; // at least to be inherited
 		
-		SelSequence firstChildInheritableSeq = null;
-		if(firstChildPresentSeq !=null){
-			firstChildInheritableSeq = 
-				(Direction.INHERIT.matchNext(firstChildPresentSeq))?
-				firstChildPresentSeq :
-				selector.getIfAny(firstChildPresentSeq.getInheritableIdx());
-		}
+		SelSequence firstChildInheritableSeq = findNewCtxInheritable(
+			firstChildPresentSeq, newCtx, res.isForwarded);
 		
 		return new MatchState( firstChildPresentSeq, firstChildInheritableSeq , selector);
 	}
+	
+	private <E> SelSequence findNewCtxInheritable(
+			SelSequence presentSeq, 
+			SelectorContext<E> newCtx, 
+			boolean presentIsAlreadyMatched){
+		
+		if(presentSeq==null){// presentIsAlreadyMatched must equals false.
+			return null;
+		}
+		
+		if(Direction.INHERIT.matchNext(presentSeq)&& 
+				(presentIsAlreadyMatched || 
+				newCtx.isEntryMatches(presentSeq))){
+			// if it's ">", need to check if newCtx matches
+			return presentSeq;
+		}
+			
+		SelSequence seq = selector.getIfAny(presentSeq.getInheritableIdx());
+		if(seq==null){
+			SelSequence first = selector.get(0);
+			boolean toFirst =
+				!SelSequence.reachedEnd(first)&&
+				Direction.INHERIT.isCbInSameDirection(first)&&
+				newCtx.isEntryMatches(first);
+			return toFirst? first : null;
+		}else{
+			return seq;
+		}
+	}
+	
 	/**
 	 *   NEXT_SIBLING - next sibling only
 	 *   REST_SIBLING - rest sibling
@@ -117,28 +142,27 @@ public class MatchState {
 				newCtx.getParent().getMatchState(
 						selector.getSelectorIndex()).inheritableSeq;
 		
-		
 		Result res;
-		SelSequence targetSeq = SelSequence.reachedEnd(presentSeq)?
-				Direction.SIBLING.backward(presentSeq, selector) : 
-				presentSeq;
+		SelSequence targetSeq = presentSeq;
 		
+		if(SelSequence.reachedEnd(presentSeq)){
+			targetSeq = backward(Direction.SIBLING, presentSeq, selector);
+			if(SelSequence.greaterThan(parentInheritableSeq, targetSeq))
+				targetSeq = parentInheritableSeq;
+		}
+
 		if(Direction.SIBLING.hasNext(targetSeq)){// use previous sibling's present Seq first.
-			res = forward(Direction.SIBLING, targetSeq, newCtx, selector);
+			res = forwardToNext(Direction.SIBLING, targetSeq, newCtx, selector);
 		}else{// from parent direction to bean...
-			res = forward(Direction.INHERIT, parentInheritableSeq, newCtx, selector);
+			res = forwardToNext(Direction.INHERIT, parentInheritableSeq, newCtx, selector);
 		}
 		SelSequence nextSibPresentSeq =
-				SelSequence.greaterThan(res.nextSeq, parentInheritableSeq)?
-					res.nextSeq : parentInheritableSeq;
+			SelSequence.greaterThan(res.nextSeq, parentInheritableSeq)?
+				res.nextSeq : 
+				parentInheritableSeq;
 
-		SelSequence nextSibInheritableSeq = null;		
-		if(nextSibPresentSeq !=null){
-			nextSibInheritableSeq = 
-				(Direction.INHERIT.matchNext(nextSibPresentSeq))?
-						nextSibPresentSeq :
-				selector.getIfAny(nextSibPresentSeq.getInheritableIdx());
-		}
+		SelSequence nextSibInheritableSeq = 
+			findNewCtxInheritable(nextSibPresentSeq, newCtx, false);
 		
 		
 		MatchState mState = new MatchState( nextSibPresentSeq, nextSibInheritableSeq , selector);
@@ -151,21 +175,28 @@ public class MatchState {
 	 * @param selector
 	 * @return
 	 */
-	public static <E> Result forward(Direction dir, SelSequence seq, SelectorContext<E> newCtx, Selector selector){
+	private static <E> Result forwardToNext(Direction dir, SelSequence seq, SelectorContext<E> newCtx, Selector selector){
 		SelSequence nextSeq = dir.getNext(seq, selector);
 		if(dir.hasNext(seq) && newCtx.isEntryMatches(nextSeq)){
 			return new Result(nextSeq, true);
 		}
-		return new Result(dir.backward(seq, selector), false); 
+		return new Result(backward(dir, seq, selector), false); 
 	}
-	
+	private static SelSequence backward(Direction dir, 
+			SelSequence seq,  Selector selector){
+		
+		if(seq==null)return seq;
+		return selector.getIfAny((dir==Direction.INHERIT)?
+				seq.getInheritableIdx():
+				seq.getTransitableIdx());
+	}
 	
 }
 
 class Result{
 	final SelSequence nextSeq;
-	
 	final boolean isForwarded;
+	
 	public Result(SelSequence nextSeq, boolean isForward) {
 		super();
 		this.nextSeq = nextSeq;
