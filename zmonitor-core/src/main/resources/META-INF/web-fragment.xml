@@ -24,7 +24,7 @@
 	 -->
 	<filter>
 		<filter-name>ZMonitorFilter</filter-name>
-		<filter-class>org.zmonitor.web.ZMonitorServletFilter</filter-class>
+		<filter-class>org.zmonitor.web.ZMonitorFilter</filter-class>
 	</filter>
 	
 	<filter-mapping>

@@ -3,7 +3,11 @@
  */
 package org.zmonitor.web;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.zmonitor.CustomConfigurable;
+import org.zmonitor.MarkerFactory;
+import org.zmonitor.MonitorMeta;
 import org.zmonitor.bean.ZMBeanBase;
 import org.zmonitor.config.ConfigContext;
 import org.zmonitor.config.ConfigContext.Visitor;
@@ -52,6 +56,12 @@ public class WebConfigurator extends ZMBeanBase implements Configurator {
 		
 	}
 	
+	public MonitorMeta newMonitorMeta(String markerStr, HttpServletRequest req){
+		//for zmonitor-webtest purpose.
+		
+		return new WebMonitorMeta(
+				MarkerFactory.getMarker(markerStr), req);
+	}
 	
 	private void initUrlFilter(ConfigContext webConf){
 		ConfigContext urlFilterCtx = webConf.toNode(REL_URL_FILTER);

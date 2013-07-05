@@ -42,14 +42,13 @@ public abstract class TestBase {
 	protected InternalTestMonitorSequenceHandler newInstance(){
 		return new InternalTestMonitorSequenceHandler(
 				ID_INTERNAL_TEST_MS_HANDLER);
-		
 	}
 	
 	protected void init() throws Exception{
 		ZMonitorManager aZMonitorManager = new ZMonitorManager();
 		
 		String packagePath = this.getClass().getPackage().getName().replace('.', '/');
-		URL url =  findSettingFromPackagePath(packagePath);
+		URL url =  TestBaseUtils.findSettingFromPackagePath(packagePath);
 		if(url==null){
 			throw new InitFailureException("cannot find Configuration:["+
 					ConfigSource.ZMONITOR_XML+
@@ -109,32 +108,13 @@ public abstract class TestBase {
 	}
 	
 
-	protected void finishMonitorLifecycle(){
+	private void finishMonitorLifecycle(){
 		MonitorLifecycle lifecycle = ZMonitorManager.getInstance().getLifecycleManager().getLifecycle();
 		if(lifecycle.isMonitorStarted()&&!lifecycle.isFinished())
 			lifecycle.finish();//force flush current monitorSequence.
 	}
 
-	/**
-	 * a.b -> a/b/zm.xml
-	 * a -> a/zm.xml
-	 * 
-	 * 
-	 * @param packagePath must be "a/b/c", not "a.b.c"
-	 */
-	private static URL findSettingFromPackagePath(String packagePath){
-		URL url = Loader.getResource(packagePath+"/"+ConfigSource.ZMONITOR_XML);
-		if(url!=null)return url;
-		
-		int lastIdx = packagePath.lastIndexOf(".");
-		if(lastIdx<=0)
-			return Loader.getResource(ConfigSource.ZMONITOR_XML);
-		
-		String parent = packagePath.substring(0, lastIdx);
-		
-		return (url==null)? findSettingFromPackagePath(parent) :
-			url;
-	}
+	
 
 	protected InternalTestMonitorSequenceHandler getInternalMSHandler(){
 		return ZMonitorManager.getInstance().getBeanById(ID_INTERNAL_TEST_MS_HANDLER);

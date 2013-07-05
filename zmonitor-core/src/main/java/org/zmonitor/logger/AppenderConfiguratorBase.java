@@ -83,7 +83,7 @@ public abstract class AppenderConfiguratorBase extends ConfiguratorBase {
 	 * <b>NOTICE:</b><br>
 	 * Due to class loading sequence and module initialization ordering, 
 	 * Auto hook up can only worked while ZMonitorManager is initialized by
-	 * others (e.g. {@link org.zmonitor.web.ZMonitorServletFilter}), and log4j
+	 * others (e.g. {@link org.zmonitor.web.ZMonitorFilter}), and log4j
 	 * Factory is already started.
 	 * @param autoHookUp
 	 *            set to true to ask ZMonitor to insert a custom appender to

@@ -69,7 +69,7 @@ public class Markers {
 			if(marker==null){
 				return MK_ZM_WEB;
 			}
-			return marker;// a marker which conceptual tracker is: org.zmonitor.web.ZMonitorServletFilter. 
+			return marker;// a marker which conceptual tracker is: org.zmonitor.web.ZMonitorFilter. 
 		}
 		
 		throw new IllegalArgumentException(" unsupported tracker: "+trackerName);

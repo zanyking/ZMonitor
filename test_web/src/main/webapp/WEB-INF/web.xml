@@ -9,7 +9,7 @@
   <display-name>ZMonitor_demos</display-name>
   <filter>
     <filter-name>zMonitor</filter-name>
-    <filter-class>org.zmonitor.web.ZMonitorServletFilter</filter-class>
+    <filter-class>org.zmonitor.web.ZMonitorFilter</filter-class>
   </filter>
   <filter-mapping>
     <filter-name>zMonitor</filter-name>

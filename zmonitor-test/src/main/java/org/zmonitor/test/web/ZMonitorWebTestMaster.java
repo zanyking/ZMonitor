@@ -3,6 +3,9 @@
  */
 package org.zmonitor.test.web;
 
+import java.util.UUID;
+
+
 /**
  * @author Ian YT Tsai(Zanyking)
  *
@@ -25,9 +28,15 @@ public final class ZMonitorWebTestMaster {
 	 */
 	public RequestResult awaitForMSTransmission(RequestObject req, long timeout) {
 		Thread thread = Thread.currentThread();// get caller thread.
+		UUID uuid = UUID.randomUUID();
+		long millis = System.currentTimeMillis();
 		
-		//TODO: 
+		//TODO
+		//1. 
+		
+		
 		return null;
 	}
 
 }
+
