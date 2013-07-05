@@ -54,7 +54,12 @@ public class HttpRequestMonitorLifecycleManager  implements MonitorLifecycleMana
 	
 	public void finishRequestIfAny(HttpServletRequest req){
 		MonitorLifecycle lfcycle = (MonitorLifecycle) req.getAttribute(KEY_REQ_MSL);
-		if(lfcycle!=null && !lfcycle.isFinished() && lfcycle.isMonitorStarted()){
+		if(lfcycle!=null && 
+				!lfcycle.isFinished() && 
+				lfcycle.isMonitorStarted()){
+			// force terminate the current MonitorLifecycle if any.
+			// normally, the MonitorLifecycle should be ended by previous pop, but if developer 
+			// doesn't operate the stack properly, then this fail safe mechanism will be triggered.
 			lfcycle.finish();
 		}
 		req.removeAttribute(KEY_REQ_MSL);

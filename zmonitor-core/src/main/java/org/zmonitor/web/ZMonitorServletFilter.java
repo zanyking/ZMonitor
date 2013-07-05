@@ -96,7 +96,7 @@ public class ZMonitorServletFilter implements Filter {
 			
 			ZMonitor.push(newTrackingContext("-> "+getQueryURI(req), 
 					new WebMonitorMeta(
-						MarkerFactory.getMarker("REQUEST_START"), req)));
+						MarkerFactory.getMarker("request-start"), req)));
 			
 			filterChain.doFilter(req, res);
 		}finally{
@@ -104,10 +104,9 @@ public class ZMonitorServletFilter implements Filter {
 			try{
 				ZMonitor.pop(newTrackingContext("<- END", 
 						new MonitorMetaBase(
-							MarkerFactory.getMarker("REQUEST_END"), TRACKER_NAME)));	
+							MarkerFactory.getMarker("request-end"), TRACKER_NAME)));	
 			}finally{
-				if (isIgnitBySelf) {// force ending, the monitoring suppose to
-									// be ended by previous pop...
+				if (isIgnitBySelf) {
 					hReqMSLfManager.finishRequestIfAny((HttpServletRequest) req);
 					HttpRequestContexts.dispose();	
 				}
@@ -116,7 +115,7 @@ public class ZMonitorServletFilter implements Filter {
 	}
 	
 	private static TrackingContext newTrackingContext(String mesg, MonitorMeta mm){
-		TrackingContextBase webCtx = new TrackingContextBase("web");
+		TrackingContextBase webCtx = new TrackingContextBase(TRACKER_NAME);
 		webCtx.setMonitorMeta(mm);
 		webCtx.setMessage(mesg);
 		return webCtx;

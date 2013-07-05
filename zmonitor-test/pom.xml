@@ -12,6 +12,8 @@
 		<logback-classic.version>1.0.11</logback-classic.version>
 		<log4j.version>1.2.17</log4j.version>
 		<servlet.version>2.4</servlet.version>
+		<jmeter.version>2.9</jmeter.version>
+		<junit.version>4.11</junit.version>
 		<packname>-${maven.build.timestamp}</packname>
 	</properties>
 
@@ -36,9 +38,14 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.2.5</version>
+		</dependency>
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.11</version>
+			<version>${junit.version}</version>
 		</dependency>
 		
 		<dependency>
