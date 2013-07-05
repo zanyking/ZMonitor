@@ -2,10 +2,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.zmonitor</groupId>
-	<artifactId>zmonitor-test</artifactId>
+	<artifactId>zmonitor-webtest</artifactId>
 	<version>0.6.0</version>
-	<name>zmonitor-test</name>
-	<description>ZMonitor Test Suite</description>
+	<name>zmonitor-webtest</name>
+	<description>ZMonitor Java Web Test Suite</description>
 
 	<properties>
 		<slf4j.version>1.7.5</slf4j.version>

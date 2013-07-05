@@ -17,6 +17,7 @@ import org.zmonitor.util.PropertySetter;
 import org.zmonitor.web.filter.Condition;
 import org.zmonitor.web.filter.DefaultUrlFilter;
 import org.zmonitor.web.filter.UrlFilter;
+import org.zmonitor.web.test.TestConfig;
 
 /**
  * @author Ian YT Tsai(Zanyking)
@@ -25,6 +26,7 @@ import org.zmonitor.web.filter.UrlFilter;
 public class WebConfigurator extends ZMBeanBase implements Configurator {
 	
 	private static final String REL_WEB_CONF = "web-conf";
+	private static final String REL_TEST_CONF = "test-conf";
 	private static final String REL_URL_FILTER = "url-filer";
 	private static final String REL_CONDITION = "condition";
 	private static final String ID_ZMBEAN_WEB_CONF = REL_WEB_CONF;
@@ -35,7 +37,7 @@ public class WebConfigurator extends ZMBeanBase implements Configurator {
 	
 
 	private UrlFilter filter;
-	
+	private TestConfig fTestConfig = new TestConfig();
 	/**
 	 * 
 	 * @param urlStr
@@ -54,15 +56,17 @@ public class WebConfigurator extends ZMBeanBase implements Configurator {
 		//TODO: Be careful of introducing sub packages stuff inside, it might not work.  
 		initUrlFilter(webConf);
 		
-	}
-	
-	public MonitorMeta newMonitorMeta(String markerStr, HttpServletRequest req){
-		//for zmonitor-webtest purpose.
+		ConfigContext testConfCtx = webConf.toNode(REL_TEST_CONF);
+		if(testConfCtx.getNode()==null)return;//use default...
+		initWebTestConf(testConfCtx);
 		
-		return new WebMonitorMeta(
-				MarkerFactory.getMarker(markerStr), req);
 	}
 	
+	private void initWebTestConf(ConfigContext testConfCtx) {
+		testConfCtx.applyAttributes(new PropertySetter(fTestConfig));
+		fTestConfig.init(testConfCtx.getManager());
+	}
+
 	private void initUrlFilter(ConfigContext webConf){
 		ConfigContext urlFilterCtx = webConf.toNode(REL_URL_FILTER);
 		if(urlFilterCtx.getNode()==null)return;
@@ -104,5 +108,10 @@ public class WebConfigurator extends ZMBeanBase implements Configurator {
 		return filter;
 	}
 	
+	public MonitorMeta newMonitorMeta(String markerStr, HttpServletRequest req){
+		//for zmonitor-webtest purpose.
 		
+		return new WebMonitorMeta(
+				MarkerFactory.getMarker(markerStr), req);
+	}
 }

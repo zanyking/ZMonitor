@@ -1,26 +1,23 @@
-/**JObjSStreamCommunicator.java
- * 2011/10/14
+/**
  * 
  */
-package org.zkoss.monitor.impl;
+package org.zmonitor.web.test;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.OutputStream;
-import java.io.Serializable;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
+import org.zmonitor.ZMonitorManager;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.message.Callback;
-import org.zmonitor.message.Communicator;
 import org.zmonitor.message.Message;
-import org.zmonitor.message.MessageHandler;
 import org.zmonitor.message.Parcel;
-import org.zmonitor.message.Receiever;
 import org.zmonitor.message.Transmitter;
 import org.zmonitor.util.Streams;
 import org.zmonitor.util.concurrent.AsyncGroupingPipe;
@@ -29,52 +26,79 @@ import org.zmonitor.util.concurrent.AsyncGroupingPipe;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class JObjSStreamCommunicator implements Communicator {
+public class TestConfig {
+	private String requestUuidParam = "webTestUuid";
+	private boolean activate = true;
+	private String testerHost = "localhost";
+	private int testerPort = 9755;
+	private String runtimeId; 
+	private long waitMillis = -1;
 	
+	public void init(ZMonitorManager zmMgmt) {
+		if(!activate)return;
+		
+		if(runtimeId==null){
+			RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
+			runtimeId = runtimeMXBean.getName();
+		}
+		TransmissionMonitorSequenceHandler handler = 
+				new TransmissionMonitorSequenceHandler();
+		handler.setTransmitter(new InnerTransmitter());
+		zmMgmt.addMonitorSequenceHandler(handler);
+	}
+	
+	public String getRequestUuidParam() {
+		return requestUuidParam;
+	}
+
+	public void setRequestUuidParam(String uuidParam) {
+		this.requestUuidParam = uuidParam;
+	}
+
+	public boolean isActivate() {
+		return activate;
+	}
+
+	public void setActivate(boolean activate) {
+		this.activate = activate;
+	}
+
+	public String getTesterHost() {
+		return testerHost;
+	}
+
+	public void setTesterHost(String host) {
+		this.testerHost = host;
+	}
+
+	public int getTesterPort() {
+		return testerPort;
+	}
+
+	public void setTesterPort(int testerPort) {
+		this.testerPort = testerPort;
+	}
+	
+
+	public long getWaitMillis() {
+		return waitMillis;
+	}
+
+	public void setWaitMillis(long waitMillis) {
+		this.waitMillis = waitMillis;
+	}
+
+	public String getRuntimeId() {
+		return runtimeId;
+	}
+	public void setRuntimeId(String runtimeId) {
+		this.runtimeId = runtimeId;
+	}
+
+
+
 	private static final int TRANSMITTER_BUFFER_SIZE = 4 * 1024;
 	protected static final int TIME_OUT_VALUE = 3000;
-	
-	private final String host;
-	private final int port;	
-	private InnerTransmitter transmitter;
-	private InnerReceiver receiver;
-	private String clientId;//tunnel info 
-	private int threshold;
-	private long waitMillis = -1;
-	/**
-	 * 
-	 * @param zMgmt
-	 */
-	public JObjSStreamCommunicator( String host, int port){
-		this.host = host;
-		this.port = port;
-		transmitter = new InnerTransmitter();
-		receiver = new InnerReceiver();
-	}
-	/* (non-Javadoc)
-	 * @see org.zmonitor.message.Communicator#getTransmitter()
-	 */
-	public Transmitter getTransmitter() {
-		return transmitter;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.zmonitor.message.Communicator#getReceiever()
-	 */
-	public Receiever getReceiever() {
-		return receiver;
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public static Receiever newReceiever(){
-		return new InnerReceiver();
-	}
-
-	
-	private final AtomicInteger atomicInt = new AtomicInteger();
 	/**
 	 * 
 	 * @author Ian YT Tsai(Zanyking)
@@ -85,11 +109,11 @@ public class JObjSStreamCommunicator implements Communicator {
 		private AsyncGroupingPipe<Message> asyncGroupPipe;
 		
 		InnerTransmitter(){ 
-			asyncGroupPipe = new AsyncGroupingPipe<Message>(threshold, waitMillis,
+			asyncGroupPipe = new AsyncGroupingPipe<Message>(0, waitMillis,
 					new AsyncGroupingPipe.Executor<Message>() {
 				private byte[] buffer = new byte[TRANSMITTER_BUFFER_SIZE];
 				
-				public void doSend(List<Message> mesgs) throws Exception{
+				public void flush(List<Message> mesgs) throws Exception{
 					// TODO: Marshalling timeline to timeline-service socket.
 					 
 					// 1. Open a socket to remote server.
@@ -103,13 +127,14 @@ public class JObjSStreamCommunicator implements Communicator {
 						
 						socket = new Socket();
 						socket.bind(null);
-						socket.connect(new InetSocketAddress(host ,port), TIME_OUT_VALUE);	
-						System.out.println("opening Client socket at:"+socket.getLocalPort()+", transport "+mesgs.size()+" timelines");
+						socket.connect(new InetSocketAddress(testerHost ,testerPort), TIME_OUT_VALUE);	
+						System.out.println("opening Client socket at:"+socket.getLocalPort()+
+								", transport "+mesgs.size()+" timelines");
 						
 						// 0. Initialize a parcel for metaInfo and Messages
 						Parcel p = new Parcel();
 						p.add(mesgs);
-						p.setAgentId(clientId);
+						p.setAgentId(runtimeId);
 						byte[] data = Streams.serialize(p); 
 						
 //						flushData(data, new FileOutputStream("C:\\ZM_LOG\\zmonitor_dosend_" +
@@ -134,7 +159,8 @@ public class JObjSStreamCommunicator implements Communicator {
 						try {
 							if(socket!=null)socket.close();
 						} catch (IOException e) {
-							ZMLog.warn(e, "falid to close socket properly, host:"+host+", port:"+port);
+							ZMLog.warn(e, "falid to close socket properly, host:"+
+									testerHost+", port:"+testerPort);
 						}
 					}
 				}
@@ -170,40 +196,4 @@ public class JObjSStreamCommunicator implements Communicator {
 			buffer = new byte[TRANSMITTER_BUFFER_SIZE];
 		Streams.flush(ain, out, buffer);
 	}
-	
-	/**
-	 * 
-	 * @author Ian YT Tsai(Zanyking)
-	 *
-	 */
-	private static class InnerReceiver implements Receiever{
-		private MessageHandler fMessageHandler;
-		
-		public void setHandler(MessageHandler handler) {
-			fMessageHandler = handler;
-		}
-
-		public Message handle(Message req){
-			Serializable respContent = null;
-			try {
-				respContent = 
-					RegisteredMessageManager.invoke(req, fMessageHandler); 
-					
-			} catch (Exception e) {
-				respContent = e;
-			}
-			Message respMesg = 
-				RegisteredMessageManager.generateAR(req, respContent);
-			
-			return respMesg;
-		}
-	}
-}//end of class...
-
-
-
-
-
-
-
-
+}

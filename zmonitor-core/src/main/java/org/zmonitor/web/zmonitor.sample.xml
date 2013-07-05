@@ -10,10 +10,15 @@
 		<appender class="org.zmonitor.logger.log4j.ZMonitorAppender"/>	
 	</log4j-conf>
 	<web-conf>
-		<test-conf activate="true" 
-			uuidParam="zmsUuid"
-			port="9755" 
-			/> 
+		<!-- 
+			waitMillis = -1;
+		 -->
+		<test-conf 
+			activate="true" 
+			requestUuidParam="webTestUuid"
+			testerHost="localhost"
+			testerPort="9755"/>
+			 
 		<url-filer rule="not" mode="or">
 			<condition match="endWith" pattern=".dsp" />
 			<condition match="contains" pattern="/images/" />

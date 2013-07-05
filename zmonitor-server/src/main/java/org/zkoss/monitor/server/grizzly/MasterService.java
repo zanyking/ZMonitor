@@ -15,7 +15,7 @@ import org.glassfish.grizzly.filterchain.NextAction;
 import org.glassfish.grizzly.filterchain.TransportFilter;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
-import org.zkoss.monitor.impl.JObjSStreamCommunicator;
+import org.zkoss.monitor.impl.JObjStreamCommunicator;
 import org.zmonitor.message.Message;
 import org.zmonitor.message.MessageHandler;
 import org.zmonitor.message.Parcel;
@@ -112,7 +112,7 @@ public class MasterService {
 	 *
 	 */
 	public static class ParcelFilter extends BaseFilter{
-		final Receiever receiever = JObjSStreamCommunicator.newReceiever();
+		final Receiever receiever = JObjStreamCommunicator.newReceiever();
 		/**
 		 * 
 		 * @param handler

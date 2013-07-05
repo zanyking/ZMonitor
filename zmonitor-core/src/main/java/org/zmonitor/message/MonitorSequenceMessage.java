@@ -1,7 +1,3 @@
-/**HandleTimelineMessage.java
- * 2011/10/14
- * 
- */
 package org.zmonitor.message;
 
 import java.util.ArrayList;
@@ -14,28 +10,24 @@ import org.zmonitor.MonitorSequence;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class NewTimelineMessage extends Message implements Iterable<MonitorSequence>{
+public class MonitorSequenceMessage extends Message implements Iterable<MonitorSequence>{
 	private static final long serialVersionUID = 196165525987720297L;
 	
-	private final List<MonitorSequence> timelines; 
-	
-	public NewTimelineMessage(){
-		timelines = new ArrayList<MonitorSequence>(30);
-	}
+	private final List<MonitorSequence> mss = new ArrayList<MonitorSequence>(30);
 	
 	public void add(MonitorSequence tl){
-		timelines.add(tl);
+		mss.add(tl);
 	}
 	
 	public void add(List<MonitorSequence> tls){
-		timelines.addAll(tls);
+		mss.addAll(tls);
 	}
 
 	public List<MonitorSequence> getAll(){
-		return timelines;
+		return mss;
 	}
 	
 	public Iterator<MonitorSequence> iterator(){
-		return timelines.iterator();
+		return mss.iterator();
 	}
 }

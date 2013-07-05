@@ -13,7 +13,7 @@ import org.zmonitor.util.vtree.VersionTree;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class VersionTreeTimelineHandler extends ZMBeanBase implements MonitorSequenceHandler {
+public class VersionTreeMonitorSequenceHandler extends ZMBeanBase implements MonitorSequenceHandler {
 	
 	private VersionTree versionTree = new VersionTree();
 	

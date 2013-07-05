@@ -46,7 +46,7 @@ public class AsyncGroupingPipe<T> {
 						
 						boolean shouldRemove = false;
 						try {
-							exec.doSend(workingList);
+							exec.flush(workingList);
 							shouldRemove = true;
 						} catch (Exception e) {
 							shouldRemove = exec.failover(e, workingList);
@@ -128,7 +128,7 @@ public class AsyncGroupingPipe<T> {
 		 * implementor should throw exception and handle the mass 
 		 * through {@link AsyncGroupingPipe#failover(Exception)}
 		 */
-		public void doSend(List<T> objs) throws Exception;
+		public void flush(List<T> objs) throws Exception;
 		/**
 		 * 
 		 * @param e

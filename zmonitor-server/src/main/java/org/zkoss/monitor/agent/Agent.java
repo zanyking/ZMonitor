@@ -4,7 +4,7 @@
  */
 package org.zkoss.monitor.agent;
 
-import org.zkoss.monitor.impl.JObjSStreamCommunicator;
+import org.zkoss.monitor.impl.JObjStreamCommunicator;
 import org.zmonitor.CustomConfigurable;
 import org.zmonitor.bean.ZMBeanBase;
 import org.zmonitor.config.ConfigContext;
@@ -57,7 +57,7 @@ public class Agent extends ZMBeanBase implements Communicator, CustomConfigurabl
 	}
 	
 	public void configure(ConfigContext webConf) {
-		fCommunicator = new JObjSStreamCommunicator(host, port);
+		fCommunicator = new JObjStreamCommunicator(host, port);
 	}
 	
 

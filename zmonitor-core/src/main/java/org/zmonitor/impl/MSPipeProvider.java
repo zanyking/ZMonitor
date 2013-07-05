@@ -128,7 +128,7 @@ public class MSPipeProvider {
 					waitMillis,
 					new AsyncGroupingPipe.Executor<MonitorSequence>() {
 
-						public void doSend(List<MonitorSequence> tls)
+						public void flush(List<MonitorSequence> tls)
 								throws Exception {
 							
 							List<MonitorSequenceHandler> handlers = 

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.zmonitor.test.web;
+package org.zmonitor.webtest;
 
 import java.net.URL;
 import java.util.UUID;

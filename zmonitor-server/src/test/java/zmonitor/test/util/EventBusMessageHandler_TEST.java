@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.zkoss.monitor.server.EventBusMessageHandler;
 import org.zkoss.monitor.server.MessageEvent;
 import org.zmonitor.message.Message;
-import org.zmonitor.message.NewTimelineMessage;
+import org.zmonitor.message.MonitorSequenceMessage;
 import org.zmonitor.message.StringMessage;
 
 
@@ -24,7 +24,7 @@ public class EventBusMessageHandler_TEST {
 		handler.addMessageEventListener(new EvtListener1());
 		handler.addMessageEventListener(new EvtListener2());
 		handler.handle(new StringMessage("This is a String!"), true);
-		handler.handle(new NewTimelineMessage(), false);
+		handler.handle(new MonitorSequenceMessage(), false);
 	}
 
 	
@@ -36,7 +36,7 @@ public class EventBusMessageHandler_TEST {
 			System.out.println(">>> nor this one~");
 		}
 		
-		public void onAddTimeline(MessageEvent<NewTimelineMessage> evt){
+		public void onAddTimeline(MessageEvent<MonitorSequenceMessage> evt){
 			System.out.println(">>> onAddTimeline:: MessageEvent<NewTimelineMessage>");
 		}
 		public void onString(MessageEvent<StringMessage> evt){
@@ -54,7 +54,7 @@ public class EventBusMessageHandler_TEST {
 		public void Fxxk(String kk){
 			System.out.println(">>> nor this one~");
 		}
-		public void onAddTimeline(MessageEvent<NewTimelineMessage> evt){
+		public void onAddTimeline(MessageEvent<MonitorSequenceMessage> evt){
 			System.out.println(">>> EvtListener2:onAddTimeline:: MessageEvent<NewTimelineMessage>");
 		}
 		
