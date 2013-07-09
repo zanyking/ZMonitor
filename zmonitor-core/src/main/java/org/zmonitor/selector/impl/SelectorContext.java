@@ -79,15 +79,29 @@ public class SelectorContext<E> implements MatchCtx<E> {
 		return matchStateArray[selectorIndex];
 	}
 	
-	
+	/**
+	 * 
+	 * @param entry
+	 * @param selectors
+	 * @param defs
+	 * @return
+	 * @throws TerminateMatchException
+	 */
 	public static<E> SelectorContext<E> toRoot(Entry<E> entry, 
 			List<Selector> selectors, 
 			Map<String, PseudoClassDef> defs){
 		SelectorContext<E> root = new SelectorContext<E>(selectors, defs, entry);
+		int counter = 0;
 		for(Selector selector : selectors){
-			root.matchStateArray[selector.getSelectorIndex()] = 
-					MatchState.toRoot(root, selector);
+			try{
+				root.matchStateArray[selector.getSelectorIndex()] = 
+						MatchState.toRoot(root, selector);	
+			}catch(TerminateMatchException e){
+				counter++;
+			}
 		}
+		if(counter==selectors.size())
+			throw new TerminateMatchException();
 		return root;
 	}
 	
@@ -97,11 +111,18 @@ public class SelectorContext<E> implements MatchCtx<E> {
 				entry.getFirstChild(), this, null);
 		// init matchStateArray...
 		int selIdx;
+		int counter = 0;
 		for(Selector selector : selectors){
 			selIdx = selector.getSelectorIndex();
-			firstChild.matchStateArray[selIdx] = 
-				this.matchStateArray[selIdx].toFirstChild(firstChild);
+			try{
+				firstChild.matchStateArray[selIdx] = 
+						this.matchStateArray[selIdx].toFirstChild(firstChild);
+			}catch(TerminateMatchException e){
+				counter++;
+			}
 		}
+		if(counter==selectors.size())
+			throw new TerminateMatchException();
 		return firstChild;
 	}
 	
@@ -110,11 +131,18 @@ public class SelectorContext<E> implements MatchCtx<E> {
 				entry.getNextSibling(), this.getParent(), this);
 		// init matchStateArray...
 		int selIdx;
+		int counter = 0;
 		for(Selector selector : selectors){
 			selIdx = selector.getSelectorIndex();
-			nextSibling.matchStateArray[selIdx] = 
-				this.matchStateArray[selIdx].toNextSibling(nextSibling);
+			try{
+				nextSibling.matchStateArray[selIdx] = 
+						this.matchStateArray[selIdx].toNextSibling(nextSibling);
+			}catch(TerminateMatchException e){
+				counter++;
+			}
 		}
+		if(counter==selectors.size())
+			throw new TerminateMatchException();
 		return nextSibling;
 	}
 	

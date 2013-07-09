@@ -75,7 +75,6 @@ public class JObjStreamCommunicator implements Communicator {
 	}
 	
 	
-	private final AtomicInteger atomicInt = new AtomicInteger();
 	/**
 	 * 
 	 * @author Ian YT Tsai(Zanyking)
@@ -140,7 +139,10 @@ public class JObjStreamCommunicator implements Communicator {
 					}
 				}
 				public boolean failover(Exception e, List<Message> workingList) {
-					e.printStackTrace();
+					if(ZMLog.isDebug()){
+						ZMLog.warn(e, "in InnerTransmitter::failover()");
+					}
+					
 					for(Message regMesg: workingList){
 						regManager.acknowledge(regMesg, e);	
 					}

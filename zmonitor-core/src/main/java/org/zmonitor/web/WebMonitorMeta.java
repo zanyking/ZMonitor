@@ -3,6 +3,8 @@
  */
 package org.zmonitor.web;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.zmonitor.MonitorMeta;
@@ -67,6 +69,9 @@ public class WebMonitorMeta extends MonitorMetaBase{
 
 	public String getQueryStr() {
 		return queryStr;
+	}
+	public Map<String, String> getQuery() {
+		return WebUtils.toMap(queryStr);
 	}
 
 	public String getRemoteUser() {

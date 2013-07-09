@@ -34,6 +34,11 @@ public class SelectorParser_TEST {
 		printAllTockens(".A ~ .B + .C", 3);
 	}
 	
+//	@Test
+//	public void test_terminator(){
+//		printAllTockens("@[] ~ .B + .C", 3);
+//	}
+	
 	@Test
 	public void test_complex(){
 		printAllTockens(".A .B ~ .C", 3);

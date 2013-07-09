@@ -2,7 +2,8 @@
 
 <zmonitor >
 	 
-
+ 	<log-device debug="true"/>
+	 	
 	<agent-conf masterHost="localhost" masterPort="8799">
 	</agent-conf>
 	
