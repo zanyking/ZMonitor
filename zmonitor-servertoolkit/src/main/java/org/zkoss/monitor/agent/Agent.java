@@ -4,13 +4,13 @@
  */
 package org.zkoss.monitor.agent;
 
-import org.zkoss.monitor.impl.JObjStreamCommunicator;
 import org.zmonitor.CustomConfigurable;
 import org.zmonitor.bean.ZMBeanBase;
 import org.zmonitor.config.ConfigContext;
 import org.zmonitor.message.Communicator;
 import org.zmonitor.message.Receiever;
 import org.zmonitor.message.Transmitter;
+import org.zmonitor.message.impl.JObjStreamCommunicator;
 
 /**
  * @author Ian YT Tsai(Zanyking)

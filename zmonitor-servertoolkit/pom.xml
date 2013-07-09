@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.zmonitor</groupId>
-	<artifactId>zmonitor-server</artifactId>
+	<artifactId>zmonitor-servertoolkit</artifactId>
 	<version>0.6.0</version>
 	<description>a simple server based on grizzly to serve multiple zmonitor agent</description>
 	<packaging>jar</packaging>

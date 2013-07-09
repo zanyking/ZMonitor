@@ -3,10 +3,26 @@
  */
 package org.zmonitor.webtest;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Future;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.HttpParams;
 import org.junit.After;
 import org.junit.Before;
 import org.zmonitor.InitFailureException;
@@ -26,14 +42,11 @@ import org.zmonitor.test.junit.TestBaseUtils;
 public abstract class WebTestBase {
 	
 	
-	
-	
-	
 	protected void initZMonitorManager() throws Exception{
 		ZMonitorManager aZMonitorManager = new ZMonitorManager();
 		
 		String packagePath = this.getClass().getPackage().getName().replace('.', '/');
-		URL url =  TestBaseUtils.findSettingFromPackagePath(packagePath);
+		URL url =  TestBaseUtils.findSetting(packagePath);
 		if(url==null){
 			throw new InitFailureException("cannot find Configuration:["+
 					ConfigSource.ZMONITOR_XML+
@@ -82,21 +95,49 @@ public abstract class WebTestBase {
 			lifecycle.finish();//force flush current monitorSequence.
 	}
 	
-	protected RequestResult doGet(String url){
-		//TODO form a request Object 
-		RequestObject reqObj = new RequestObject();
-		RequestResult t = sendRequest(reqObj);
-		return t;
+	
+	
+	
+	
+	protected WebTestResponse doGet(String url, Map<String, Object> args){
+		HttpGet get = new HttpGet(url);
+		
+		if(args!=null){
+			HttpParams params = get.getParams();
+			for(Map.Entry<String, Object> entry : args.entrySet()){
+				params.setParameter(entry.getKey(), entry.getValue());
+			}
+		}
+		
+		return sendRequest(get);
 	}
 	
-	protected RequestResult doPost(String url, Object... args){
-		//TODO form a request Object 
-		RequestObject reqObj = new RequestObject();
-		RequestResult t = sendRequest(reqObj);
-		return t;
+	protected WebTestResponse doPost(String url, Map<String, Object> args){
+		HttpPost post = new HttpPost(url);
+		
+		
+		if(args!=null){
+			List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
+			for(Map.Entry<String, Object> entry : args.entrySet()){
+				urlParameters.add(
+					new BasicNameValuePair(entry.getKey(), toString(entry.getValue())));
+			}
+			try {
+				post.setEntity(new UrlEncodedFormEntity(urlParameters));
+			} catch (UnsupportedEncodingException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		
+		return sendRequest(post);
+	}
+	
+	private static String toString(Object obj){
+		if(obj==null)return "";
+		return obj.toString();
 	}
 
-	private RequestResult sendRequest(RequestObject req) {
+	private WebTestResponse sendRequest(HttpUriRequest req) {
 		
 		//1. Decorate URL
 		//2. Forge a browser request and send request
@@ -105,9 +146,10 @@ public abstract class WebTestBase {
 		// (add current thread to ZMonitorWebMaster's waiting list)
 		//5. ZMonitorWebTestMaster transmission.
 		//6. get a result Ref;
-		ZMonitorWebTestMaster master = ZMonitorWebTestMaster.getInstance();
+		ZMonitorWebTestMaster master = 
+			WebTestConfigurator.getInstance().getWebTestMaster();
 		long timeout = 10000L;
-		RequestResult resultRef  = master.awaitForMSTransmission(req, timeout);
+		WebTestResponse resultRef  = master.awaitForMSTransmission(req, timeout);
 		return resultRef;
 	}
 	

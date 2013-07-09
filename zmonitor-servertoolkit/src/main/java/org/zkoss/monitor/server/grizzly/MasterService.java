@@ -15,11 +15,11 @@ import org.glassfish.grizzly.filterchain.NextAction;
 import org.glassfish.grizzly.filterchain.TransportFilter;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
-import org.zkoss.monitor.impl.JObjStreamCommunicator;
 import org.zmonitor.message.Message;
 import org.zmonitor.message.MessageHandler;
 import org.zmonitor.message.Parcel;
 import org.zmonitor.message.Receiever;
+import org.zmonitor.message.impl.JObjStreamCommunicator;
 
 
 /**
@@ -73,11 +73,12 @@ public class MasterService {
 		transport.start();
 	}
 	/**
-	 * override this method to provide your own protocol of this MasterService instance.
+	 * override this method to provide your own protocol of this MasterService instance.<br>
+	 * not used by now...
 	 * @param filters
 	 */
 	protected void initFilters(Filter... filters){
-		
+		//TODO not used by now...
 	}
 	/**
 	 * @throws IOException 

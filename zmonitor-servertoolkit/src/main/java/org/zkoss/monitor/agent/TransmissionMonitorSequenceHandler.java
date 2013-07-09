@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.zmonitor.MonitorSequence;
 import org.zmonitor.ZMonitorManager;
-import org.zmonitor.handler.NonblockingMonitorSequenceHandler;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.message.MonitorSequenceMessage;
 import org.zmonitor.util.concurrent.AsyncGroupingPipe;

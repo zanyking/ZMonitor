@@ -48,7 +48,7 @@ public abstract class TestBase {
 		ZMonitorManager aZMonitorManager = new ZMonitorManager();
 		
 		String packagePath = this.getClass().getPackage().getName().replace('.', '/');
-		URL url =  TestBaseUtils.findSettingFromPackagePath(packagePath);
+		URL url =  TestBaseUtils.findSetting(packagePath);
 		if(url==null){
 			throw new InitFailureException("cannot find Configuration:["+
 					ConfigSource.ZMONITOR_XML+

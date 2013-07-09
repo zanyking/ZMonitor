@@ -15,7 +15,6 @@ import org.zmonitor.marker.Marker;
  */
 public class WebMonitorMeta extends MonitorMetaBase{
 	protected static final long serialVersionUID = 7285893125167926262L;
-	protected String uuid;
 	protected String mimeType;
 	protected String protocol;
 	protected String remoteAddr;
@@ -27,7 +26,7 @@ public class WebMonitorMeta extends MonitorMetaBase{
 	protected String reqSessionId;
 	protected String serverName;
 	protected int serverPort;
-	
+	protected String uuid;
 	
 	protected WebMonitorMeta(){}
 	public WebMonitorMeta(Marker marker, HttpServletRequest req) {

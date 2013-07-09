@@ -3,7 +3,9 @@
  */
 package org.zmonitor.webtest;
 
-import java.util.Iterator;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
 
 import org.zmonitor.MonitorSequence;
 
@@ -11,16 +13,27 @@ import org.zmonitor.MonitorSequence;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public interface MonitorSequenceStore {
+public interface MonitorSequenceStore{
+	/**
+	 * 
+	 * @return
+	 */
+	List<MonitorSequence> drainAll() ;
 	/**
 	 * 
 	 * @param key
-	 * @return
+	 * @param ms
 	 */
-	public MonitorSequence find(String key);
+	void add( MonitorSequence ms);
 	/**
 	 * 
+	 * @param mss
+	 */
+	void addAll( Collection<MonitorSequence> mss);
+	/**
+	 * 
+	 * @param uuid
 	 * @return
 	 */
-	public Iterator<MonitorSequence> iterator();
+	public boolean contains(String uuid);
 }

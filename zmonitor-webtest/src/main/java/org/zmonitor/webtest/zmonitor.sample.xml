@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<zmonitor >
+	 
+	<webtest-conf>
+		<monitor-sequence-store 
+			class="org.zmonitor.webtest.impl.SimpleMonitorSequenceStore"
+			/>
+			
+		<web-test-master
+			requestUuidParam="webTestUuid" 
+			port="9755"/>
+		
+	</webtest-conf>
+
+
+
+</zmonitor>

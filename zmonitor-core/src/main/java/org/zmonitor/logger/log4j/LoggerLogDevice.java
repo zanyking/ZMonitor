@@ -14,6 +14,7 @@ import org.zmonitor.util.Strings;
 public class LoggerLogDevice implements LogDevice{
 	
 	private final Logger logger;
+	private boolean debug;
 	/**
 	 * 
 	 * @param logger
@@ -37,4 +38,12 @@ public class LoggerLogDevice implements LogDevice{
 	public void info(Object... args) {
 		logger.info(Strings.append(args));
 	}
+	
+	public boolean isDebug() {
+		return debug;
+	}
+	public void setDebug(boolean debug) {
+		this.debug = debug;
+	}
+	
 }

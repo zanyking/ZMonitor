@@ -53,7 +53,6 @@ public class WebConfigurator extends ZMBeanBase implements Configurator {
 		
 		if(webConf.getNode()==null)return;//use default...
 		
-		//TODO: Be careful of introducing sub packages stuff inside, it might not work.  
 		initUrlFilter(webConf);
 		
 		ConfigContext testConfCtx = webConf.toNode(REL_TEST_CONF);
@@ -64,7 +63,7 @@ public class WebConfigurator extends ZMBeanBase implements Configurator {
 	
 	private void initWebTestConf(ConfigContext testConfCtx) {
 		testConfCtx.applyAttributes(new PropertySetter(fTestConfig));
-		fTestConfig.init(testConfCtx.getManager());
+		fTestConfig.init(testConfCtx);
 	}
 
 	private void initUrlFilter(ConfigContext webConf){
@@ -109,9 +108,12 @@ public class WebConfigurator extends ZMBeanBase implements Configurator {
 	}
 	
 	public MonitorMeta newMonitorMeta(String markerStr, HttpServletRequest req){
-		//for zmonitor-webtest purpose.
-		
-		return new WebMonitorMeta(
+		//  append additional info for zmonitor-webtest purpose.
+		WebMonitorMeta meta = new WebMonitorMeta(
 				MarkerFactory.getMarker(markerStr), req);
+		if(fTestConfig.isActivate()){
+			meta.setUuid(req.getParameter(fTestConfig.getRequestUuidParam()));
+		}
+		return meta;
 	}
 }

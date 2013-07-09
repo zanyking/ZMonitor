@@ -8,6 +8,7 @@ package org.zmonitor.spi;
  *
  */
 public interface LogDevice {
+	public boolean isDebug();
 	public void info(Object... args);
 	public void debug(Object... args);
 	public void warn( Throwable e, Object... strings) ;

@@ -121,13 +121,13 @@ public class ZMonitorFilter implements Filter {
 	}
 	
 	
-	private static String getQueryURI(HttpServletRequest req) {
-	    String reqUri = req.getRequestURI().toString();
-	    String queryString = req.getQueryString();   // d=789
-	    if (queryString != null) {
-	        reqUri += "?"+queryString;
-	    }
-	    return reqUri;
-	}
+//	private static String getQueryURI(HttpServletRequest req) {
+//	    String reqUri = req.getRequestURI().toString();
+//	    String queryString = req.getQueryString();   // d=789
+//	    if (queryString != null) {
+//	        reqUri += "?"+queryString;
+//	    }
+//	    return reqUri;
+//	}
 
 }

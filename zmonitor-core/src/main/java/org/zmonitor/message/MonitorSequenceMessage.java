@@ -13,7 +13,8 @@ import org.zmonitor.MonitorSequence;
 public class MonitorSequenceMessage extends Message implements Iterable<MonitorSequence>{
 	private static final long serialVersionUID = 196165525987720297L;
 	
-	private final List<MonitorSequence> mss = new ArrayList<MonitorSequence>(30);
+	private final List<MonitorSequence> mss = 
+			new ArrayList<MonitorSequence>(30);
 	
 	public void add(MonitorSequence tl){
 		mss.add(tl);

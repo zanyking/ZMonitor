@@ -6,9 +6,12 @@ package zmonitor.test;
 
 
 import java.io.IOException;
+import java.net.URL;
+
 
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -17,6 +20,9 @@ import org.zmonitor.InitFailureException;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.config.ConfigSource;
 import org.zmonitor.config.ConfigSources;
+import org.zmonitor.config.URLConfigSource;
+import org.zmonitor.impl.ZMLog;
+import org.zmonitor.test.junit.TestBaseUtils;
 
 
 /**
@@ -26,42 +32,10 @@ import org.zmonitor.config.ConfigSources;
 
 public class ZMonitorConfig_TEST {
 
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-	
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-		
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@Before
-	public void setUp() throws Exception {
-		
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@After
-	public void tearDown() throws Exception {
-		
-	}
 
 	@Test
 	public void initZMonitorByGivenClassPath() throws InterruptedException, IOException{
 		String packagePath = this.getClass().getPackage().getName().replace('.', '/');
-		
 		String path = packagePath+"/"+ConfigSource.ZMONITOR_XML;
 		
 		final ConfigSource configSrc = 
@@ -80,7 +54,18 @@ public class ZMonitorConfig_TEST {
 			}
 			ZMonitorManager.dispose();
 	}
-	
+	@Test
+	public void testZMLogDebug() throws InterruptedException, IOException, AlreadyStartedException{
+		String packagePath = this.getClass().getPackage().getName().replace('.', '/');
+		
+		URL url = TestBaseUtils.findSetting(packagePath, "zmonitor.debug.xml");
+		ZMonitorManager aZMonitorManager = new ZMonitorManager();
+		aZMonitorManager.performConfiguration(new URLConfigSource(url));
+		ZMonitorManager.init(aZMonitorManager); 
+		Assert.assertEquals(true, ZMLog.isDebug());
+		
+		ZMonitorManager.dispose();
+	}
 	
 	
 	

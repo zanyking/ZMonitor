@@ -20,11 +20,13 @@ import org.zmonitor.selector.impl.zm.MSWrapper;
 public class MonitoredResult {
 	
 	private final List<MonitorSequence> mss;
-	private final Class testCaseClass;
 	
-	public MonitoredResult(Class testCaseClass) {
-		this.testCaseClass = testCaseClass;
-		this.mss = Collections.synchronizedList(new LinkedList<MonitorSequence>());
+	public MonitoredResult(List<MonitorSequence> mss) {
+		this.mss = mss;
+	}
+	public MonitoredResult() {
+		this.mss = Collections.synchronizedList(
+				new LinkedList<MonitorSequence>());
 	}
 	
 	void add(MonitorSequence ms) {

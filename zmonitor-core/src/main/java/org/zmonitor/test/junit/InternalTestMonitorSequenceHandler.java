@@ -36,7 +36,7 @@ implements MonitorSequenceHandler {
 		MonitoredResult result = mrStore.get(class1);
 		if(result == null){
 			mrStore.put(class1, 
-				result = new MonitoredResult(class1)); 
+				result = new MonitoredResult()); 
 		}
 		return result;
 	}

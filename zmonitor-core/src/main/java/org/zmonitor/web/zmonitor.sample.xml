@@ -15,9 +15,8 @@
 		 -->
 		<test-conf 
 			activate="true" 
-			requestUuidParam="webTestUuid"
-			testerHost="localhost"
-			testerPort="9755"/>
+			webTesterHost="localhost"
+			webTesterPort="9755"/>
 			 
 		<url-filer rule="not" mode="or">
 			<condition match="endWith" pattern=".dsp" />

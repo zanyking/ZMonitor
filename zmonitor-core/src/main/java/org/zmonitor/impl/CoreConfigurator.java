@@ -14,6 +14,7 @@ import org.zmonitor.config.Configs;
 import org.zmonitor.config.WrongConfigurationException;
 import org.zmonitor.impl.MSPipe.Mode;
 import org.zmonitor.spi.Configurator;
+import org.zmonitor.spi.LogDevice;
 import org.zmonitor.spi.MonitorSequenceHandler;
 import org.zmonitor.util.DOMs;
 import org.zmonitor.util.PropertySetter;
@@ -27,17 +28,27 @@ import org.zmonitor.util.PropertySetter;
 public class CoreConfigurator  implements Configurator {
 	
 	
-	public static final String REL_TIMELINE_HANDLER = "monitor-sequence-handler";
+	private static final String REL_MS_HANDLER = "monitor-sequence-handler";
 	private static final String REL_MONITOR_SEQUENCE_PIPE = "monitor-sequence-pipe";
+	private static final String REL_LOG_DEVICE =  "log-device";
 	
 	
 	public void configure(ConfigContext monitorMgmt) {
+		prepareZMLog(monitorMgmt);
 		prepareMSPipe(monitorMgmt);
 		prepareMSHandlers(monitorMgmt);
 	}
 
+	private static void prepareZMLog(ConfigContext monitorMgmt) {
+		ConfigContext logDeviceCtx = monitorMgmt.toNode(REL_LOG_DEVICE);
+		if(logDeviceCtx.getNode()==null)return;
+		LogDevice logDevice = logDeviceCtx.newBean(ConsoleLogDevice.class, false);
+		logDeviceCtx.applyAttributes(new PropertySetter(logDevice), "class");
+		ZMLog.setLogCore(logDevice);
+	}
+
 	private static void prepareMSPipe(ConfigContext  monitorMgmt){
-		//TODO: make mode configurable...
+		//TODO: make mode configurable..
 		ConfigContext msPipeCtx = monitorMgmt.toNode(REL_MONITOR_SEQUENCE_PIPE);
 		if(msPipeCtx.getNode()==null){
 			MSPipe pipe = MSPipeProvider.getPipe(Mode.SYNC);
@@ -56,7 +67,7 @@ public class CoreConfigurator  implements Configurator {
 	}
 	
 	private static void prepareMSHandlers(ConfigContext  configCtx){
-		configCtx.forEach(REL_TIMELINE_HANDLER, new Visitor(){
+		configCtx.forEach(REL_MS_HANDLER, new Visitor(){
 			public boolean visit(int index, ConfigContext nodeCtx) {
 				MonitorSequenceHandler handler = nodeCtx.newBean(null, true);
 				PropertySetter setter = new PropertySetter(handler);

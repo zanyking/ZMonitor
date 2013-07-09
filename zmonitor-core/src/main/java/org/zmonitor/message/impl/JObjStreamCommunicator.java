@@ -2,7 +2,7 @@
  * 2011/10/14
  * 
  */
-package org.zkoss.monitor.impl;
+package org.zmonitor.message.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -51,6 +51,15 @@ public class JObjStreamCommunicator implements Communicator {
 		transmitter = new InnerTransmitter();
 		receiver = new InnerReceiver();
 	}
+	
+	public String getClientId() {
+		return clientId;
+	}
+
+	public void setClientId(String clientId) {
+		this.clientId = clientId;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.zmonitor.message.Communicator#getTransmitter()
 	 */
@@ -65,14 +74,6 @@ public class JObjStreamCommunicator implements Communicator {
 		return receiver;
 	}
 	
-	/**
-	 * 
-	 * @return
-	 */
-	public static Receiever newReceiever(){
-		return new InnerReceiver();
-	}
-
 	
 	private final AtomicInteger atomicInt = new AtomicInteger();
 	/**
@@ -170,7 +171,13 @@ public class JObjStreamCommunicator implements Communicator {
 			buffer = new byte[TRANSMITTER_BUFFER_SIZE];
 		Streams.flush(ain, out, buffer);
 	}
-	
+	/**
+	 * 
+	 * @return
+	 */
+	public static Receiever newReceiever(){
+		return new InnerReceiver();
+	}
 	/**
 	 * 
 	 * @author Ian YT Tsai(Zanyking)

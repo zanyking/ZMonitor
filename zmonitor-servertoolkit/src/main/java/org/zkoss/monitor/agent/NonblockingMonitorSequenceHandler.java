@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.zmonitor.handler;
+package org.zkoss.monitor.agent;
 
 import org.zmonitor.CustomConfigurable;
 import org.zmonitor.MonitorSequence;

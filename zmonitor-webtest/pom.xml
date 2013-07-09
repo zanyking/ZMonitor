@@ -63,7 +63,7 @@
 		
 		<dependency>
 			<groupId>org.zmonitor</groupId>
-			<artifactId>zmonitor-core</artifactId>
+			<artifactId>zmonitor-servertoolkit</artifactId>
 			<version>${version}</version>
 		</dependency>
 		

@@ -21,7 +21,9 @@ public class EventBusMessageHandler implements MessageHandler {
 	 */
 	public Message handle(Message request, boolean hasCallback)
 			throws Exception {
-		MessageEvent mEvent = new MessageEvent(request, hasCallback);
+		MessageEvent<Message> mEvent = 
+				new MessageEvent<Message>(request, hasCallback);
+		
 		dispatcher.send(mEvent);
 		if(hasCallback)return mEvent.getResponse();
 		return null;

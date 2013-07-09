@@ -2,7 +2,7 @@
  * 2011/10/15
  * 
  */
-package org.zmonitor.web.test;
+package org.zmonitor.message.impl;
 
 import java.io.Serializable;
 import java.util.Collections;

@@ -49,5 +49,12 @@ public class ZMLog {
 	public static void warn(Object... strings) {
 		logCore.warn(strings);
 	}
+	/**
+	 * 
+	 * @return
+	 */
+	public static boolean isDebug() {
+		return logCore.isDebug();
+	}
 
 }

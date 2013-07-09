@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<zmonitor>
+	 <log-device debug="true" 
+	 	class="org.zmonitor.impl.ConsoleLogDevice"/>
+	 	
+	<!-- 
+	<monitor-sequence-pipe 
+		mode="ASYNC" waitMillis="200" threshold="0"/> -->
+		
+	<monitor-sequence-pipe mode="SYNC" />
+	
+</zmonitor>

@@ -12,6 +12,8 @@ import org.zmonitor.util.Strings;
  *
  */
 public class ConsoleLogDevice implements LogDevice{
+	private boolean debug;
+	
 	public void info(Object... args) {
 		System.out.println(Strings.append(args));
 	}
@@ -24,5 +26,11 @@ public class ConsoleLogDevice implements LogDevice{
 	}
 	public void warn(Object[] strings) {
 		System.err.println(Strings.append(strings));
+	}
+	public boolean isDebug() {
+		return debug;
+	}
+	public void setDebug(boolean debug) {
+		this.debug = debug;
 	}
 }
