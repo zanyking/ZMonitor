@@ -3,7 +3,6 @@ package org.zmonitor.logger;
 import org.zmonitor.MonitorMeta;
 import org.zmonitor.TrackingContext;
 import org.zmonitor.ZMonitor;
-import org.zmonitor.marker.Marker;
 
 /**
  * 
@@ -27,7 +26,7 @@ public class AppenderTracker extends TrackerBase {
 			}else{
 				// start a new stack for monitoring...
 			}
-			MonitorMeta meta = tCtx.getMonitorMeta();
+			MonitorMeta meta = tCtx.newMonitorMeta();
 			
 			if(message.startsWith(pushOp)){
 				if(eatOperator){

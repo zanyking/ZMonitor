@@ -140,7 +140,7 @@ public class JObjStreamCommunicator implements Communicator {
 				}
 				public boolean failover(Exception e, List<Message> workingList) {
 					if(ZMLog.isDebug()){
-						ZMLog.warn(e, "in InnerTransmitter::failover()");
+						ZMLog.info(e, "in InnerTransmitter::failover()");
 					}
 					
 					for(Message regMesg: workingList){

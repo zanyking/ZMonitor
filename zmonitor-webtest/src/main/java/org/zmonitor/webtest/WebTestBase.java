@@ -4,8 +4,11 @@
 package org.zmonitor.webtest;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -19,6 +22,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
@@ -34,6 +38,7 @@ import org.zmonitor.impl.ZMLog;
 import org.zmonitor.impl.MSPipe.Mode;
 import org.zmonitor.spi.MonitorLifecycle;
 import org.zmonitor.test.junit.TestBaseUtils;
+import org.zmonitor.util.Arguments;
 
 /**
  * @author Ian YT Tsai(Zanyking)
@@ -98,35 +103,42 @@ public abstract class WebTestBase {
 	
 	
 	
-	
-	protected WebTestResponse doGet(String url, Map<String, Object> args){
-		HttpGet get = new HttpGet(url);
-		
-		if(args!=null){
-			HttpParams params = get.getParams();
-			for(Map.Entry<String, Object> entry : args.entrySet()){
-				params.setParameter(entry.getKey(), entry.getValue());
-			}
-		}
-		
-		return sendRequest(get);
+	protected WebTestResponse doGet(String url) throws Exception{
+		return doGet(url, Collections.EMPTY_MAP);
 	}
 	
-	protected WebTestResponse doPost(String url, Map<String, Object> args){
-		HttpPost post = new HttpPost(url);
+	protected WebTestResponse doGet(String url, Map<String, String> params) throws Exception{
+		return sendRequest(new HttpGet(getURI(url, params)));
+	}
+	
+	
+	private static URI getURI(String uri, Map<String, String> params) throws URISyntaxException{
+		Arguments.checkNotNull(params);
+		URIBuilder builder = new URIBuilder(uri);
+		for(Map.Entry<String, String> entry : params.entrySet()){
+			builder.addParameter(entry.getKey(), entry.getValue());
+		}
+		return builder.build();
+	}
+	
+	protected WebTestResponse doPost(String url, 
+			Map<String, String> inputs) throws Exception{
+		return doPost(url, Collections.EMPTY_MAP, inputs);
+	}
+	
+	protected WebTestResponse doPost(String url, 
+			Map<String, String> params, 
+			Map<String, String> inputs) throws Exception{
+		Arguments.checkNotNull(inputs);
+		HttpPost post = new HttpPost(getURI(url, params));
 		
-		
-		if(args!=null){
+		if(inputs!=null){
 			List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
-			for(Map.Entry<String, Object> entry : args.entrySet()){
+			for(Map.Entry<String, String> entry : inputs.entrySet()){
 				urlParameters.add(
 					new BasicNameValuePair(entry.getKey(), toString(entry.getValue())));
 			}
-			try {
-				post.setEntity(new UrlEncodedFormEntity(urlParameters));
-			} catch (UnsupportedEncodingException e) {
-				throw new RuntimeException(e);
-			}
+			post.setEntity(new UrlEncodedFormEntity(urlParameters));
 		}
 		
 		return sendRequest(post);

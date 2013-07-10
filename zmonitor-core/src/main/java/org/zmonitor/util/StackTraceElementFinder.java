@@ -7,13 +7,13 @@ package org.zmonitor.util;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class CallerStackTraceElementFinder {
+public class StackTraceElementFinder {
 	private final String[] ignorPackages;
 	
 	/**
 	 * 
 	 */
-	public CallerStackTraceElementFinder(String... ignorPackages) {
+	public StackTraceElementFinder(String... ignorPackages) {
 		this.ignorPackages = ignorPackages; 
 	}
 	/**
@@ -44,6 +44,36 @@ public class CallerStackTraceElementFinder {
 			return stEle;
 		}
 		return null;
+	}
+	
+	private static final StackTraceElement[] EMPTY = new StackTraceElement[0];
+	/**
+	 * 
+	 * @param stackElemts
+	 * @return
+	 */
+	public StackTraceElement[] truncate(StackTraceElement[] stackElemts){
+		
+		for(int i=0; i<stackElemts.length; i++){
+			if(ignore(stackElemts[i])){
+				continue;
+			}
+			StackTraceElement[] newArr = new StackTraceElement[stackElemts.length - i];
+			System.arraycopy(stackElemts, i, newArr, 0, newArr.length);
+			return newArr;
+		}
+		return EMPTY;
+	}
+	
+	public static StackTraceElement[] truncate(int callerLevel){
+		StackTraceElement[] stackElemts = Thread.currentThread().getStackTrace();
+		if(stackElemts.length<=callerLevel){
+			//this should never happened...
+			throw new Error("How could method has no caller?");
+		}
+		StackTraceElement[] arr = new StackTraceElement[stackElemts.length-callerLevel];
+		System.arraycopy(stackElemts, callerLevel, arr, 0, arr.length);
+		return arr; 
 	}
 	
 	private boolean ignore(StackTraceElement element){

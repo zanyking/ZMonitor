@@ -11,6 +11,7 @@ import org.apache.log4j.spi.LocationInfo;
 import org.apache.log4j.spi.LoggingEvent;
 import org.zmonitor.AlreadyStartedException;
 import org.zmonitor.InitFailureException;
+import org.zmonitor.MonitorMeta;
 import org.zmonitor.TrackingContext;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.config.ConfigSource;
@@ -111,42 +112,46 @@ public abstract class ZMonitorAppenderBase extends AppenderSkeleton{
 			ZMonitorManager.dispose();
 		}
 	}
+
 	/**
 	 * 
-	 * @param event
-	 * @param markerName
-	 * @param message
-	 * @return
+	 * @author Ian YT Tsai(Zanyking)
+	 *
 	 */
-	protected TrackingContextBase newTrackingContext(LoggingEvent event,  Marker marker, String message){
-		TrackingContextBase ctx = new TrackingContextBase(Markers.TRACKER_NAME_LOG4J);
-		ctx.setMessage(message);
-		if (javaSourceLocationInfo) {
-			LocationInfo locInfo = event.getLocationInformation();
+	protected class Log4jTrackingContext extends TrackingContextBase{
+		private LoggingEvent event; 
+		private Marker marker;
+		
+		public Log4jTrackingContext(LoggingEvent event,  Marker marker) {
+			super(Markers.TRACKER_NAME_LOG4J, null);// Log4j didn't provide full stack Trace while logger logging. 
 			
-			
-			int lineNum = -1;
-			try {
-				lineNum = Integer.parseInt(locInfo.getLineNumber());
-			} catch (Exception e) {
-			}// line number is not applicable, ignore it.
-			
-			MonitorMetaBase cInfo = new MonitorMetaBase(marker,
-					ctx.getTrackerName(),
-					locInfo.getClassName(), 
-					locInfo.getMethodName(), 
-					lineNum, 
-					locInfo.getFileName());
-			ctx.setMonitorMeta(cInfo);
-		} else {
-			MonitorMetaBase cInfo = new MonitorMetaBase();
-			cInfo.setClassName(event.getLoggerName());
-			ctx.setMonitorMeta(cInfo);
 		}
-		return ctx;
+
+		public MonitorMeta newMonitorMeta() {
+			MonitorMetaBase mm = null;
+			if (javaSourceLocationInfo) {
+				LocationInfo locInfo = event.getLocationInformation();
+				
+				int lineNum = -1;
+				try {
+					lineNum = Integer.parseInt(locInfo.getLineNumber());
+				} catch (Exception e) {
+				}// line number is not applicable, ignore it.
+				
+				mm = new MonitorMetaBase(marker,
+						getTrackerName(),
+						locInfo.getClassName(), 
+						locInfo.getMethodName(), 
+						lineNum, 
+						locInfo.getFileName());
+			} else {
+				mm = new MonitorMetaBase();
+				mm.setClassName(event.getLoggerName());
+				
+			}
+			return mm;
+		}
 	}
-	
-	
 
 	protected Log4jConfigurator getConfig(){
 		return ZMonitorManager.getInstance().getBeanIfAny(
@@ -161,7 +166,18 @@ public abstract class ZMonitorAppenderBase extends AppenderSkeleton{
 	protected TrackingContextBase newTrackingContext(LoggingEvent event, Marker marker) {
 		return newTrackingContext(event, marker, event.getRenderedMessage());
 	}
-	
+	/**
+	 * 
+	 * @param event
+	 * @param markerName
+	 * @param message
+	 * @return
+	 */
+	protected TrackingContextBase newTrackingContext(LoggingEvent event,  Marker marker, String message){
+		TrackingContextBase ctx = new Log4jTrackingContext(event, marker);
+		ctx.setMessage(message);
+		return ctx;
+	}
 	/**
 	 * used to prevent recursion appender process. 
 	 * @param claz

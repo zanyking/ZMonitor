@@ -74,10 +74,7 @@ public class ZMonitorFilter implements Filter {
 			ZMLog.info("already initialized by other place");
 		}
 		ZMLog.info(">> Ignit ZMonitor in: ",ZMonitorFilter.class.getCanonicalName());
-		webConf = ZMonitorManager.getInstance().getBeanIfAny(
-						WebConfigurator.class);
 	}
-	private WebConfigurator webConf;
 	public void destroy() {
 		if(isIgnitBySelf){
 			ZMonitorManager.dispose();
@@ -94,16 +91,13 @@ public class ZMonitorFilter implements Filter {
 		}
 		
 		try{
-			ZMonitor.push(newTrackingContext(null, 
-					webConf.newMonitorMeta("request-start",req)));
+			ZMonitor.push(newPushTrackingCtx(req));
 			
 			filterChain.doFilter(req, res);
 		}finally{
 			
 			try{
-				ZMonitor.pop(newTrackingContext("<- END", 
-						new MonitorMetaBase(
-							MarkerFactory.getMarker("request-end"), TRACKER_NAME)));	
+				ZMonitor.pop(newPopTrackingCtx());	
 			}finally{
 				if (isIgnitBySelf) {
 					hReqMSLfManager.finishRequestIfAny((HttpServletRequest) req);
@@ -113,21 +107,29 @@ public class ZMonitorFilter implements Filter {
 		}
 	}
 	
-	private static TrackingContext newTrackingContext(String mesg, MonitorMeta mm){
-		TrackingContextBase webCtx = new TrackingContextBase(TRACKER_NAME);
-		webCtx.setMonitorMeta(mm);
+	private static TrackingContext newPushTrackingCtx(HttpServletRequest req){
+		String mesg = req.getRequestURL()+"?"+req.getQueryString();
+		WebConfigurator webConf = ZMonitorManager.getInstance().getBeanIfAny(
+				WebConfigurator.class);
+		final MonitorMeta mm = webConf.newMonitorMeta("request-start",req);
+		
+		TrackingContextBase webCtx = new TrackingContextBase(TRACKER_NAME, null){
+			public MonitorMeta newMonitorMeta() {
+				return mm;
+			}};
 		webCtx.setMessage(mesg);
 		return webCtx;
 	}
 	
-	
-//	private static String getQueryURI(HttpServletRequest req) {
-//	    String reqUri = req.getRequestURI().toString();
-//	    String queryString = req.getQueryString();   // d=789
-//	    if (queryString != null) {
-//	        reqUri += "?"+queryString;
-//	    }
-//	    return reqUri;
-//	}
+	private static TrackingContext newPopTrackingCtx(){
+		TrackingContextBase webCtx = new TrackingContextBase(TRACKER_NAME, null){
+			public MonitorMeta newMonitorMeta() {
+				return new MonitorMetaBase(
+						MarkerFactory.getMarker("request-end"), TRACKER_NAME);
+			}
+		};
+		webCtx.setMessage("<- END");
+		return webCtx;
+	}
 
 }

@@ -3,6 +3,7 @@
  */
 package org.zmonitor.logger;
 
+import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,11 +25,11 @@ import java.util.Map;
  * @author Ian YT Tsai(Zanyking)
  * 
  */
-public class MessageTuple implements Message{
+public class MessageTuple implements Message, Serializable{
 	public static final MessageTuple NULL = new MessageTuple(null);
-	private static final Object[] EMPTY_ARR = new Object[0];
+	private static final Serializable[] EMPTY_ARR = new Serializable[0];
 	private String messagePattern;
-	private Object[] argArray = EMPTY_ARR;
+	private Serializable[] argArray = EMPTY_ARR;
 	private Throwable throwable;
 	
 
@@ -49,7 +50,21 @@ public class MessageTuple implements Message{
 		this.messagePattern = messagePattern;
 		this.throwable = throwable;
 		if(argArray!=null)
-			this.argArray = argArray;
+			this.argArray = transform(argArray);
+	}
+	
+	private static Serializable[] transform(Object[] oriArr){
+		Serializable[] argArr = new Serializable[oriArr.length];
+		Object obj;
+		for(int i=0;i<argArr.length;i++){
+			obj = oriArr[i];
+			if(obj==null || (obj instanceof Serializable)){
+				argArr[i] = (Serializable) obj;
+			}else{
+				argArr[i] = obj.toString();
+			}
+		}
+		return argArr;
 	}
 	/**
 	 * need this method for ZMonitor to eat tracking operator.

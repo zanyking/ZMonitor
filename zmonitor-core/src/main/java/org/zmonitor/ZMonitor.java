@@ -14,6 +14,7 @@ import org.zmonitor.impl.TrackingContextBase;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.marker.Marker;
 import org.zmonitor.spi.MonitorLifecycle;
+import org.zmonitor.util.StackTraceElementFinder;
 
 import static org.zmonitor.marker.Markers.*;
 
@@ -118,12 +119,25 @@ public final class ZMonitor {
 	 * @return
 	 */
 	public static MonitorPoint push(Marker marker, Object message, boolean traceCallerStack){
-		TrackingContextBase ctx = new TrackingContextBase(TRACKER_NAME_ZM);
-		ctx.setCreateMillis(System.currentTimeMillis());
-		ctx.setMessage(message);
-		ctx.setMonitorMeta(newMonitorMeta(marker, traceCallerStack, 3));
-		return push(ctx);
+		return push(newNativeTrackingCtx(marker, message, traceCallerStack));
 	}
+	private static TrackingContextBase newNativeTrackingCtx(
+			Marker marker, Object message, boolean traceCallerStack){
+		StackTraceElement[] elements = StackTraceElementFinder.truncate(5);
+		
+		final MonitorMeta mm = newMonitorMeta(marker, elements[0]);
+		TrackingContextBase ctx = new TrackingContextBase(TRACKER_NAME_ZM, elements){
+			public MonitorMeta newMonitorMeta() {
+				return mm;
+			}
+		};
+		ctx.setMessage(message);
+		return ctx;
+	}
+	private static MonitorMeta newMonitorMeta(Marker marker, StackTraceElement element){
+		return new MonitorMetaBase(marker, TRACKER_NAME_ZM, element);
+	}
+	
 	/**
 	 * 
 	 * @param ctx
@@ -146,24 +160,6 @@ public final class ZMonitor {
 				System.currentTimeMillis() - slSpMillis);
 		
 		return mp;
-	}
-	
-	
-	
-	private static MonitorMeta newMonitorMeta(Marker marker, boolean shouldDo, int callerLevel){
-		
-		if(!shouldDo){
-			return new MonitorMetaBase(marker, TRACKER_NAME_ZM);		
-		}
-		
-		StackTraceElement[] stackElemts = Thread.currentThread().getStackTrace();
-		callerLevel += 1;
-		if(stackElemts.length<=callerLevel){
-			//this should never happened...
-			throw new Error("How could method has no caller?");
-		}
-		StackTraceElement sElemt = stackElemts[callerLevel];
-		return new MonitorMetaBase(marker, TRACKER_NAME_ZM, sElemt);
 	}
 	
 	/**
@@ -193,11 +189,7 @@ public final class ZMonitor {
 	 * @return
 	 */
 	public static MonitorPoint record(Marker marker, Object message, boolean traceCallerStack){
-		TrackingContextBase ctx = new TrackingContextBase(TRACKER_NAME_ZM);
-		ctx.setCreateMillis(System.currentTimeMillis());
-		ctx.setMessage(message);
-		ctx.setMonitorMeta(newMonitorMeta(marker, traceCallerStack, 3));
-		return record(ctx);
+		return record(newNativeTrackingCtx(marker, message, traceCallerStack));
 	}
 	/**
 	 * 
@@ -258,11 +250,7 @@ public final class ZMonitor {
 	 * @return
 	 */
 	public static MonitorPoint pop(Marker marker, Object message, boolean traceCallerStack){
-		TrackingContextBase ctx = new TrackingContextBase(TRACKER_NAME_ZM);
-		ctx.setCreateMillis(System.currentTimeMillis());
-		ctx.setMessage(message);
-		ctx.setMonitorMeta(newMonitorMeta(marker, traceCallerStack, 3));
-		return pop(ctx);
+		return pop(newNativeTrackingCtx(marker, message, traceCallerStack));
 	}
 	/**
 	 * 

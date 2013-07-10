@@ -8,13 +8,14 @@ import java.io.Serializable;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.zmonitor.HasNotInitializedException;
+import org.zmonitor.MonitorMeta;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.impl.TrackingContextBase;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.logger.LoggerMonitorMeta;
 import org.zmonitor.logger.MessageTuple;
 import org.zmonitor.logger.TrackerBase;
-import org.zmonitor.util.CallerStackTraceElementFinder;
+import org.zmonitor.util.StackTraceElementFinder;
 
 /**
  * 
@@ -51,8 +52,8 @@ public class ZMonitorLogger implements Logger, Serializable{
 	private ConfigRef configRef = new ConfigRef();
 
 	
-	private static final CallerStackTraceElementFinder ST_ELEMENT_FINDER = 
-			new CallerStackTraceElementFinder(
+	private static final StackTraceElementFinder ST_ELEMENT_FINDER = 
+			new StackTraceElementFinder(
 					"java.lang",
 					"org.zmonitor",
 					"org.slf4j");
@@ -131,13 +132,22 @@ public class ZMonitorLogger implements Logger, Serializable{
 		
 		// TODO: zmonitor slf4j logging...
 		// more than dozens of properties can be used at this place.
-		TrackingContextBase tCtx = new TrackingContextBase("slf4j");
-		tCtx.setMessage(mt);
-		tCtx.setMonitorMeta(new LoggerMonitorMeta(
+		StackTraceElement[] elements = Thread.currentThread().getStackTrace();
+		
+		elements = ST_ELEMENT_FINDER.truncate(elements);
+		final LoggerMonitorMeta mm = new LoggerMonitorMeta(
 				adapt(marker), 
-				tCtx.getTrackerName(), 
-				ST_ELEMENT_FINDER.find(), 
-				level.toString()));
+				Markers.TRACKER_NAME_SLF4J, 
+				elements[0], 
+				level.toString());
+		
+		TrackingContextBase tCtx = new TrackingContextBase(Markers.TRACKER_NAME_SLF4J, elements){
+			public MonitorMeta newMonitorMeta() {
+				return mm;
+			}
+			
+		};
+		tCtx.setMessage(mt);
 		getTracker().doTrack(tCtx);
 	}
 	

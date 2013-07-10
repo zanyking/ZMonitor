@@ -3,7 +3,6 @@
  */
 package org.zmonitor.impl;
 
-import org.zmonitor.MonitorMeta;
 import org.zmonitor.MonitorPoint;
 import org.zmonitor.MonitorSequence;
 import org.zmonitor.TrackingContext;
@@ -14,23 +13,19 @@ import org.zmonitor.spi.MonitorLifecycle;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class TrackingContextBase implements TrackingContext {
+public abstract class TrackingContextBase implements TrackingContext {
 
 	protected Object message;
-	
-	protected final String trackerName;
-	
-	protected MonitorMeta monitorMeta;
-	
 	protected long createMillis = System.currentTimeMillis();
-	
-	
+	protected final String trackerName;
+	protected final StackTraceElement[] stackTraceElements;
 	/**
 	 * 
 	 * @param trackerName
 	 */
-	public TrackingContextBase(String trackerName) {
+	public TrackingContextBase(String trackerName, StackTraceElement[] stackTraceElements) {
 		this.trackerName = trackerName;
+		this.stackTraceElements = stackTraceElements;
 	}
 
 	
@@ -56,14 +51,9 @@ public class TrackingContextBase implements TrackingContext {
 		return trackerName;
 	}
 
-	public void setMonitorMeta(MonitorMeta cInfo) {
-		monitorMeta = cInfo;
+	public StackTraceElement[] getStackTraceElements() {
+		return stackTraceElements;
 	}
-	
-	public MonitorMeta getMonitorMeta(){
-		return monitorMeta;
-	}
-
 	/**
 	 * override this method in your tracking environment to get monitorlifecycle back.
 	 */
@@ -80,7 +70,7 @@ public class TrackingContextBase implements TrackingContext {
 
 	public MonitorPoint create(MonitorPoint parent) {
 		MonitorPoint mp = new MonitorPoint(
-				this.getMonitorMeta(),
+				this.newMonitorMeta(),
 				this.getMessage(), 
 				this.getMonitorSequence(), 
 				this.getCreateMillis()
@@ -88,4 +78,7 @@ public class TrackingContextBase implements TrackingContext {
 		if(parent!=null) mp.setParent(parent);
 		return mp;
 	}
+
+	
+
 }

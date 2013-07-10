@@ -5,6 +5,7 @@ package org.zmonitor.webtest;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.UUID;
 
@@ -12,7 +13,9 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpParams;
 import org.zkoss.monitor.server.grizzly.MasterService;
@@ -126,11 +129,19 @@ public final class ZMonitorWebTestMaster extends ZMBeanBase{
 		
 		
 		String uuid = UUID.randomUUID().toString();
-		req.getParams().setParameter(requestUuidParam, uuid);
+		
+//		req.getParams().setParameter(requestUuidParam, uuid);
+		
+		URIBuilder builder = new URIBuilder(req.getURI()).addParameter(requestUuidParam, uuid);
+		try {
+			((HttpRequestBase) req).setURI(builder.build());
+		} catch (URISyntaxException e1) {
+			throw new RuntimeException(e1);
+		}
 		
 		//TODO
 		//1. 
-		HttpClient client = new DefaultHttpClient();
+		DefaultHttpClient client = new DefaultHttpClient();
 		HttpResponse response;
 		try {
 			response = client.execute(req);

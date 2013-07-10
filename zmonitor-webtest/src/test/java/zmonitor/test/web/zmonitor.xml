@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<zmonitor >
+	 
+	<webtest-conf>
+		<web-test-master port="9755"/>
+	</webtest-conf>
+
+	<monitor-sequence-handler name="console-handler" 
+		class="org.zmonitor.handler.EclipseConsoleMonitorSequenceHandler"
+		previousMillis="false"	
+		nextMillis="true"
+		callerJavaFile="false"
+		showId="false"
+		showType="false"
+		showClass="true"
+		showMessage="true">
+	</monitor-sequence-handler>
+
+</zmonitor>

@@ -46,10 +46,16 @@ public interface TrackingContext {
 	 * 
 	 * @return
 	 */
-	MonitorMeta getMonitorMeta();
+	MonitorMeta newMonitorMeta();
 	/**
 	 * 
 	 * @return
 	 */
 	MonitorSequence getMonitorSequence();
+	
+	/**
+	 * 
+	 * @return
+	 */
+	StackTraceElement[] getStackTraceElements();
 }

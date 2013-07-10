@@ -26,7 +26,7 @@ public class LogbackConfigurator extends AppenderConfiguratorBase{
 		super(REL_LOGBACK_CONF, 
 				REL_LOGBACK_CONF, 
 				new MessageTupleTracker(),
-				"");
+				"org.zmonitor.logger.logback.Driver");
 		tracker.setPushMarcker(Markers.MK_PUSH_LOGBACK);
 		tracker.setPopMarcker(Markers.MK_END_LOGBACK);
 		tracker.setTrackingMarcker(Markers.MK_RECORD_LOGBACK);

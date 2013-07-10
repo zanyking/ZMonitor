@@ -3,9 +3,11 @@
  */
 package org.zmonitor.logger.logback;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import org.zmonitor.MonitorMeta;
 import org.zmonitor.TrackingContext;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.impl.TrackingContextBase;
@@ -14,7 +16,7 @@ import org.zmonitor.logger.MessageTuple;
 import org.zmonitor.logger.TrackerBase;
 import org.zmonitor.marker.IMarkerFactory;
 import org.zmonitor.marker.Marker;
-import org.zmonitor.util.CallerStackTraceElementFinder;
+import org.zmonitor.util.StackTraceElementFinder;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
@@ -45,8 +47,8 @@ public class ZMonitorAppender extends AppenderBase<ILoggingEvent>{
 		}
 		return tracker; 
 	}
-	private static final CallerStackTraceElementFinder ST_ELEMENT_FINDER = 
-			new CallerStackTraceElementFinder(
+	private static final StackTraceElementFinder ST_ELEMENT_FINDER = 
+			new StackTraceElementFinder(
 					"java.lang",
 					"org.zmonitor",
 					"java.util",
@@ -54,25 +56,32 @@ public class ZMonitorAppender extends AppenderBase<ILoggingEvent>{
 					"org.slf4j");
 	
 	private TrackingContext newTrackingContext(ILoggingEvent event){
-		TrackingContextBase ctx = new TrackingContextBase(Markers.TRACKER_NAME_LOGBACK);
-		ctx.setMessage(newMessage(event));
-		LoggerMonitorMeta lmMeta = new LoggerMonitorMeta(
+		StackTraceElement[] elements = event.getCallerData();
+		
+		final LoggerMonitorMeta lmMeta = new LoggerMonitorMeta(
 				transform(event.getMarker()), 
 			Markers.TRACKER_NAME_LOGBACK, 
-			ST_ELEMENT_FINDER.find(event.getCallerData()), 
+			elements==null? null:elements[0], 
 			event.getLevel().toString());
 		
-		event.getTimeStamp();
-		ctx.setMonitorMeta(lmMeta);
+		TrackingContextBase ctx = new TrackingContextBase(Markers.TRACKER_NAME_LOGBACK, elements){
+			public MonitorMeta newMonitorMeta() {
+				return lmMeta;
+			}
+		};
+		ctx.setCreateMillis(event.getTimeStamp());
+		ctx.setMessage(newMessage(event));
 		return ctx;
 	}
 	
 	
 	private static MessageTuple newMessage(ILoggingEvent event){
+		
 		MessageTuple mt = new MessageTuple(
 			event.getMessage(), event.getArgumentArray(), null);
 		return mt;
 	}
+	
 	
 	
 	private Marker transform(org.slf4j.Marker slf4jMk){

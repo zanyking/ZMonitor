@@ -4,15 +4,12 @@
 	 
  	<log-device debug="true"/>
 	 	
-	<agent-conf masterHost="localhost" masterPort="8799">
-	</agent-conf>
-	
 	<log4j-conf autoHookUp="true">
 		<appender class="org.zmonitor.logger.log4j.ZMonitorAppender"/>	
 	</log4j-conf>
+	
 	<web-conf>
-		<test-conf
-			activate="true" 
+		<test-conf activate="true" 
 			testerHost="localhost"
 			testerPort="9755"/>
 			 
@@ -34,8 +31,13 @@
 	
 	<monitor-sequence-handler name="console-handler" 
 		class="org.zmonitor.handler.EclipseConsoleMonitorSequenceHandler"/>
-	
 
+	
+	<assertion>
+		<matcher><![CDATA[ .Root[url^='login'] ]]></matcher>
+		<action class="a.b.c.MyAction" />
+		<handler ref="IDE"></handler>
+	</assertion>
 
 
 </zmonitor>

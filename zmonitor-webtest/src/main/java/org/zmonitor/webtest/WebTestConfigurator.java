@@ -51,6 +51,7 @@ public class WebTestConfigurator extends ZMBeanBase implements Configurator {
 			
 			
 		}
+		configCtx.getManager().accept(webTestMaster);
 		//use default configuration...
 	}
 

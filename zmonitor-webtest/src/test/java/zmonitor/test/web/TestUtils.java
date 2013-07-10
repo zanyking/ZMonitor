@@ -1,7 +1,7 @@
 /**
  * 
  */
-package zmonitor.test;
+package zmonitor.test.web;
 
 import org.junit.Assert;
 import org.zmonitor.MonitorPoint;
