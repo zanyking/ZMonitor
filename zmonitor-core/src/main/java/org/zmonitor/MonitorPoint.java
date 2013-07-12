@@ -49,7 +49,7 @@ public class MonitorPoint implements Serializable{
 		this.monitorMeta = mm;
 		this.message = mesg;
 		this.mSequence = mSequence;
-		this.mSequence.increament();
+//		this.mSequence.increament();
 		
 		this.createMillis = createMillis;
 	}

@@ -7,6 +7,7 @@ package org.zmonitor.impl;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.zmonitor.MonitorPoint;
 import org.zmonitor.MonitorSequence;
 import org.zmonitor.TrackingContext;
 import org.zmonitor.ZMonitorManager;
@@ -22,14 +23,15 @@ public class SimpleMonitorLifecycle implements MonitorLifecycle {
 	
 	protected MonitorSequence mSquence;
 	protected boolean finished;
-	
 	protected MonitorLifecycleManager lfcManager;
+	protected MonitorState mState;
 	/**
 	 * 
 	 * @param lfcManager
 	 */
 	public SimpleMonitorLifecycle( MonitorLifecycleManager lfcManager) {
 		this.lfcManager = lfcManager;
+		mState = new MonitorStateImpl();
 	}
 	public MonitorSequence getInstance() {
 		if(finished)
@@ -56,7 +58,10 @@ public class SimpleMonitorLifecycle implements MonitorLifecycle {
 	}
 	public void finish() {
 		if(finished)
-			throw new IllegalStateException("this life-cycle was already finished, should never be reused.");
+			throw new IllegalStateException("this life-cycle was already " +
+					"finished, should never be reused.");
+		
+		mSquence.setSize(mState.size());
 		try{
 			ZMonitorManager.getInstance().handle(mSquence);
 			lfcManager.disposeLifecycle(this);
@@ -84,5 +89,66 @@ public class SimpleMonitorLifecycle implements MonitorLifecycle {
 			throw new IllegalStateException("this life-cycle was already finished, should never be reused.");
 		return (T) storage.get(key);
 	}
+	
+	public MonitorState getState() {
+		return mState;
+	}
+	
+	/**
+	 * 
+	 * @author Ian YT Tsai(Zanyking)
+	 *
+	 */
+	private class MonitorStateImpl implements MonitorState{ 
+		protected transient MonitorPoint current;
+		protected int currentDepth;
+		protected int counter;
+		
+		public MonitorPoint getCurrent() {
+			return current;
+		}
+		public int getCurrentDepth() {
+			return currentDepth;
+		}
+		public int increament() {
+			return counter++;
+		}
+		public int size() {
+			return counter;
+		}
+		public boolean isFinished() {
+			return current == null;
+		}
+		public MonitorPoint start(TrackingContext trackingCtx) {
+			MonitorSequence mSquence = getInstance();
+			if(mSquence.getRoot()==null){
+				current = trackingCtx.create(null);
+				mSquence.setRoot(current);
+			}else{
+				current = trackingCtx.create(current);
+			}
+			currentDepth++;
+			return current;
+		}
+		public MonitorPoint record(TrackingContext trackingCtx) {
+			MonitorPoint rec = trackingCtx.create(current);
+			return rec;
+		}
+		public MonitorPoint end(TrackingContext trackingCtx) {
+			if(current==null){
+				//TODO how about return null?
+				throw new IllegalStateException("you already ended this monitor Sequence and want to end it again?");
+			}
+			if(current.getCreateMillis() > trackingCtx.getCreateMillis()){
+				throw new IllegalArgumentException("try to tag a monitor point which create time is smaller than start stack.");
+			}
+			currentDepth--;
+			MonitorPoint endMP = trackingCtx.create(current);
+			
+			current = current.getParent();
+			return endMP;
+		}
+		
+	}//end of class...
 
 }

@@ -299,10 +299,51 @@ class NOOPZMBeanRepository implements ZMBeanRepository{
 	}
 }//end of class
 /**
+ * 
+ * @author Ian YT Tsai(Zanyking)
+ *
+ */
+class NoOpMonitorState implements MonitorLifecycle.MonitorState{
+
+	public MonitorPoint getCurrent() {
+		return null;
+	}
+
+	public int getCurrentDepth() {
+		return 0;
+	}
+
+	public int increament() {
+		return 0;
+	}
+
+	public int size() {
+		return 0;
+	}
+
+	public boolean isFinished() {
+		return false;
+	}
+
+	public MonitorPoint start(TrackingContext trackingCtx) {
+		return null;
+	}
+
+	public MonitorPoint record(TrackingContext trackingCtx) {
+		return null;
+	}
+
+	public MonitorPoint end(TrackingContext trackingCtx) {
+		return null;
+	}
+	
+}
+/**
  * @author Ian YT Tsai(Zanyking)
  */
 class NOOPMonitorLifecycleManager implements MonitorLifecycleManager{
-	MonitorLifecycle noop = new MonitorLifecycle(){
+	private static final MonitorLifecycle noop = new MonitorLifecycle(){
+		private final NoOpMonitorState NOOP_STATE = new NoOpMonitorState();
 		public boolean shouldMonitor(TrackingContext trackingCtx) {
 			return false;// this should take care the rest of all...
 		}
@@ -327,6 +368,9 @@ class NOOPMonitorLifecycleManager implements MonitorLifecycleManager{
 		}
 		public <T> T getAttribute(String key) {
 			return null;
+		}
+		public MonitorState getState() {
+			return NOOP_STATE;
 		}
 		};
 	public MonitorLifecycle getLifecycle() {

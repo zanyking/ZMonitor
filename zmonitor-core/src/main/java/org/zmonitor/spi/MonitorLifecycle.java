@@ -4,6 +4,7 @@
  */
 package org.zmonitor.spi;
 
+import org.zmonitor.MonitorPoint;
 import org.zmonitor.MonitorSequence;
 import org.zmonitor.TrackingContext;
 
@@ -80,5 +81,26 @@ public interface MonitorLifecycle {
 	 * @return
 	 */
 	public boolean shouldMonitor(TrackingContext trackingCtx);
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public MonitorState getState();
+	/**
+	 * 
+	 * @author Ian YT Tsai(Zanyking)
+	 *
+	 */
+	interface MonitorState{
+		MonitorPoint getCurrent();
+		int getCurrentDepth();
+		int increament();
+		int size();
+		boolean isFinished();
+		MonitorPoint start(TrackingContext trackingCtx);
+		MonitorPoint record(TrackingContext trackingCtx);
+		MonitorPoint end(TrackingContext trackingCtx);
+	}
 
 }

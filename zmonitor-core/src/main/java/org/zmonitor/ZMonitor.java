@@ -155,7 +155,7 @@ public final class ZMonitor {
 			return null;
 		}
 		MonitorSequence ms = lc.getInstance();
-		MonitorPoint mp = ms.start(ctx);
+		MonitorPoint mp = lc.getState().start(ctx);
 		ms.accumulateSelfSpend(System.nanoTime()- nanosec, 
 				System.currentTimeMillis() - slSpMillis);
 		
@@ -209,8 +209,10 @@ public final class ZMonitor {
 		}
 	
 		MonitorSequence ms = lc.getInstance();
+		
 		MonitorPoint mp = lc.isMonitorStarted() ? 
-				ms.record(ctx) : ms.start(ctx);
+				lc.getState().record(ctx) : 
+				lc.getState().start(ctx);
 		
 		ms.accumulateSelfSpend(System.nanoTime()- nanosec, 
 			System.currentTimeMillis() - slSpMillis);
@@ -271,11 +273,11 @@ public final class ZMonitor {
 		}
 		
 		MonitorSequence ms = lc.getMonitorSequence();
-		MonitorPoint mp = ms.end(ctx);
+		MonitorPoint mp = lc.getState().end(ctx);
 		ms.accumulateSelfSpend(System.nanoTime()- nanosec, 
 				System.currentTimeMillis() - slSpMillis);
 		
-		if(ms.isFinished()){
+		if(lc.getState().isFinished()){
 			lc.finish();
 		}
 		return mp;

@@ -124,7 +124,8 @@ public abstract class ZMonitorAppenderBase extends AppenderSkeleton{
 		
 		public Log4jTrackingContext(LoggingEvent event,  Marker marker) {
 			super(Markers.TRACKER_NAME_LOG4J, null);// Log4j didn't provide full stack Trace while logger logging. 
-			
+			this.event = event;
+			this.marker = marker;
 		}
 
 		public MonitorMeta newMonitorMeta() {

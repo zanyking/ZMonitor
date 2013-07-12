@@ -55,7 +55,7 @@ public class EclipseConsoleMonitorSequenceHandler extends ZMBeanBase
 		Strings.appendln(sb, root.getMonitorMeta().getTrackerName()," -> MONITOR_SEQUENCE DUMP BEGIN [ ",getHHmmssSSS_yyyy_MM_dd().format(new Date())," ] ");
 		
 		Strings.appendln(sb,"Total Elipsed Millis:\t",retrieveMillisToEnd(root));
-		Strings.appendln(sb,"Monitor Point Amount:\t",ms.getRecordAmount());
+		Strings.appendln(sb,"Monitor Point Amount:\t",ms.getSize());
 		Strings.appendln(sb,"Self Spent Nanosec:\t",Strings.toNumericString(ms.getSelfSpendNanos(),","));
 		Strings.appendln(sb,"Self Spent millis:\t", Strings.toNumericString(ms.getSelfSpendMillis(),","));
 		
