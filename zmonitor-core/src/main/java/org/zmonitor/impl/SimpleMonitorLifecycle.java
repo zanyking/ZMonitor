@@ -21,7 +21,7 @@ import org.zmonitor.spi.MonitorLifecycleManager;
  */
 public class SimpleMonitorLifecycle implements MonitorLifecycle {
 	
-	protected MonitorSequence mSquence;
+	protected MonitorSequence mSequence;
 	protected boolean finished;
 	protected MonitorLifecycleManager lfcManager;
 	protected MonitorState mState;
@@ -44,29 +44,29 @@ public class SimpleMonitorLifecycle implements MonitorLifecycle {
 	protected void setMonitorSequence(MonitorSequence mSequence) {
 		if(finished)
 			throw new IllegalStateException("this life-cycle was already finished, should never be reused.");
-		this.mSquence = mSequence;
+		this.mSequence = mSequence;
 	}
 	public MonitorSequence getMonitorSequence() {
-		return mSquence;
+		return mSequence;
 	}
 	public boolean isInitialized() {
-		return mSquence!=null;
+		return mSequence!=null;
 	}
 	public boolean isMonitorStarted() {
 		if(!isInitialized())return false;
-		return mSquence.isStarted();
+		return mSequence.isStarted();
 	}
 	public void finish() {
 		if(finished)
 			throw new IllegalStateException("this life-cycle was already " +
 					"finished, should never be reused.");
 		
-		mSquence.setSize(mState.size());
+		mSequence.setSize(mState.size());
 		try{
-			ZMonitorManager.getInstance().handle(mSquence);
+			ZMonitorManager.getInstance().handle(mSequence);
 			lfcManager.disposeLifecycle(this);
 		}finally{
-			mSquence = null;
+			mSequence = null;
 			finished = true;	
 		}
 	}

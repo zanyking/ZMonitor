@@ -21,13 +21,15 @@ public class MonitorPoint implements Serializable{
 	private static final long serialVersionUID = 1772552143735347953L;
 	
 	// tree node data
-	private MonitorPoint parent;
+	private MonitorPoint parent;// 
 	private int index;
+	
+	private MonitorSequence mSequence;
 	private MonitorPoint previousSibling;
 	private MonitorPoint nextSibling;
 	private MonitorPoint firstChild;
 	private MonitorPoint lastChild;
-	private MonitorSequence mSequence;
+	
 	
 	// Context info
 	private MonitorMeta monitorMeta;
@@ -49,8 +51,6 @@ public class MonitorPoint implements Serializable{
 		this.monitorMeta = mm;
 		this.message = mesg;
 		this.mSequence = mSequence;
-//		this.mSequence.increament();
-		
 		this.createMillis = createMillis;
 	}
 	

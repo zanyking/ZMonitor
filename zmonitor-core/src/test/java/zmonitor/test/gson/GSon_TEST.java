@@ -4,15 +4,22 @@
 package zmonitor.test.gson;
 
 import org.junit.Test;
+import org.zmonitor.MonitorPoint;
 import org.zmonitor.MonitorSequence;
 import org.zmonitor.ZMonitor;
-import org.zmonitor.selector.MonitorPointSelection;
+import org.zmonitor.impl.MonitorMetaBase;
+import org.zmonitor.marker.Marker;
+import org.zmonitor.marker.Markers;
 import org.zmonitor.test.junit.MonitoredResult;
 import org.zmonitor.test.junit.TestBase;
+import org.zmonitor.util.json.DefaultMarkerAdapter;
+import org.zmonitor.util.json.DefaultMonitorPointAdapter;
 
-import zmonitor.test.TestUtils;
 import zmonitor.test.clz.BusinessObject;
 import zmonitor.test.clz.Dao;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * @author Ian YT Tsai(Zanyking)
@@ -32,6 +39,34 @@ public class GSon_TEST  extends TestBase{
 //		MonitorPointSelection mpSel = result.asSelection().select(".Dao.getBean");
 //		TestUtils.assertMPAmount(mpSel, 4);
 		MonitorSequence ms = result.get(0);
+		printGSonResult(ms);
+	}
+	
+	
+	@Test
+	public void MonitorMeta2JSon(){
+		StackTraceElement[] elements = Thread.currentThread().getStackTrace();
 		
+		MonitorMetaBase mm = new MonitorMetaBase(
+			Markers.MK_PUSH_ZM, Markers.TRACKER_NAME_ZM, elements[1]);
+		printGSonResult(mm);
+	}
+	@Test
+	public void JSon2MonitorMeta(){
+		StackTraceElement[] elements = Thread.currentThread().getStackTrace();
+		
+		MonitorMetaBase mm = new MonitorMetaBase(
+			Markers.MK_PUSH_ZM, Markers.TRACKER_NAME_ZM, elements[1]);
+		printGSonResult(mm);
+	}
+	
+	private static void printGSonResult(Object target){
+		GsonBuilder gBuilder = new GsonBuilder().setPrettyPrinting()
+				.registerTypeAdapter(MonitorPoint.class, new DefaultMonitorPointAdapter())
+				.registerTypeAdapter(Marker.class, new DefaultMarkerAdapter());
+		Gson gson = gBuilder.create();
+		String jsonOutput = gson.toJson(target);
+		System.out.println("+++++++++++++++++++++++++");
+		System.out.println(jsonOutput);
 	}
 }

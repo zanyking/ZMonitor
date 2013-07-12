@@ -73,7 +73,14 @@ public class MarkerFactory {
   public static Marker getDetachedMarker(String name) {
     return getInstance().getDetachedMarker(name);
   }
-  
+  /**
+   * 
+   * @param name
+   * @return
+   */
+  public static boolean exist(String name){
+	  return getInstance().exists(name);
+  }
   /**
    * Return the {@link IMarkerFactory}instance in use.
    * 

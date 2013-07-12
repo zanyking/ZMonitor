@@ -12,7 +12,6 @@ import org.apache.log4j.spi.LoggingEvent;
 import org.zmonitor.AlreadyStartedException;
 import org.zmonitor.InitFailureException;
 import org.zmonitor.MonitorMeta;
-import org.zmonitor.TrackingContext;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.config.ConfigSource;
 import org.zmonitor.config.ConfigSources;
