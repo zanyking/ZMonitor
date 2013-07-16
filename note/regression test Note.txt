@@ -1,0 +1,23 @@
+According to the Regression Testing course on TestingEducation.org, regression testing is a common way to manage the risks of change. We might do regression testing by repeating the exact same test as before, or we might reuse the prior test idea, using different data and different secondary conditions as varying items across different uses of the test. The course covers why we might want to regression test, covers some common methods for regression testing, and provides an extensive list of readings for more information on the topic.
+
+When writing the regression testing section of a formal test plan, there are several things you might want to consider:
+
+What's the goal of the testing? This will help you understand what types of risks you'll address and how much coverage you'll need. Try to define this as clearly as you possibly can. I find that confusion around the goal of what the regression tests are suppose to accomplish is largest reason why regression testing spirals out of control, becoming expensive and ineffective.
+
+
+What risks will our regression testing address, and what risks won't it address? Based on the goal of your testing, what specific risks will be addressed and which won't?
+
+
+What kind of coverage do we want from our regression testing? I find that coverage is one of the hardest things to keep track of in my regression testing. Often, one test may cover multiple risks or multiple areas of the application. Understanding coverage is important in communicating what your regression tests are and are not doing to other project stakeholders.
+
+
+What techniques will we employ to execute and maintain the tests? Understanding execution will be important. What tests will be manual and what tests automated? If they are automated, what tools will we need? What infrastructure? How will we maintain them over time? If tests are manual, who will do the testing? Using what techniques? What skills will the manual testers need to know and what areas of the application?
+
+
+What environment(s) will we need to execute the tests? Here you look at what environments you'll need and when you think you'll need them. What data will need to be available? Are there any custom configurations that will need to be deployed? Will the same tests need to be executed against different configurations? How will you manage that?
+
+
+How will we report the status of the testing? Who is the audience for oGyur status? What level of detail do they want? Which information do they want first? Are some tests more important then others? What obstacles do you have to your regression testing?
+If your test plan section addresses those items in some way, I think you're ok. The specifics of the format don't really matter if you have the right content there. Just format the information using the same style and tone as the template you're using. If you don't use a template, just structure the information in a way that makes sense for your context.
+
+Before you start writing however, I recommend you read through two articles by James Bach. They both offer valuable insights into the topic. In a short article titled Reasons to Repeat Tests, James Bach lists ten reasons why you might want to repeat a test. In this article, regression testing is not necessarily the focus (regression testing is not simply repeating tests), but since many people think that regression testing is simply repeating a test, this article may be useful. Also, in his article on Rapid Testing for Rapid Maintenance (PDF), Bach lists some useful things to consider when thinking about regression testing. Again, regression testing is not the focus of the article, but the content is very relevant.

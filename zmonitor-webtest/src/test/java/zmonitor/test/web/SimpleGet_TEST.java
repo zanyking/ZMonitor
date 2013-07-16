@@ -27,6 +27,7 @@ public class SimpleGet_TEST extends WebTestBase {
 		
 		MonitoredResult result = webResp.getMonitoredResult();
 		TestUtils.assertMPAmount(result.asSelection().select(".Dao.getBean"), 2);
+		TestUtils.assertMPAmount(result.asSelection().select("[message*='Chopin']"), 1);
 	}
 
 }
