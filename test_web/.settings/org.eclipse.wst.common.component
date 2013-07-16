@@ -5,7 +5,7 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/test/java"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/test/resources"/>
         <wb-resource deploy-path="/" source-path="/src/main/webapp"/>
-        <dependent-module archiveName="zmonitor-core.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/zmonitor-core/zmonitor-core">
+        <dependent-module archiveName="zmonitor-core-0.6.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/zmonitor-core/zmonitor-core">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="context-root" value="test-web"/>
