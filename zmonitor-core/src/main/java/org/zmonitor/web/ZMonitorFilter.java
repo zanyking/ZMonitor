@@ -125,7 +125,7 @@ public class ZMonitorFilter implements Filter {
 		TrackingContextBase webCtx = new TrackingContextBase(TRACKER_NAME, null){
 			public MonitorMeta newMonitorMeta() {
 				return new MonitorMetaBase(
-						MarkerFactory.getMarker("request-end"), TRACKER_NAME);
+						MarkerFactory.getMarker("request-end"), TRACKER_NAME, null);
 			}
 		};
 		webCtx.setMessage("<- END");

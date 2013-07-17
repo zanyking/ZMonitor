@@ -54,6 +54,11 @@ public interface MonitorMeta extends Serializable, Cloneable {
 	 */
 	String getTrackerName();
 	/**
+	 * 
+	 * @return
+	 */
+	StackTraceElement[] getStackTraceElements();
+	/**
 	 * @return
 	 */
 	Marker getMarker();

@@ -17,21 +17,11 @@ public class LoggerMonitorMeta extends MonitorMetaBase {
 	private String logLevel;
 
 	public LoggerMonitorMeta(Marker marker, String trackerName,
-			StackTraceElement stEle, String logLevel) {
-		super(marker, trackerName, stEle);
+			StackTraceElement[] elements, String logLevel) {
+		super(marker, trackerName, elements);
 		this.logLevel = logLevel;
 	}
 
-	public LoggerMonitorMeta(Marker marker, String trackerName,
-			String className, String methodName, int lineNumber, String fileName, String logLevel) {
-		super(marker, trackerName, className, methodName, lineNumber, fileName);
-		this.logLevel = logLevel;
-	}
-
-	public LoggerMonitorMeta(Marker marker, String trackerName, String logLevel) {
-		super(marker, trackerName);
-		this.logLevel = logLevel;
-	}
 
 	public String getLogLevel() {
 		return logLevel;

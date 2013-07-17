@@ -4,6 +4,8 @@
 package zmonitor.test.web;
 
 import org.junit.Test;
+import org.zmonitor.ZMonitorManager;
+import org.zmonitor.handler.EclipseConsoleMonitorSequenceHandler;
 import org.zmonitor.test.junit.MonitoredResult;
 import org.zmonitor.webtest.WebTestBase;
 import org.zmonitor.webtest.WebTestResponse;
@@ -26,8 +28,14 @@ public class SimpleGet_TEST extends WebTestBase {
 //		TestUtils.assertMPAmount(result.asSelection().select(".Dao.getBean[message.0=1]"), 1);
 		
 		MonitoredResult result = webResp.getMonitoredResult();
+		
+		EclipseConsoleMonitorSequenceHandler handler = 
+				ZMonitorManager.getInstance().getBeanIfAny(
+						EclipseConsoleMonitorSequenceHandler.class);
+		
+		
 		TestUtils.assertMPAmount(result.asSelection().select(".Dao.getBean"), 2);
-		TestUtils.assertMPAmount(result.asSelection().select("[message*='Chopin']"), 1);
+		TestUtils.assertMPAmount(result.asSelection().select(".D .E[message*='Chopin']"), 1);
 	}
 
 }

@@ -6,10 +6,8 @@ package org.zmonitor.logger.log4j;
 
 import org.zmonitor.MonitorPoint;
 import org.zmonitor.ZMonitorManager;
-import org.zmonitor.config.ConfigContext;
 import org.zmonitor.impl.DefaultMPVariableResolver;
 import org.zmonitor.impl.DefaultSelectorAdaptation;
-import org.zmonitor.impl.ZMLog;
 import org.zmonitor.logger.AppenderConfiguratorBase;
 import org.zmonitor.logger.AppenderTracker;
 

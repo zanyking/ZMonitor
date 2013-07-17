@@ -20,25 +20,28 @@ public class MonitorMetaBase implements MonitorMeta{
 	protected String fileName;
 	protected Marker marker;
 	protected String trackerName;
+	protected StackTraceElement[] stackTraceElements;
 	
 	public MonitorMetaBase(){};
 	/**
 	 * @param marker
 	 */
-	public MonitorMetaBase(Marker marker, String trackerName){
+	protected MonitorMetaBase(Marker marker, String trackerName){
 		this.marker = marker;
 		this.trackerName = trackerName;
 	};
 	/**
 	 * @param stEle
 	 */
-	public MonitorMetaBase(Marker marker, String trackerName, StackTraceElement stEle) {
+	public MonitorMetaBase(Marker marker, String trackerName, StackTraceElement[] elements) {
 		this(marker, trackerName);
-		if(stEle!=null){
+		if(elements!=null){
+			StackTraceElement stEle = elements[0];
 			className = stEle.getClassName();
 			methodName = stEle.getMethodName();
 			lineNumber = stEle.getLineNumber();
-			fileName = stEle.getFileName();	
+			fileName = stEle.getFileName();
+			stackTraceElements = elements;
 		}
 	}
 	/**
@@ -77,6 +80,15 @@ public class MonitorMetaBase implements MonitorMeta{
 		if(lineNumber>0)
 			Strings.append(sb, " ", lineNumber);
 		return sb.toString();
+	}
+	
+	
+	public StackTraceElement[] getStackTraceElements() {
+		return stackTraceElements;
+	}
+	
+	public void setStackTraceElements(StackTraceElement[] stackTraceElements) {
+		this.stackTraceElements = stackTraceElements;
 	}
 	
 	public String getClassName() {
@@ -121,6 +133,7 @@ public class MonitorMetaBase implements MonitorMeta{
 	public void setTrackerName(String trackerName) {
 		this.trackerName = trackerName;
 	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

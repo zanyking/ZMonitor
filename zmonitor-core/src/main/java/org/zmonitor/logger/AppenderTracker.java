@@ -5,7 +5,7 @@ import org.zmonitor.TrackingContext;
 import org.zmonitor.ZMonitor;
 
 /**
- * 
+ * currently only log4j will use this.
  * @author Ian YT Tsai(Zanyking)
  *
  */

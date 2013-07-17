@@ -12,6 +12,7 @@ import org.zmonitor.marker.Marker;
 import org.zmonitor.marker.Markers;
 import org.zmonitor.test.junit.MonitoredResult;
 import org.zmonitor.test.junit.TestBase;
+import org.zmonitor.util.StackTraceElementFinder;
 import org.zmonitor.util.json.DefaultMarkerAdapter;
 import org.zmonitor.util.json.DefaultMonitorPointAdapter;
 
@@ -45,18 +46,17 @@ public class GSon_TEST  extends TestBase{
 	
 	@Test
 	public void MonitorMeta2JSon(){
-		StackTraceElement[] elements = Thread.currentThread().getStackTrace();
-		
+		StackTraceElement[] elements = StackTraceElementFinder.truncate(0);
 		MonitorMetaBase mm = new MonitorMetaBase(
-			Markers.MK_PUSH_ZM, Markers.TRACKER_NAME_ZM, elements[1]);
+			Markers.MK_PUSH_ZM, Markers.TRACKER_NAME_ZM, elements);
 		printGSonResult(mm);
 	}
 	@Test
 	public void JSon2MonitorMeta(){
-		StackTraceElement[] elements = Thread.currentThread().getStackTrace();
+		StackTraceElement[] elements = StackTraceElementFinder.truncate(0);
 		
 		MonitorMetaBase mm = new MonitorMetaBase(
-			Markers.MK_PUSH_ZM, Markers.TRACKER_NAME_ZM, elements[1]);
+			Markers.MK_PUSH_ZM, Markers.TRACKER_NAME_ZM, elements);
 		printGSonResult(mm);
 	}
 	

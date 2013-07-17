@@ -123,9 +123,12 @@ public final class ZMonitor {
 	}
 	private static TrackingContextBase newNativeTrackingCtx(
 			Marker marker, Object message, boolean traceCallerStack){
-		StackTraceElement[] elements = StackTraceElementFinder.truncate(5);
 		
-		final MonitorMeta mm = newMonitorMeta(marker, elements[0]);
+		StackTraceElement[] elements = StackTraceElementFinder.truncate(3);// for: newNativeTrackingCtx
+																			// push, pop, record
+		
+		
+		final MonitorMeta mm = newMonitorMeta(marker, elements);
 		TrackingContextBase ctx = new TrackingContextBase(TRACKER_NAME_ZM, elements){
 			public MonitorMeta newMonitorMeta() {
 				return mm;
@@ -134,8 +137,8 @@ public final class ZMonitor {
 		ctx.setMessage(message);
 		return ctx;
 	}
-	private static MonitorMeta newMonitorMeta(Marker marker, StackTraceElement element){
-		return new MonitorMetaBase(marker, TRACKER_NAME_ZM, element);
+	private static MonitorMeta newMonitorMeta(Marker marker, StackTraceElement[] elements){
+		return new MonitorMetaBase(marker, TRACKER_NAME_ZM, elements);
 	}
 	
 	/**
@@ -223,18 +226,6 @@ public final class ZMonitor {
 	/**
 	 * traceCallerStack is default false.
 	 */
-	public static MonitorPoint pop(){
-		return pop(MK_END_ZM, null, true);
-	}
-	/**
-	 * traceCallerStack is default false.
-	 */
-	public static MonitorPoint pop(Object message){
-		return pop(MK_END_ZM, message, true);
-	}
-	/**
-	 * traceCallerStack is default false.
-	 */
 	public static MonitorPoint pop(Object message, boolean traceCallerStack){
 		return pop(MK_END_ZM, message, traceCallerStack);
 	}
@@ -274,6 +265,29 @@ public final class ZMonitor {
 		
 		MonitorSequence ms = lc.getMonitorSequence();
 		MonitorPoint mp = lc.getState().end(ctx);
+		ms.accumulateSelfSpend(System.nanoTime()- nanosec, 
+				System.currentTimeMillis() - slSpMillis);
+		
+		if(lc.getState().isFinished()){
+			lc.finish();
+		}
+		return mp;
+	}
+	
+	public static MonitorPoint pop(MonitorLifecycle lc){
+		long nanosec = System.nanoTime();
+		long slSpMillis = System.currentTimeMillis();
+		
+		if(lc==null){
+			throw new IllegalStateException("Not able to retrieve a MonitorLifecycle. " +
+				"please take a look at the implementation of MonitorLifecycleManager, it must always returned a value instead of null.");
+		}
+		if(!lc.shouldMonitor(null)) {
+			return null;
+		}
+		
+		MonitorSequence ms = lc.getMonitorSequence();
+		MonitorPoint mp = lc.getState().end(null);
 		ms.accumulateSelfSpend(System.nanoTime()- nanosec, 
 				System.currentTimeMillis() - slSpMillis);
 		

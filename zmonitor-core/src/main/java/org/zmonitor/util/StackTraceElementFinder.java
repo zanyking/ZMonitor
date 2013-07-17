@@ -8,13 +8,13 @@ package org.zmonitor.util;
  *
  */
 public class StackTraceElementFinder {
-	private final String[] ignorPackages;
+	private final String[] ignoredPackages;
 	
 	/**
 	 * 
 	 */
 	public StackTraceElementFinder(String... ignorPackages) {
-		this.ignorPackages = ignorPackages; 
+		this.ignoredPackages = ignorPackages; 
 	}
 	/**
 	 * 
@@ -67,20 +67,24 @@ public class StackTraceElementFinder {
 	
 	public static StackTraceElement[] truncate(int callerLevel){
 		StackTraceElement[] stackElemts = Thread.currentThread().getStackTrace();
+		callerLevel+=2;// for java.lang.Thread.getStackTrace
+		//and org.zmonitor.util.StackTraceElementFinder.truncate
 		if(stackElemts.length<=callerLevel){
-			//this should never happened...
-			throw new Error("How could method has no caller?");
+		//this should never happened...
+		throw new IndexOutOfBoundsException(" the callerLevel"+callerLevel
+			+ " >= stacktrace depth: "+stackElemts.length);
 		}
 		StackTraceElement[] arr = new StackTraceElement[stackElemts.length-callerLevel];
 		System.arraycopy(stackElemts, callerLevel, arr, 0, arr.length);
 		return arr; 
 	}
 	
+	
 	private boolean ignore(StackTraceElement element){
 		String clzName = element.getClassName();
 		if(clzName==null)return true;
-		
-		for(String ignorePkg : ignorPackages){
+
+		for(String ignorePkg : ignoredPackages){
 			if(clzName.startsWith(ignorePkg)){
 				return true;
 			}
@@ -88,5 +92,11 @@ public class StackTraceElementFinder {
 		return false;
 	}
 	
+	public static void main(String[] args){
+		 StackTraceElement[] arr = truncate(0);
+		 for(StackTraceElement e : arr){
+			 System.out.println("StackTraceElement: "+e);
+		 }
+	}
 	
 }

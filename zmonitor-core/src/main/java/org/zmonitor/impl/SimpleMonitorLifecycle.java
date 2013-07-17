@@ -139,12 +139,16 @@ public class SimpleMonitorLifecycle implements MonitorLifecycle {
 				//TODO how about return null?
 				throw new IllegalStateException("you already ended this monitor Sequence and want to end it again?");
 			}
-			if(current.getCreateMillis() > trackingCtx.getCreateMillis()){
-				throw new IllegalArgumentException("try to tag a monitor point which create time is smaller than start stack.");
-			}
-			currentDepth--;
-			MonitorPoint endMP = trackingCtx.create(current);
 			
+			MonitorPoint endMP = null;
+//			if(trackingCtx!=null){
+				if(current.getCreateMillis() > trackingCtx.getCreateMillis()){
+					throw new IllegalArgumentException("try to tag a monitor point which create time is smaller than start stack.");
+				}
+				endMP = trackingCtx.create(current);
+//			}
+			
+			currentDepth--;
 			current = current.getParent();
 			return endMP;
 		}
