@@ -347,7 +347,7 @@ class NOOPMonitorLifecycleManager implements MonitorLifecycleManager{
 		public boolean shouldMonitor(TrackingContext trackingCtx) {
 			return false;// this should take care the rest of all...
 		}
-		public MonitorSequence getInstance() {
+		public MonitorSequence init() {
 			return null;
 		}
 		public MonitorSequence getMonitorSequence() {

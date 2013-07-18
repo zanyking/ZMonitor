@@ -157,7 +157,7 @@ public final class ZMonitor {
 		if(!lc.shouldMonitor(ctx)) {
 			return null;
 		}
-		MonitorSequence ms = lc.getInstance();
+		MonitorSequence ms = lc.init();
 		MonitorPoint mp = lc.getState().start(ctx);
 		ms.accumulateSelfSpend(System.nanoTime()- nanosec, 
 				System.currentTimeMillis() - slSpMillis);
@@ -211,7 +211,7 @@ public final class ZMonitor {
 			return null;
 		}
 	
-		MonitorSequence ms = lc.getInstance();
+		MonitorSequence ms = lc.init();
 		
 		MonitorPoint mp = lc.isMonitorStarted() ? 
 				lc.getState().record(ctx) : 

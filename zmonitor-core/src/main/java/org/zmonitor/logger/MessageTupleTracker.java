@@ -14,13 +14,11 @@ public class MessageTupleTracker extends TrackerBase {
 
 	public void doTrack(TrackingContext tCtx) {
 		//TODO working on Auto Tracking Mechanism...
-		
-//		if(tCtx.getStackTraceElements()==null){
+		if(tCtx.getStackTraceElements()==null){
 			trackByMessage(tCtx);	
-//		}else{
-//			new AutoTrackingHelper(tCtx).track(); 
-//		}
-		
+		}else{
+			new AutoTrackingHelper(tCtx).track(); 
+		}
 	}
 	
 	

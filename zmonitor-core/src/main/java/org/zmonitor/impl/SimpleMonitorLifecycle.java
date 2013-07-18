@@ -33,7 +33,7 @@ public class SimpleMonitorLifecycle implements MonitorLifecycle {
 		this.lfcManager = lfcManager;
 		mState = new MonitorStateImpl();
 	}
-	public MonitorSequence getInstance() {
+	public MonitorSequence init() {
 		if(finished)
 			throw new IllegalStateException("this life-cycle was already finished, should never be reused.");
 		if(getMonitorSequence() == null){
@@ -120,7 +120,7 @@ public class SimpleMonitorLifecycle implements MonitorLifecycle {
 			return current == null;
 		}
 		public MonitorPoint start(TrackingContext trackingCtx) {
-			MonitorSequence mSquence = getInstance();
+			MonitorSequence mSquence = init();
 			if(mSquence.getRoot()==null){
 				current = trackingCtx.create(null);
 				mSquence.setRoot(current);

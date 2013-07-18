@@ -65,7 +65,7 @@ public abstract class TrackingContextBase implements TrackingContext {
 	 * @see org.zmonitor.TrackingContext#getMonitorSequence()
 	 */
 	public MonitorSequence getMonitorSequence() {
-		return getLifeCycle().getInstance();
+		return getLifeCycle().getMonitorSequence();
 	}
 
 	public MonitorPoint create(MonitorPoint parent) {

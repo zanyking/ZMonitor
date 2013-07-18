@@ -27,10 +27,10 @@ public interface MonitorLifecycle {
 	 * The first time to call this method will also initialize a new MonitorSequence. 
 	 * @return a MonitorSequence instance, shouldn't return null.
 	 */
-	public MonitorSequence getInstance();
+	public MonitorSequence init();
 	/**
 	 * 
-	 * @return the current MonitorSequence, could be null if {@link #getInstance()} 
+	 * @return the current MonitorSequence, could be null if {@link #init()} 
 	 * hasn't been called before.  
 	 */
 	public MonitorSequence getMonitorSequence();
