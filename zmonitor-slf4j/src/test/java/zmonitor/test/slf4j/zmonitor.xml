@@ -8,10 +8,10 @@
 		class="org.zmonitor.handler.EclipseConsoleMonitorSequenceHandler"
 		previousMillis="false"	
 		nextMillis="true"
-		callerJavaFile="false"
-		showId="true"
+		callerJavaFile="true"
+		showId="false"
 		showType="false"
-		showClass="true"
+		showClass="false"
 		showMessage="true"/>
 	
 	

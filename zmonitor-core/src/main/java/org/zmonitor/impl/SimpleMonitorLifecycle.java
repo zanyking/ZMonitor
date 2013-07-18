@@ -141,12 +141,12 @@ public class SimpleMonitorLifecycle implements MonitorLifecycle {
 			}
 			
 			MonitorPoint endMP = null;
-//			if(trackingCtx!=null){
+			if(trackingCtx!=null){// trackingCtx ==null: means pop the stack without an end MP.
 				if(current.getCreateMillis() > trackingCtx.getCreateMillis()){
 					throw new IllegalArgumentException("try to tag a monitor point which create time is smaller than start stack.");
 				}
 				endMP = trackingCtx.create(current);
-//			}
+			}
 			
 			currentDepth--;
 			current = current.getParent();
