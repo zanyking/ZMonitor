@@ -2,7 +2,14 @@
 <!-- do not use Id here, let TestBase generate the ID by class name -->
 <zmonitor>
 	<monitor-sequence-handler name="console-LOG4J" 
-		class="org.zmonitor.handler.EclipseConsoleMonitorSequenceHandler"/>
+		class="org.zmonitor.handler.EclipseConsoleMonitorSequenceHandler"
+		previousMillis="false"	
+		nextMillis="true"
+		callerJavaFile="false"
+		showId="true"
+		showType="false"
+		showClass="true"
+		showMessage="true"/>
 	
 	<logback-conf autoHookUp="true">
 		<appender class="zmonitor.test.logback.autohookup.DemoAppender" />

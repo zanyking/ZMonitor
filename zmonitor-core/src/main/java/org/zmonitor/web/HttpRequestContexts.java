@@ -21,6 +21,7 @@ public class HttpRequestContexts {
 	 * @param res
 	 */
 	public static void init(HttpRequestContext context, HttpServletRequest req, HttpServletResponse res){
+		System.out.println("init()  ========================"+context);
 		HTTP_REQ_CTX_REF.set(context);
 		context.init(req, res);
 	}
@@ -35,7 +36,11 @@ public class HttpRequestContexts {
 	 * 
 	 */
 	public static void dispose(){
-		get().dispose();
+		HttpRequestContext context = get();
+		
+		System.out.println("dispose() ========================"+context);
+		if(context==null)return;
+		context.dispose();
 		HTTP_REQ_CTX_REF.remove();
 	}
 	

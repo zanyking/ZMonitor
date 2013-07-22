@@ -3,12 +3,6 @@
 <zmonitor >
 	 
 
-	<agent-conf masterHost="localhost" masterPort="8799">
-	</agent-conf>
-	
-	<log4j-conf autoHookUp="true">
-		<appender class="org.zmonitor.logger.log4j.ZMonitorAppender"/>	
-	</log4j-conf>
 	<web-conf>
 		<!-- 
 			waitMillis = -1;
