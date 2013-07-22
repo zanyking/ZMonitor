@@ -16,7 +16,6 @@ public class MessageTupleTracker extends TrackerBase {
 	private MessageTrackingHelper helper = new MessageTrackingHelper();
 	
 	public void doTrack(TrackingContext tCtx) {
-		//TODO working on Auto Tracking Mechanism...
 //		helper.track(tCtx);	
 		if(tCtx.getStackTraceElements()==null){
 			helper.track(tCtx);	
@@ -24,7 +23,6 @@ public class MessageTupleTracker extends TrackerBase {
 			new AutoTrackingHelper(helper).track(tCtx); 
 		}
 	}
-	
 	
 	/**
 	 * 

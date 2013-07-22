@@ -14,13 +14,18 @@ import org.zmonitor.util.Strings;
 public class MonitorMetaBase implements MonitorMeta{
 	private static final long serialVersionUID = -2036093624490603264L;
 
+	// Top stack trace element...
 	protected String className; 
 	protected String methodName; 
 	protected int lineNumber = CODE_NOT_AVAILABLE;
 	protected String fileName;
+	
+	// meta info
 	protected Marker marker;
 	protected String trackerName;
-	protected StackTraceElement[] stackTraceElements;
+	
+	//
+//	protected transient StackTraceElement[] stackTraceElements;// TODO this is too heavy for 
 	
 	public MonitorMetaBase(){};
 	/**
@@ -41,7 +46,7 @@ public class MonitorMetaBase implements MonitorMeta{
 			methodName = stEle.getMethodName();
 			lineNumber = stEle.getLineNumber();
 			fileName = stEle.getFileName();
-			stackTraceElements = elements;
+//			stackTraceElements = elements;
 		}
 	}
 	/**
@@ -83,13 +88,13 @@ public class MonitorMetaBase implements MonitorMeta{
 	}
 	
 	
-	public StackTraceElement[] getStackTraceElements() {
-		return stackTraceElements;
-	}
-	
-	public void setStackTraceElements(StackTraceElement[] stackTraceElements) {
-		this.stackTraceElements = stackTraceElements;
-	}
+//	public StackTraceElement[] getStackTraceElements() {
+//		return stackTraceElements;
+//	}
+//	
+//	public void setStackTraceElements(StackTraceElement[] stackTraceElements) {
+//		this.stackTraceElements = stackTraceElements;
+//	}
 	
 	public String getClassName() {
 		return className;
@@ -171,11 +176,6 @@ public class MonitorMetaBase implements MonitorMeta{
 			return false;
 		if (lineNumber != other.lineNumber)
 			return false;
-		if (marker == null) {
-			if (other.marker != null)
-				return false;
-		} else if (!marker.equals(other.marker))
-			return false;
 		if (methodName == null) {
 			if (other.methodName != null)
 				return false;
@@ -185,6 +185,11 @@ public class MonitorMetaBase implements MonitorMeta{
 			if (other.trackerName != null)
 				return false;
 		} else if (!trackerName.equals(other.trackerName))
+			return false;
+		if (marker == null) {
+			if (other.marker != null)
+				return false;
+		} else if (!marker.equals(other.marker))
 			return false;
 		return true;
 	}

@@ -40,7 +40,6 @@ public class DefaultMonitorPointAdapter  implements JsonSerializer<MonitorPoint>
 	
 	public JsonElement serialize(MonitorPoint mp, Type typeOfSrc,
 			JsonSerializationContext context) {
-		
 		JsonObject jObj = new JsonObject();
 //		context.serialize(src);
 		jObj.add("index", new JsonPrimitive(mp.getIndex()));

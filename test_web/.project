@@ -3,7 +3,6 @@
 	<name>test-web</name>
 	<comment></comment>
 	<projects>
-		<project>zmonitor-core</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
