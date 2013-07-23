@@ -15,6 +15,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.zmonitor.impl.ZMLog;
+
 /**
  * 
  * 
@@ -35,8 +37,8 @@ public class ZMonitorFilter implements Filter{
 	throws IOException, ServletException {
 		HttpServletRequest request = (HttpServletRequest)req;
 		HttpServletResponse response = (HttpServletResponse) res;
-		
-//		System.out.println("init()  ========================"+WebUtils.toURLString(request));
+		String str = WebUtils.toURLString(request);
+		ZMLog.debug("init()  ========================"+str);
 		
 		helper.doFilterStart( request, response);
 		try {
@@ -44,9 +46,7 @@ public class ZMonitorFilter implements Filter{
 		} finally {
 			helper.doFilterEnd(request);
 		}
-
-		
-//		System.out.println("dispose() ========================"+context);
+		ZMLog.debug("dispose() ========================"+str);
 	}
 	
 }

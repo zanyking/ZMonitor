@@ -105,13 +105,16 @@ public class EclipseConsoleMonitorSequenceHandler extends ZMBeanBase
 	private boolean showType = true;
 	private boolean showClass = true;
 	private boolean showMessage = true;
+	private boolean shortClassName = true;
 	
 	public void writeMP(StringBuffer sb, MonitorPoint mp, String prefix){
 		String mpId = selAdptor.retrieveId(mp);
 		Set<String> mpCssClz = selAdptor.retrieveConceptualCssClasses(mp);
 		String mpType = selAdptor.retrieveType(mp);
 		
-		Strings.append(sb, prefix, "[");
+		Strings.append(sb, prefix);
+		if(previousMillis || nextMillis)
+			Strings.append(sb, "[");
 		
 		if(previousMillis)
 			Strings.append(sb, align(retrieveMillisToPrevious(mp)));
@@ -120,7 +123,9 @@ public class EclipseConsoleMonitorSequenceHandler extends ZMBeanBase
 		if(nextMillis)
 			Strings.append(sb, align(retrieveMillisToNext(mp)));
 		
-		Strings.append(sb, "]ms ");
+		if(previousMillis || nextMillis)
+			Strings.append(sb, "]ms ");
+		
 		if(callerJavaFile)
 			writeTraceElement(sb, "", mp.getMonitorMeta());
 		if(showId)
@@ -145,17 +150,28 @@ public class EclipseConsoleMonitorSequenceHandler extends ZMBeanBase
 			writeMP(sb, current, prefix+=indent);	
 		}
 	}
-	private static void writeTraceElement(StringBuffer sb, String prefix, MonitorMeta meta){
+	private void writeTraceElement(StringBuffer sb, String prefix, MonitorMeta meta){
 		if(meta.isCallerNotAvailable()){
 			Strings.append(sb, prefix, "caller's stackTraceElement is not available.");
 			return;
 		}else{
-			Strings.append(sb, prefix,"at ",
-					meta.getClassName(),".",
+			Strings.append(sb, prefix,"at ", 
+					getMetaClassName(meta.getClassName()),".",
 					meta.getMethodName(),"(",
 					meta.getFileName(),":",meta.getLineNumber(),")");	
 		}
 	}
+	
+	private String getMetaClassName(String clzName){
+		if(shortClassName){
+			int i = clzName.lastIndexOf(".");
+			if(i<0) return clzName;
+			return clzName.substring(i+1);
+		}else{
+			return clzName;
+		}
+	}
+	
 
 	
 	public static List<MonitorPoint> getBloodline(MonitorPoint mp){
@@ -219,5 +235,11 @@ public class EclipseConsoleMonitorSequenceHandler extends ZMBeanBase
 	}
 	public void setShowMessage(boolean showMessage) {
 		this.showMessage = showMessage;
+	}
+	public boolean isShortClassName() {
+		return shortClassName;
+	}
+	public void setShortClassName(boolean shortClassName) {
+		this.shortClassName = shortClassName;
 	}
 }

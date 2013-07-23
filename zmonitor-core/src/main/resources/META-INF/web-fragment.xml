@@ -22,6 +22,9 @@
 		please declare your own "ZMonitorFilter" filter 
 		in web.xml.
 	 -->
+	<listener>
+		<listener-class>org.zmonitor.web.ZMonitorListener</listener-class>
+	</listener>
 	<filter>
 		<filter-name>ZMonitorFilter</filter-name>
 		<filter-class>org.zmonitor.web.ZMonitorFilter</filter-class>
