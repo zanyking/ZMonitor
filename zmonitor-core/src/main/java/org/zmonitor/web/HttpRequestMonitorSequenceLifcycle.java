@@ -4,6 +4,8 @@
  */
 package org.zmonitor.web;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.zmonitor.TrackingContext;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.impl.SimpleMonitorLifecycle;
@@ -21,14 +23,15 @@ public class HttpRequestMonitorSequenceLifcycle extends SimpleMonitorLifecycle {
 	 * The lifetime of this {@link MonitorLifecycle} is as long as a request.
 	 * @param requestCtx
 	 */
-	public HttpRequestMonitorSequenceLifcycle(MonitorLifecycleManager lfcManager, String oriReqUrl) {
+	public HttpRequestMonitorSequenceLifcycle(MonitorLifecycleManager lfcManager, 
+			HttpServletRequest req) {
 		super(lfcManager);
 		
 		WebConfigurator webConf = 
 			ZMonitorManager.getInstance().getBeanIfAny(
 					WebConfigurator.class);
 		if(webConf != null)
-			urlAccepted = webConf.shouldAccept(oriReqUrl);
+			urlAccepted = webConf.shouldAccept(req);
 	}
 	
 	public boolean shouldMonitor(TrackingContext trackingCtx) {

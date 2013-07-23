@@ -66,9 +66,9 @@ public class Condition {
 		return Pattern.compile(pattern);//TODO: cache this.
 	}
 	
-	public boolean match(String urlStr, URL url){
+	public boolean match( URL url){
 		return not ^ ma.doMatch(pattern, 
-				tFecher.get(urlStr, url));
+				tFecher.get(url));
 	}
 	
 	public String getPattern() {
@@ -95,29 +95,29 @@ public class Condition {
 		 * @param url
 		 * @return
 		 */
-		String get(String urlStr, URL url);
+		String get(URL url);
 	}
 	private static final TargetFecher FULL = new TargetFecher() {
 		public String toString() {return "full";}
-		public String get(String urlStr, URL url) {
-			return urlStr;
+		public String get(URL url) {
+			return url.toExternalForm();
 		}
 	};
 	private static final TargetFecher PATH = new TargetFecher() {
 		public String toString() {return "path";}
-		public String get(String urlStr, URL url) {
+		public String get(URL url) {
 			return url.getPath();
 		}
 	};
 	private static final TargetFecher HOST = new TargetFecher() {
 		public String toString() {return "host";}
-		public String get(String urlStr, URL url) {
+		public String get(URL url) {
 			return url.getHost();
 		}
 	}; 
 	private static final TargetFecher QUERY = new TargetFecher() {
 		public String toString() {return "query";}
-		public String get(String urlStr, URL url) {
+		public String get(URL url) {
 			return url.getQuery();
 		}
 	}; 

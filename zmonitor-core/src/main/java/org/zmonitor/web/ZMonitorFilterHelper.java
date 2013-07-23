@@ -25,7 +25,7 @@ import org.zmonitor.impl.ZMLog;
 import org.zmonitor.spi.MonitorLifecycle;
 
 /**
- * @author ian.tsai
+ * @author Ian YT Tsai (Zanyking)
  *
  */
 public class ZMonitorFilterHelper {
@@ -43,13 +43,11 @@ public class ZMonitorFilterHelper {
 		if (helper == null) {
 			synchronized (servletCtx) {
 				if (helper == null) {
-
 					servletCtx.setAttribute(
 							ZMonitorFilterHelper.class.getName(),
 							helper = new ZMonitorFilterHelper());
 				}
 			}
-
 		}
 		return helper;
 	}
@@ -63,7 +61,6 @@ public class ZMonitorFilterHelper {
 		
 		ZMonitorManager aZMonitorManager = new ZMonitorManager();
 		
-		//TODO: get Configuration Source...
 		ConfigSource configSource = null;
 		try {
 			configSource = ConfigSources.loadForJavaEEWebApp(servletCtx);
@@ -102,41 +99,70 @@ public class ZMonitorFilterHelper {
 	}
 	
 	/**
-	 * 
+	 * need to be thread safe, multiple request may call this method at the same time.
 	 * @param req
 	 * @param res
 	 */
-	public void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain)
-			throws IOException, ServletException {
+	public void doFilterStart(HttpServletRequest req, HttpServletResponse res){
+		int stackLv = ReqStack.getInstance(req).push();
 		
-		boolean isZmUsed = ZMonitorManager.isInitialized();
-		
-		if(isZmUsed && isIgnitBySelf){
-			HttpRequestContexts.init(new StantardHttpRequestContext(), 
-					req, res);
-			hReqMSLfManager.initRequest( req);	
+		if (isIgnitBySelf && stackLv <= 1) {// need to identify if this is the first 
+			HttpRequestContexts.init(new StantardHttpRequestContext(), req, res);	
+			hReqMSLfManager.initRequest(req);
 		}
-		
-		try{
-			if(isZmUsed)
-				ZMonitor.push(newPushTrackingCtx(req));
-			
-			filterChain.doFilter(req, res);
-		}finally{
-			if(isZmUsed){
-				try{
-					ZMonitor.pop(newPopTrackingCtx());	
-				}finally{
-					if (isIgnitBySelf) {
-						hReqMSLfManager.finishRequestIfAny( req);
-						HttpRequestContexts.dispose();	
-					}
-				}
+		ZMonitor.push(newPushTrackingCtx(req));
+	}
+	
+	/**
+	 * need to be thread safe, multiple request may call this method at the same time.
+	 * @param req
+	 */
+	public void doFilterEnd(HttpServletRequest req){
+		try {
+			ZMonitor.pop(newPopTrackingCtx());
+		} finally {
+			int stackLv = ReqStack.getInstance(req).pop();
+			//
+			if (isIgnitBySelf && stackLv<=0) {
+				hReqMSLfManager.finishRequestIfAny(req);
+				HttpRequestContexts.dispose();
 			}
 		}
 	}
 	
 	
+	/**
+	 * 
+	 * @author Ian YT Tsai (Zanyking)
+	 *
+	 */
+	private static class ReqStack{
+		private static final String KEY =  ReqStack.class.getName();
+		/**
+		 * 
+		 * @param req
+		 * @return
+		 */
+		public static ReqStack getInstance(HttpServletRequest req){
+			ReqStack rs = (ReqStack) req.getAttribute(KEY);
+			if(rs==null){
+				req.setAttribute(KEY, rs = new ReqStack());
+			}
+			return rs;
+		}
+		
+		private int stackLv;
+		
+		public int push(){
+			stackLv++;
+			return stackLv;
+		}
+
+		public int pop(){
+			stackLv--;
+			return stackLv;
+		}
+	}//end of class...
 	
 	/**
 	 * 
@@ -144,17 +170,13 @@ public class ZMonitorFilterHelper {
 	 * @return
 	 */
 	private TrackingContext newPushTrackingCtx(HttpServletRequest req){
-		String query = req.getQueryString();
-		
-		String mesg = req.getRequestURL()+
-				(query==null? "" : ("?"+req.getQueryString()));
 		
 		WebConfigurator webConf = ZMonitorManager.getInstance().getBeanIfAny(
 				WebConfigurator.class);
 		MonitorMeta mm = webConf.newMonitorMeta("request-start",req);
 		
 		WebTrackingContextBase webCtx = new WebTrackingContextBase(null, mm);
-		webCtx.setMessage(mesg);
+		webCtx.setMessage(WebUtils.toURLString(req));
 		return webCtx;
 	}
 	/**
@@ -193,7 +215,7 @@ public class ZMonitorFilterHelper {
 				return hReqMSLfManager.getLifecycle();
 			return ZMonitorManager.getInstance().getMonitorLifecycle();
 		}
-	}
+	}//end of class...
 	
 	
 	

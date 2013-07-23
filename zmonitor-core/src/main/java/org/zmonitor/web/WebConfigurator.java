@@ -43,9 +43,9 @@ public class WebConfigurator extends ZMBeanBase implements Configurator {
 	 * @param urlStr
 	 * @return
 	 */
-	public boolean shouldAccept(String urlStr){
+	public boolean shouldAccept(HttpServletRequest req){
 		if(filter==null)return true;
-		return filter.shouldAccept(urlStr);
+		return filter.shouldAccept(WebUtils.toURL(req));
 	}
 	
 	public void configure(ConfigContext monitorMgmt) {

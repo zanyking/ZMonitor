@@ -49,7 +49,7 @@ public class HttpRequestMonitorLifecycleManager  implements MonitorLifecycleMana
 	public void initRequest(HttpServletRequest req){
 		req.setAttribute(KEY_REQ_MSL, 
 			new HttpRequestMonitorSequenceLifcycle(
-					this, req.getRequestURL().toString()));
+					this, req));
 	}
 	
 	public void finishRequestIfAny(HttpServletRequest req){

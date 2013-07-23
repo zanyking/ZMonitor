@@ -3,7 +3,6 @@
  */
 package org.zmonitor.web.filter;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,9 +21,9 @@ public class DefaultUrlFilter implements UrlFilter{
 	}
 	
 	private static final Acceptor AND = new Acceptor(){
-		public boolean accept(String urlStr, URL url, List<Condition> conds) {
+		public boolean accept( URL url, List<Condition> conds) {
 			for (Condition cond : new ArrayList<Condition>(conds)) {
-				if(cond.match(urlStr, url)){
+				if(cond.match(url)){
 					continue;
 				}else{
 					return false;
@@ -37,10 +36,9 @@ public class DefaultUrlFilter implements UrlFilter{
 			return "and";
 		}};
 	private static final Acceptor OR = new Acceptor(){
-		public boolean accept(String urlStr, URL url, List<Condition> conds) {
-			
+		public boolean accept( URL url, List<Condition> conds) {
 			for (Condition cond : new ArrayList<Condition>(conds)) {
-				if(cond.match(urlStr, url)){
+				if(cond.match(url)){
 					return true;
 				}else{
 					continue;
@@ -58,14 +56,8 @@ public class DefaultUrlFilter implements UrlFilter{
 	 * @param urlStr
 	 * @return
 	 */
-	public boolean shouldAccept(String urlStr){
-		URL url = null;
-		try {
-			url = new URL(urlStr);
-		} catch (MalformedURLException e) {
-			throw new RuntimeException(e);
-		}
-		return not ^ fAcceptor.accept(urlStr, url, conditions);
+	public boolean shouldAccept(URL url){
+		return not ^ fAcceptor.accept(url, conditions);
 	}
 	
 	
@@ -107,11 +99,10 @@ public class DefaultUrlFilter implements UrlFilter{
 	interface Acceptor{
 		/**
 		 * 
-		 * @param urlStr 
 		 * @param url
 		 * @return
 		 */
-		public boolean accept(String urlStr, URL url, List<Condition> conds);
+		public boolean accept(URL url, List<Condition> conds);
 		/**
 		 * 
 		 * @return

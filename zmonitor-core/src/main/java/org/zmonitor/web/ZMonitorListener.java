@@ -11,12 +11,12 @@ import javax.servlet.ServletContextListener;
  * @author Ian YT Tsai(Zanyking)
  *
  */
-public class ZMonitorServletContextListener implements ServletContextListener {
+public class ZMonitorListener implements ServletContextListener {
 
 	
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
-		System.out.println(">>>>>>>>>>>>>>>>>>>>>>> contextInitialized: "+sce.getSource());
+		System.out.println("ZMonitorServletContextListener::contextInitialized: "+sce.getSource());
 		ServletContext servletCtx = sce.getServletContext();
 		ZMonitorFilterHelper helper = 
 			ZMonitorFilterHelper.getInstance(servletCtx);
@@ -24,10 +24,12 @@ public class ZMonitorServletContextListener implements ServletContextListener {
 	}
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
-		System.out.println(">>>>>>>>>>>>>>>>>>>>>>> contextDestroyed: "+sce.getSource());
+		System.out.println("ZMonitorServletContextListener::contextDestroyed: "+sce.getSource());
 		ServletContext servletCtx = sce.getServletContext();
 		ZMonitorFilterHelper helper = 
 			ZMonitorFilterHelper.getInstance(servletCtx);
 		helper.destroy();
 	}
+	
+	
 }

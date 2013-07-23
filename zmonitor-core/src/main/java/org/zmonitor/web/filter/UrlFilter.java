@@ -3,6 +3,8 @@
  */
 package org.zmonitor.web.filter;
 
+import java.net.URL;
+
 /**
  * the implementation must be thread-safe.
  *  
@@ -15,5 +17,5 @@ public interface UrlFilter {
 	 * @param urlStr
 	 * @return
 	 */
-	public boolean shouldAccept(String urlStr);
+	public boolean shouldAccept(URL url);
 }
