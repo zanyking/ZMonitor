@@ -8,7 +8,7 @@
 
 	<display-name>ZMonitor_demos</display-name>
 	<listener>
-		<listener-class>org.zmonitor.web.ZMonitorServletContextListener</listener-class>
+		<listener-class>org.zmonitor.web.ZMonitorListener</listener-class>
 	</listener>
 	<filter>
 		<filter-name>zMonitor</filter-name>
@@ -22,7 +22,7 @@
 	<servlet>
 		<description>Demo Sevlet</description>
 		<servlet-name>demoServlet</servlet-name>
-		<servlet-class>webtest.demo.DemoServlet</servlet-class>
+		<servlet-class>webtest.demo.DemoServlet2</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 
