@@ -70,7 +70,7 @@ public class WebMonitorMeta extends MonitorMetaBase{
 	public String getQueryStr() {
 		return queryStr;
 	}
-	public Map<String, String> getQuery() {
+	public Map<String, Object> getQuery() {
 		return WebUtils.toMap(queryStr);
 	}
 
