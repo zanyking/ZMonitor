@@ -15,17 +15,6 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class WebUtils {
 	private WebUtils() {}
-	/**
-	 * 
-	 * @param query
-	 * @return
-	 */
-	public static Map<String, String> toMap(String query){
-		query.split("");
-		//TODO
-		return null;
-	}
-	
 	
 	/**
 	 * 

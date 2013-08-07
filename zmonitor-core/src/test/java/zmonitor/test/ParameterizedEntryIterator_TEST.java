@@ -7,18 +7,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.zmonitor.MonitorPoint;
-import org.zmonitor.MonitorSequence;
 import org.zmonitor.ZMonitor;
-import org.zmonitor.selector.MPDefaultPseudoClassDefs;
-import org.zmonitor.selector.impl.EntryIterator;
-import org.zmonitor.selector.impl.SelectorContext;
-import org.zmonitor.selector.impl.zm.MSWrapper;
 import org.zmonitor.test.junit.MonitoredResult;
 import org.zmonitor.test.junit.TestBase;
 
