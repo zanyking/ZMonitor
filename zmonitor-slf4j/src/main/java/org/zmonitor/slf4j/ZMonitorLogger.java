@@ -139,7 +139,8 @@ public class ZMonitorLogger implements Logger, Serializable{
 				adapt(marker), 
 				Markers.TRACKER_NAME_SLF4J, 
 				elements, 
-				level.toString());
+				level.toString(),
+				Thread.currentThread().getName());
 		
 		TrackingContextBase tCtx = new TrackingContextBase(Markers.TRACKER_NAME_SLF4J, elements){
 			public MonitorMeta newMonitorMeta() {

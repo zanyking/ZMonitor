@@ -48,7 +48,10 @@ public class GSon_TEST  extends TestBase{
 	public void MonitorMeta2JSon(){
 		StackTraceElement[] elements = StackTraceElementFinder.truncate(0);
 		MonitorMetaBase mm = new MonitorMetaBase(
-			Markers.MK_PUSH_ZM, Markers.TRACKER_NAME_ZM, elements);
+			Markers.MK_PUSH_ZM, 
+			Markers.TRACKER_NAME_ZM, 
+			elements,
+			Thread.currentThread().getName());
 		printGSonResult(mm);
 	}
 	@Test
@@ -56,7 +59,10 @@ public class GSon_TEST  extends TestBase{
 		StackTraceElement[] elements = StackTraceElementFinder.truncate(0);
 		
 		MonitorMetaBase mm = new MonitorMetaBase(
-			Markers.MK_PUSH_ZM, Markers.TRACKER_NAME_ZM, elements);
+			Markers.MK_PUSH_ZM, 
+			Markers.TRACKER_NAME_ZM, 
+			elements,
+			Thread.currentThread().getName());
 		printGSonResult(mm);
 	}
 	

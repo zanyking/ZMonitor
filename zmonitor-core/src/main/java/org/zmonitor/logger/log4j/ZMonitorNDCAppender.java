@@ -122,7 +122,7 @@ public class ZMonitorNDCAppender extends ZMonitorAppenderBase {
 //				"ZMonitor Log4j stack Operation Logic Error or forget to cleanup the state.");			
 //		}
 
-		ndcCtxt.doStart(newTrackingContext(event, Markers.MK_PUSH_LOG4J), ndcStr, depth);
+		ndcCtxt.doStart(newTrackingContext(event, Markers.MK_PUSH_LOG4J, event.getThreadName()), ndcStr, depth);
 //		System.out.printf("ZMonitorAppender::start() ndcStr=%1$2s ,NdcObj=%2$2s, isMonitorStarted=%3$b\n" ,
 //				ndcStr, ndcCtxt.getNdcObj(), lfc.isMonitorStarted());
 	}
@@ -172,6 +172,7 @@ public class ZMonitorNDCAppender extends ZMonitorAppenderBase {
 		
 		NdcContext ndcCtxt = getNdcContext(lfc);
 		NdcObj last = ndcCtxt.getNdcObj();
+		String threadId = event.getThreadName();
 		
 //		if(last.tlDepth != getCurrentTlDepth(lfc)){
 //			//TODO:MonitorSequence is operated between two LOG4J log commands, the stack information might be fucked up!   
@@ -184,22 +185,22 @@ public class ZMonitorNDCAppender extends ZMonitorAppenderBase {
 //				ndcStr, last);
 		
 		if(last==null){
-			ndcCtxt.doRecord(newTrackingContext(event, Markers.MK_RECORD_LOG4J), ndcDepth);
+			ndcCtxt.doRecord(newTrackingContext(event, Markers.MK_RECORD_LOG4J, threadId), ndcDepth);
 			return;
 		}
 		
 		if(ndcDepth > last.depth){
-			ndcCtxt.doStart(newTrackingContext(event, Markers.MK_PUSH_LOG4J), ndcStr, ndcDepth);
+			ndcCtxt.doStart(newTrackingContext(event, Markers.MK_PUSH_LOG4J, threadId), ndcStr, ndcDepth);
 			
 		}else if(ndcDepth == last.depth){
-			ndcCtxt.doRecord(newTrackingContext(event, Markers.MK_RECORD_LOG4J), ndcDepth);
+			ndcCtxt.doRecord(newTrackingContext(event, Markers.MK_RECORD_LOG4J, threadId), ndcDepth);
 			
 		}else{//if( ndcDepth < last.depth )
 			if(ndcDepth == last.previous.depth){
-				ndcCtxt.doEnd(newTrackingContext(event, Markers.MK_END_LOG4J));
+				ndcCtxt.doEnd(newTrackingContext(event, Markers.MK_END_LOG4J, threadId));
 				
 			}else if(ndcDepth > last.previous.depth){
-				ndcCtxt.doRecord(newTrackingContext(event, Markers.MK_RECORD_LOG4J), ndcDepth);
+				ndcCtxt.doRecord(newTrackingContext(event, Markers.MK_RECORD_LOG4J, threadId), ndcDepth);
 				
 			}else{// if(ndcDepth < last.previous.depth)
 				autoEnd(ndcCtxt, event);
@@ -227,7 +228,7 @@ public class ZMonitorNDCAppender extends ZMonitorAppenderBase {
 			autoEnd(ndcCtxt, event);
 			currentTlDepth = getCurrentTlDepth(lfc);
 		}
-		TrackingContext jName = newTrackingContext(event, Markers.MK_END_LOG4J);
+		TrackingContext jName = newTrackingContext(event, Markers.MK_END_LOG4J, event.getThreadName());
 		ndcCtxt.doEnd(jName);
 	}
 	

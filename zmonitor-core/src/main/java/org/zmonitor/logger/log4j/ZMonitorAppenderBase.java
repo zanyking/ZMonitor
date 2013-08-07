@@ -120,11 +120,14 @@ public abstract class ZMonitorAppenderBase extends AppenderSkeleton{
 	protected class Log4jTrackingContext extends TrackingContextBase{
 		private LoggingEvent event; 
 		private Marker marker;
+		private final String threadId;
 		
-		public Log4jTrackingContext(LoggingEvent event,  Marker marker) {
+		
+		public Log4jTrackingContext(LoggingEvent event,  Marker marker, String threadId) {
 			super(Markers.TRACKER_NAME_LOG4J, null);// Log4j didn't provide full stack Trace while logger logging. 
 			this.event = event;
 			this.marker = marker;
+			this.threadId = threadId;
 		}
 
 		public MonitorMeta newMonitorMeta() {
@@ -143,7 +146,8 @@ public abstract class ZMonitorAppenderBase extends AppenderSkeleton{
 						locInfo.getClassName(), 
 						locInfo.getMethodName(), 
 						lineNum, 
-						locInfo.getFileName());
+						locInfo.getFileName(),
+						threadId);
 			} else {
 				mm = new MonitorMetaBase();
 				mm.setClassName(event.getLoggerName());
@@ -163,8 +167,8 @@ public abstract class ZMonitorAppenderBase extends AppenderSkeleton{
 	 * @param markerName
 	 * @return
 	 */
-	protected TrackingContextBase newTrackingContext(LoggingEvent event, Marker marker) {
-		return newTrackingContext(event, marker, event.getRenderedMessage());
+	protected TrackingContextBase newTrackingContext(LoggingEvent event, Marker marker, String threadId) {
+		return newTrackingContext(event, marker, event.getRenderedMessage(), threadId);
 	}
 	/**
 	 * 
@@ -173,8 +177,8 @@ public abstract class ZMonitorAppenderBase extends AppenderSkeleton{
 	 * @param message
 	 * @return
 	 */
-	protected TrackingContextBase newTrackingContext(LoggingEvent event,  Marker marker, String message){
-		TrackingContextBase ctx = new Log4jTrackingContext(event, marker);
+	protected TrackingContextBase newTrackingContext(LoggingEvent event,  Marker marker, String message, String threadId){
+		TrackingContextBase ctx = new Log4jTrackingContext(event, marker, threadId);
 		ctx.setMessage(message);
 		return ctx;
 	}

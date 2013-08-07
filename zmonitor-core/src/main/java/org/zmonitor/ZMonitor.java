@@ -138,7 +138,7 @@ public final class ZMonitor {
 		return ctx;
 	}
 	private static MonitorMeta newMonitorMeta(Marker marker, StackTraceElement[] elements){
-		return new MonitorMetaBase(marker, TRACKER_NAME_ZM, elements);
+		return new MonitorMetaBase(marker, TRACKER_NAME_ZM, elements, Thread.currentThread().getName());
 	}
 	
 	/**

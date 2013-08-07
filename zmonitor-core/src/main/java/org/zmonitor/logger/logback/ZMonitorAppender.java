@@ -62,7 +62,8 @@ public class ZMonitorAppender extends AppenderBase<ILoggingEvent>{
 				transform(event.getMarker()), 
 			Markers.TRACKER_NAME_LOGBACK, 
 			elements, 
-			event.getLevel().toString());
+			event.getLevel().toString(),
+			event.getThreadName());
 		
 		TrackingContextBase ctx = new TrackingContextBase(Markers.TRACKER_NAME_LOGBACK, elements){
 			public MonitorMeta newMonitorMeta() {

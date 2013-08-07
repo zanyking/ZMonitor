@@ -17,8 +17,8 @@ public class LoggerMonitorMeta extends MonitorMetaBase {
 	private String logLevel;
 
 	public LoggerMonitorMeta(Marker marker, String trackerName,
-			StackTraceElement[] elements, String logLevel) {
-		super(marker, trackerName, elements);
+			StackTraceElement[] elements, String logLevel, String threadId) {
+		super(marker, trackerName, elements, threadId);
 		this.logLevel = logLevel;
 	}
 

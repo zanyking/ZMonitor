@@ -23,6 +23,7 @@ public class MonitorMetaBase implements MonitorMeta{
 	// meta info
 	protected Marker marker;
 	protected String trackerName;
+	protected String threadId;
 	
 	//
 //	protected transient StackTraceElement[] stackTraceElements;// TODO this is too heavy for 
@@ -31,15 +32,16 @@ public class MonitorMetaBase implements MonitorMeta{
 	/**
 	 * @param marker
 	 */
-	protected MonitorMetaBase(Marker marker, String trackerName){
+	protected MonitorMetaBase(Marker marker, String trackerName, String threadId){
 		this.marker = marker;
 		this.trackerName = trackerName;
+		this.threadId = threadId;
 	};
 	/**
 	 * @param stEle
 	 */
-	public MonitorMetaBase(Marker marker, String trackerName, StackTraceElement[] elements) {
-		this(marker, trackerName);
+	public MonitorMetaBase(Marker marker, String trackerName, StackTraceElement[] elements, String threadId) {
+		this(marker, trackerName, threadId);
 		if(elements!=null){
 			StackTraceElement stEle = elements[0];
 			className = stEle.getClassName();
@@ -55,8 +57,8 @@ public class MonitorMetaBase implements MonitorMeta{
 	 * @param methodName
 	 * @param lineNumber
 	 */
-	public MonitorMetaBase(Marker marker, String trackerName, String className, String methodName, int lineNumber, String fileName) {
-		this(marker, trackerName);
+	public MonitorMetaBase(Marker marker, String trackerName, String className, String methodName, int lineNumber, String fileName, String threadId) {
+		this(marker, trackerName, threadId);
 		this.className = className;
 		this.methodName = methodName;
 		this.lineNumber = lineNumber;

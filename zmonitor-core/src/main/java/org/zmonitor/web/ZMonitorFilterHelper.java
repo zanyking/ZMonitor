@@ -185,7 +185,10 @@ public class ZMonitorFilterHelper {
 	 */
 	private TrackingContext newPopTrackingCtx(){
 		MonitorMeta mm = new MonitorMetaBase(
-				MarkerFactory.getMarker("request-end"), TRACKER_NAME, null);
+				MarkerFactory.getMarker("request-end"), 
+				TRACKER_NAME, null, 
+				Thread.currentThread().getName());
+		
 		WebTrackingContextBase webCtx = new WebTrackingContextBase( null, mm);
 		webCtx.setMessage("<- END");
 		return webCtx;
