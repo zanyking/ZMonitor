@@ -43,6 +43,14 @@ public class EclipseConsoleMonitorSequenceHandler extends ZMBeanBase
 				+selAdptor);
 	}
 	
+	private boolean showThreadName = true;
+	
+	public boolean isShowThreadName() {
+		return showThreadName;
+	}
+	public void setShowThreadName(boolean showThreadName) {
+		this.showThreadName = showThreadName;
+	}
 	
 	public void handle(MonitorSequence ms){
 		//dump Records from Black Box
@@ -52,7 +60,12 @@ public class EclipseConsoleMonitorSequenceHandler extends ZMBeanBase
 		String indent = "    ";
 		StringBuffer sb = new StringBuffer();
 		
-		Strings.appendln(sb, root.getMonitorMeta().getTrackerName()," -> MONITOR_SEQUENCE DUMP BEGIN [ ",getHHmmssSSS_yyyy_MM_dd().format(new Date())," ] ");
+		Strings.append(sb, root.getMonitorMeta().getTrackerName()," -> MONITOR_SEQUENCE DUMP BEGIN [ ",getHHmmssSSS_yyyy_MM_dd().format(new Date())," ] ");
+		
+		if(showThreadName)
+			Strings.appendln(sb, "[ ", root.getMonitorMeta().getThreadName()," ]");
+		else
+			Strings.appendln(sb);
 		
 		Strings.appendln(sb,"Total Elipsed Millis:\t",retrieveMillisToEnd(root));
 		Strings.appendln(sb,"Monitor Point Amount:\t",ms.getSize());
@@ -60,7 +73,22 @@ public class EclipseConsoleMonitorSequenceHandler extends ZMBeanBase
 		Strings.appendln(sb,"Self Spent millis:\t", Strings.toNumericString(ms.getSelfSpendMillis(),","));
 		
 		
-		Strings.appendln(sb, indent,"[ pre~ | ~next ]ms");
+		
+		if(previousMillis || nextMillis)
+			Strings.append(sb, "[");
+		
+		if(previousMillis)
+			Strings.append(sb, " pre~ ");
+		if(previousMillis && nextMillis)
+			Strings.append(sb, "|");
+		if(nextMillis)
+			Strings.append(sb, " ~next ");
+		
+		if(previousMillis || nextMillis)
+			Strings.append(sb, "]ms ");
+		
+		
+		Strings.appendln(sb);
 		
 		write(sb, root, indent, indent);
 		
@@ -121,7 +149,7 @@ public class EclipseConsoleMonitorSequenceHandler extends ZMBeanBase
 		if(previousMillis && nextMillis)
 			Strings.append(sb, "|");
 		if(nextMillis)
-			Strings.append(sb, align(retrieveMillisToNext(mp)));
+			Strings.append(sb, align(retrieveMillisToStrictNext(mp)));
 		
 		if(previousMillis || nextMillis)
 			Strings.append(sb, "]ms ");

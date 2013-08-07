@@ -31,7 +31,22 @@ public class MPUtils {
 	}
 	
 	
-	
+	/**
+	 * the elapsed time between current and the strict next mp.<br>
+	 * A strict next mp means:<br>
+	 * <ul>
+	 * <li> if mp is root, it's the very end of current.
+	 * <li> if mp has first child, it's the first child 
+	 * <li> the next sibling if any 
+	 * <li> null, if the current is the very end of the entire mp tree.
+	 * <ul>
+	 * 
+	 * @param current
+	 * @return
+	 */
+	public static long retrieveMillisToStrictNext(MonitorPoint current){
+		return RangeRetriever.Default.STRICT_NEXT.retrieve(current).getInterval();
+	}
 	
 	/**
 	 * calculate the elapsed time from current to next(see: {@link #getNext(MonitorPoint)}) in milliseconds.   

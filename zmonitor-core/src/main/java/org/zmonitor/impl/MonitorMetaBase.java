@@ -23,7 +23,7 @@ public class MonitorMetaBase implements MonitorMeta{
 	// meta info
 	protected Marker marker;
 	protected String trackerName;
-	protected String threadId;
+	protected String threadName;
 	
 	//
 //	protected transient StackTraceElement[] stackTraceElements;// TODO this is too heavy for 
@@ -32,16 +32,16 @@ public class MonitorMetaBase implements MonitorMeta{
 	/**
 	 * @param marker
 	 */
-	protected MonitorMetaBase(Marker marker, String trackerName, String threadId){
+	protected MonitorMetaBase(Marker marker, String trackerName, String threadName){
 		this.marker = marker;
 		this.trackerName = trackerName;
-		this.threadId = threadId;
+		this.threadName = threadName;
 	};
 	/**
 	 * @param stEle
 	 */
-	public MonitorMetaBase(Marker marker, String trackerName, StackTraceElement[] elements, String threadId) {
-		this(marker, trackerName, threadId);
+	public MonitorMetaBase(Marker marker, String trackerName, StackTraceElement[] elements, String threadName) {
+		this(marker, trackerName, threadName);
 		if(elements!=null){
 			StackTraceElement stEle = elements[0];
 			className = stEle.getClassName();
@@ -57,8 +57,8 @@ public class MonitorMetaBase implements MonitorMeta{
 	 * @param methodName
 	 * @param lineNumber
 	 */
-	public MonitorMetaBase(Marker marker, String trackerName, String className, String methodName, int lineNumber, String fileName, String threadId) {
-		this(marker, trackerName, threadId);
+	public MonitorMetaBase(Marker marker, String trackerName, String className, String methodName, int lineNumber, String fileName, String threadName) {
+		this(marker, trackerName, threadName);
 		this.className = className;
 		this.methodName = methodName;
 		this.lineNumber = lineNumber;
@@ -98,6 +98,12 @@ public class MonitorMetaBase implements MonitorMeta{
 //		this.stackTraceElements = stackTraceElements;
 //	}
 	
+	public String getThreadName() {
+		return threadName;
+	}
+	public void setThreadName(String threadName) {
+		this.threadName = threadName;
+	}
 	public String getClassName() {
 		return className;
 	}
@@ -209,6 +215,7 @@ public class MonitorMetaBase implements MonitorMeta{
 	public boolean isSimilar(MonitorMeta mMeta) {
 		return equals(mMeta);
 	}
+
 	
 	
 

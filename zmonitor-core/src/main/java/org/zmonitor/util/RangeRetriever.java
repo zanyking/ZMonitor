@@ -180,19 +180,22 @@ public interface RangeRetriever {
 		 *(there's no NEXT)
 		 *</pre>
 		 */
-		TRAVERSE_NEXT{
+		STRICT_NEXT{
 			public Range retrieve(MonitorPoint current){
+				if(current.getParent()==null){// this is root mp...
+					return END.retrieve(current);
+				}
 				MonitorPoint next = dfs(current, current);
 				return new Range( current, next) ;
 			}
-			private MonitorPoint dfs(MonitorPoint root, MonitorPoint current){
+			private MonitorPoint dfs(MonitorPoint start, MonitorPoint current){
 				MonitorPoint next = current.getFirstChild();
 
 				while(next == null){//has no first child, look up next sibling...
 					next = current.getNextSibling();
 					if(next ==null){//current is the last child of parent, looking up parent's next sibling.
 						current = current.getParent();
-						if(current == null || current == root){// reach the end...
+						if(current == null || current == start){// reach the end...
 							return null;
 						}
 					}
