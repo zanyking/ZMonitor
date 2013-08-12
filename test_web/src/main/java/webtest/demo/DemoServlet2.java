@@ -40,9 +40,7 @@ public class DemoServlet2 extends HttpServlet{
 		}finally{
 			logger.debug("<< finish Demo Biz Logic...");	
 		}
-		logger.debug(">> do Demo action");
 		//DO something
-		logger.debug("<< finish Demo Biz Logic...");
 	}
 	
 	

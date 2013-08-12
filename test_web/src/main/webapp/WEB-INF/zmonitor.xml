@@ -30,7 +30,16 @@
 	</web-conf>
 	
 	<monitor-sequence-handler name="console-handler" 
-		class="org.zmonitor.handler.EclipseConsoleMonitorSequenceHandler"/>
+		class="org.zmonitor.handler.EclipseConsoleMonitorSequenceHandler"
+		showThreadName="true"
+		shortClassName="false"
+		previousMillis="false"	
+		nextMillis="true"
+		callerJavaFile="true"
+		showId="false"
+		showType="false"
+		showClass="false"
+		showMessage="true"/>
 
 	
 	<assertion>
