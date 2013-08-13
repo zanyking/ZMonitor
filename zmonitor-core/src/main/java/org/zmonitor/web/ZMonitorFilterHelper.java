@@ -173,7 +173,10 @@ public class ZMonitorFilterHelper {
 		
 		WebConfigurator webConf = ZMonitorManager.getInstance().getBeanIfAny(
 				WebConfigurator.class);
-		MonitorMeta mm = webConf.newMonitorMeta("request-start",req);
+		MonitorMeta mm = webConf.newMonitorMeta(
+				"request-start", 
+				req, 
+				Thread.currentThread().getName());
 		
 		WebTrackingContextBase webCtx = new WebTrackingContextBase(null, mm);
 		webCtx.setMessage(WebUtils.toURLString(req));

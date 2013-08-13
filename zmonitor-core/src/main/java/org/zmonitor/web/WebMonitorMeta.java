@@ -31,8 +31,8 @@ public class WebMonitorMeta extends MonitorMetaBase{
 	protected String uuid;
 	
 	protected WebMonitorMeta(){}
-	public WebMonitorMeta(Marker marker, HttpServletRequest req) {
-		super(marker, ZMonitorFilter.TRACKER_NAME, null);
+	public WebMonitorMeta(Marker marker, HttpServletRequest req, String threadName) {
+		super(marker, ZMonitorFilter.TRACKER_NAME, threadName);
 		mimeType = req.getContentType();
 		protocol = req.getProtocol();
 		remoteAddr = req.getRemoteAddr();

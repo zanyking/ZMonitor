@@ -107,10 +107,10 @@ public class WebConfigurator extends ZMBeanBase implements Configurator {
 		return filter;
 	}
 	
-	public MonitorMeta newMonitorMeta(String markerStr, HttpServletRequest req){
+	public MonitorMeta newMonitorMeta(String markerStr, HttpServletRequest req, String threadName){
 		//  append additional info for zmonitor-webtest purpose.
 		WebMonitorMeta meta = new WebMonitorMeta(
-				MarkerFactory.getMarker(markerStr), req);
+				MarkerFactory.getMarker(markerStr), req, threadName);
 		if(fTestConfig.isActivate()){
 			meta.setUuid(req.getParameter(fTestConfig.getRequestUuidParam()));
 		}
