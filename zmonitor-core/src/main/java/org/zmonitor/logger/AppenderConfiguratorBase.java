@@ -6,6 +6,7 @@ package org.zmonitor.logger;
 import org.zmonitor.InitFailureException;
 import org.zmonitor.config.ConfigContext;
 import org.zmonitor.impl.ZMLog;
+import org.zmonitor.logger.Driver.HookUpContext;
 
 
 /**
@@ -34,12 +35,21 @@ public abstract class AppenderConfiguratorBase extends ConfiguratorBase {
 		 * <appender class="org.zmonitor.logger.log4j.ZMonitorAppender">
 		 *   the given class must extends org.zmonitor.logger.log4j.ZMonitorAppenderBase.
 		 */
-		ConfigContext appenderCtx = log4jConfCtx.toNode(REL_APPENDER);
+		final ConfigContext appenderCtx = log4jConfCtx.toNode(REL_APPENDER);
 		Class<?> driverClz = null;
 		try{
 			driverClz = Class.forName(driverClassName);
 			Driver driver = (Driver)driverClz.newInstance();
-			driver.hookUpCustomAppender(appenderCtx);
+			driver.hookUpCustomAppender(new HookUpContext() {
+				@Override
+				public String getLogLevel() {
+					return logLevel;
+				}
+				@Override
+				public ConfigContext getAppenderCtx() {
+					return appenderCtx;
+				}
+			});
 		}catch(NoClassDefFoundError e){
 			e.printStackTrace();
 			ZMLog.info("cannot init Custom Appender for " +confNodeName+
@@ -67,11 +77,10 @@ public abstract class AppenderConfiguratorBase extends ConfiguratorBase {
 	
 	/**
 	 * <p>
-	 * If you want ZMonitor to add a custom appender to your application's log4j
-	 * context while ZMonitor initialization. Configure this setting to true in 
-	 * <i>zmonitor.xml/log4j-conf:autoHookUp</i>. This mechanism is designed for
-	 * Developer who don't want to switch log4j configurations between development 
-	 * environment  and production environment.
+	 * If you want ZMonitor to add a custom appender to your application's log4j or Logback
+	 * context while ZMonitor initialization. Configure this setting: <i>zmonitor.xml/log4j-conf:autoHookUp</i> 
+	 * to true. This mechanism is designed for Developer who don't want to switch between 
+	 * configurations of development environment and production environment.
 	 * 
 	 * <p>
 	 * If you want to do further detailed control to ZMonitorAppender, or
@@ -83,14 +92,30 @@ public abstract class AppenderConfiguratorBase extends ConfiguratorBase {
 	 * <b>NOTICE:</b><br>
 	 * Due to class loading sequence and module initialization ordering, 
 	 * Auto hook up can only worked while ZMonitorManager is initialized by
-	 * others (e.g. {@link org.zmonitor.web.ZMonitorFilter}), and log4j
-	 * Factory is already started.
+	 * a specific container task intercepter (e.g. {@link org.zmonitor.web.ZMonitorFilter}), 
+	 * and log4j (or logback) Factory is already started.
 	 * @param autoHookUp
 	 *            set to true to ask ZMonitor to insert a custom appender to
-	 *            your application's log4j context, default value is
+	 *            your application's log4j & logback context, default value is
 	 *            <i>false</i>
 	 */
 	public void setAutoHookUp(boolean autoHookUp) {
 		this.autoHookUp = autoHookUp;
 	}
+	
+	private String logLevel = "ERROR";
+	
+	
+	public String getLogLevel() {
+		return logLevel;
+	}
+	/**
+	 * Set the log level to the Hooked up appender, default   
+	 * @param logLevel
+	 */
+	public void setLogLevel(String logLevel) {
+		this.logLevel = logLevel;
+	}
+	
+	
 }

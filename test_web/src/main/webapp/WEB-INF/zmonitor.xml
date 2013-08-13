@@ -35,13 +35,14 @@
 		shortClassName="false"
 		previousMillis="false"	
 		nextMillis="true"
+		showLogLevel="true"
 		callerJavaFile="true"
 		showId="false"
 		showType="false"
 		showClass="false"
 		showMessage="true"/>
 
-	
+	<!-- thinking about new spec... -->
 	<assertion>
 		<matcher><![CDATA[ .Root[url^='login'] ]]></matcher>
 		<action class="a.b.c.MyAction" />

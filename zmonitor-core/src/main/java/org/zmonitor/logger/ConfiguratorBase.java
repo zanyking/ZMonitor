@@ -46,7 +46,7 @@ public abstract class ConfiguratorBase extends ZMBeanBase implements Configurato
 		}
 	}
 	/**
-	 * will be called in very beginning while configure.
+	 * will be called in very beginning while configuring.
 	 * @param manager
 	 */
 	protected abstract void configureDefault(ZMonitorManager manager);

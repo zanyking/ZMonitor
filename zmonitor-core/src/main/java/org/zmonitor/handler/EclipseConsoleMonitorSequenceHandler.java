@@ -18,10 +18,12 @@ import org.zmonitor.MonitorSequence;
 import org.zmonitor.ZMonitorManager;
 import org.zmonitor.bean.ZMBeanBase;
 import org.zmonitor.config.ConfigContext;
+import org.zmonitor.logger.LoggerMonitorMeta;
 import org.zmonitor.marker.Marker;
 import org.zmonitor.selector.SelectorAdaptor;
 import org.zmonitor.spi.MonitorSequenceHandler;
 import org.zmonitor.util.Strings;
+
 import static org.zmonitor.util.MPUtils.*;
 
 /**
@@ -134,6 +136,7 @@ public class EclipseConsoleMonitorSequenceHandler extends ZMBeanBase
 	private boolean showClass = true;
 	private boolean showMessage = true;
 	private boolean shortClassName = true;
+	private boolean showLogLevel = true;
 	
 	public void writeMP(StringBuffer sb, MonitorPoint mp, String prefix){
 		String mpId = selAdptor.retrieveId(mp);
@@ -154,6 +157,8 @@ public class EclipseConsoleMonitorSequenceHandler extends ZMBeanBase
 		if(previousMillis || nextMillis)
 			Strings.append(sb, "]ms ");
 		
+		if(showLogLevel)
+			writeLogLevel(sb, "", mp.getMonitorMeta());
 		if(callerJavaFile)
 			writeTraceElement(sb, "", mp.getMonitorMeta());
 		if(showId)
@@ -163,13 +168,23 @@ public class EclipseConsoleMonitorSequenceHandler extends ZMBeanBase
 		if(showClass)
 			Strings.append(sb, ", CLASS:", mpCssClz);
 		if(showMessage)
-			Strings.append(sb, ", MESSAGE:",mp.getMessage());
+			Strings.append(sb, ", ",mp.getMessage());
 		
 		Strings.append(sb,"\n");
 		
 //				"|",Strings.alignedMillisStr(record.getSelfPeriod()),"]ms [",record.name,"]");
 		
 		
+	}
+	private void writeLogLevel(StringBuffer sb, 
+			String prefix,
+			MonitorMeta monitorMeta) {
+		if(monitorMeta instanceof LoggerMonitorMeta){
+			LoggerMonitorMeta lm = (LoggerMonitorMeta) monitorMeta;
+			Strings.append(sb, prefix, "[", lm.getLogLevel(),"]");
+		}else{
+			Strings.append(sb, prefix, "[N/A]");
+		}
 	}
 	public void writeRoot2MP(StringBuffer sb, MonitorPoint mp, String indent){
 		List<MonitorPoint> bloodline = getBloodline(mp);
@@ -180,7 +195,7 @@ public class EclipseConsoleMonitorSequenceHandler extends ZMBeanBase
 	}
 	private void writeTraceElement(StringBuffer sb, String prefix, MonitorMeta meta){
 		if(meta.isCallerNotAvailable()){
-			Strings.append(sb, prefix, "caller's stackTraceElement is not available.");
+			Strings.append(sb, prefix, "");
 			return;
 		}else{
 			Strings.append(sb, prefix,"at ", 
@@ -270,4 +285,12 @@ public class EclipseConsoleMonitorSequenceHandler extends ZMBeanBase
 	public void setShortClassName(boolean shortClassName) {
 		this.shortClassName = shortClassName;
 	}
+	public boolean isShowLogLevel() {
+		return showLogLevel;
+	}
+	public void setShowLogLevel(boolean showLogLevel) {
+		this.showLogLevel = showLogLevel;
+	}
+	
+	
 }

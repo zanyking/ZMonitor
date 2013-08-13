@@ -28,7 +28,7 @@ public class ZMonitorAppender extends ZMonitorAppenderBase {
 	    		preventRecursion(ZMLog.class, event.getLoggerName()))
 	    	return;
 	    {//IMPORTANT: this section is something MUST be called!
-	    	String mesg = event.getRenderedMessage();
+	    	event.getRenderedMessage();
 	    	event.getThrowableStrRep();
 //	    	MonitorLifecycle lfc = ZMonitorManager.getInstance().getMonitorLifecycle();
 	    	TrackerBase tracker = Log4jConfigurator.getInstance().getTracker();

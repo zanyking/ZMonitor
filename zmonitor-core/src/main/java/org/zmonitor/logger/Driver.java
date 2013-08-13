@@ -12,7 +12,16 @@ import org.zmonitor.config.ConfigContext;
 public interface Driver {
 	/**
 	 * 
-	 * @param appenderCtx
+	 * @param hookupCtx
 	 */
-	 void hookUpCustomAppender(ConfigContext appenderCtx);
+	 void hookUpCustomAppender(HookUpContext hookupCtx);
+	 /**
+	  * 
+	  * @author Ian YT Tsai (Zanyking)
+	  *
+	  */
+	 interface HookUpContext{
+		 ConfigContext getAppenderCtx();
+		 String getLogLevel();
+	 }
 }

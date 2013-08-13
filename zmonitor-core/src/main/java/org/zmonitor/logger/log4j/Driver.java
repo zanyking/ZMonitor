@@ -18,7 +18,8 @@ public class Driver implements org.zmonitor.logger.Driver{
 	 * 
 	 * @param appenderCtx
 	 */
-	public void hookUpCustomAppender(ConfigContext appenderCtx){
+	public void hookUpCustomAppender(HookUpContext hookupCtx){
+		ConfigContext appenderCtx = hookupCtx.getAppenderCtx();
 		Logger root = Logger.getRootLogger();
 		ZMonitorAppenderBase log4jAppender;//default appender class
 		if(appenderCtx.getNode()==null){
@@ -29,17 +30,20 @@ public class Driver implements org.zmonitor.logger.Driver{
 			// must extends ZMonitorAppenderBase...
 			log4jAppender = appenderCtx.newBean(
 					ZMonitorAppender.class, false);
+			
 			appenderCtx.applyAttributes(new PropertySetter(log4jAppender), 
 					"class");
 		}
-		log4jAppender.setThreshold(Level.DEBUG);
+		log4jAppender.setThreshold(Level.toLevel(hookupCtx.getLogLevel()));
 		root.addAppender(log4jAppender);
+		
 		// developer might want to implement an appender which is also a ZMBean.
 		// by now there's no benefit for this because there's no big
-		// infra-services that ZM provided.
+		// infra-services that ZM provided.(uncomment this line one day)
 		
 //		ZMonitorManager.getInstance().accept(log4jAppender);
 	}
+	
 	
 	
 }
