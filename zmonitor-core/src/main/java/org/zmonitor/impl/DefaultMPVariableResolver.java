@@ -3,7 +3,6 @@
  */
 package org.zmonitor.impl;
 
-import java.util.List;
 import java.util.Map;
 
 import org.zmonitor.MonitorPoint;
@@ -69,6 +68,7 @@ public class DefaultMPVariableResolver {
 		return recursive(target, attrs, 1).getValue();
 	}
 	
+	@SuppressWarnings("rawtypes")
 	protected Result recursive(Object target, String[] attrs, int idx){
 		Arguments.checkNotNull(target);
 		if(target instanceof Map){
@@ -143,7 +143,7 @@ public class DefaultMPVariableResolver {
 	 * @param idx
 	 * @return
 	 */
-	protected Result recursiveMap(Map map, String[] attrs, int idx ){
+	protected Result recursiveMap(@SuppressWarnings("rawtypes") Map map, String[] attrs, int idx ){
 		Object value = map.get(attrs[idx]);
 		
 		if((attrs.length-idx)<=1 ){//reach the end

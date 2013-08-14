@@ -6,7 +6,6 @@ package org.zmonitor.selector.impl;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import org.zmonitor.selector.Entry;
 import org.zmonitor.selector.SelectorEvalException;
@@ -26,6 +25,7 @@ public class EntryLocalProperties {
 	
 	
 	
+	@SuppressWarnings("rawtypes")
 	public static<T> boolean match(Entry<T> entry, 
 			SelSequence seq, 
 			Map<String, PseudoClassDef> defs){
@@ -95,7 +95,8 @@ public class EntryLocalProperties {
 		return true;
 	}
 	
-	/*package*/ static<T> boolean matchPseudoClasses(
+	/*package*/ @SuppressWarnings({ "rawtypes", "unchecked" })
+	static<T> boolean matchPseudoClasses(
 			Entry<T> context, List<PseudoClass> pseudoClasses, 
 			Map<String, PseudoClassDef> defs){
 		if(pseudoClasses == null || pseudoClasses.isEmpty()) return true;
@@ -119,6 +120,7 @@ public class EntryLocalProperties {
 	
 	
 	// helper //TODO to support 
+	@SuppressWarnings("unchecked")
 	private static<T, K> T getValue(Entry<K> entry, String name){
 		Object var = entry.getEntryContainer().resolveAttribute(name, entry);
 		return (T) var;
@@ -127,6 +129,7 @@ public class EntryLocalProperties {
 	
 
 	
+	@SuppressWarnings("rawtypes")
 	private static PseudoClassDef getPseudoClassDef(
 			Map<String, PseudoClassDef> defs, String className) {
 		PseudoClassDef def = null;

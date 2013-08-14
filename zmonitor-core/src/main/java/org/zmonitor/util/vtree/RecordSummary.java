@@ -16,7 +16,6 @@ import java.util.List;
 public class RecordSummary<T> {
 	@SuppressWarnings("rawtypes")
 	private static final Rotate EMPTY_MESGS = new Rotate(0);
-	@SuppressWarnings("unchecked")
 	private Rotate<T> mesgs = EMPTY_MESGS;
 	private int counter;
 	private long beforePeriodSum;

@@ -4,7 +4,6 @@
  */
 package org.zmonitor.util;
 
-import java.util.regex.Pattern;
 
 /**
  * @author Ian YT Tsai(Zanyking)

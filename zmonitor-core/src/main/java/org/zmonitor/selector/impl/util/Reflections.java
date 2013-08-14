@@ -116,7 +116,7 @@ public class Reflections {
 	/**
 	 * Add the item to a collection field of an object.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static void addToCollectionField(Object owner, Field field, 
 			Object item){
 		if(!isAppendableToCollection(field.getGenericType(), item))

@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+
+
 import org.zmonitor.impl.ZMLog;
 
 /**
@@ -46,6 +48,7 @@ public class PropertySetter {
 	 * @param obj
 	 * @param interceptor
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public PropertySetter(Object obj, Interceptor interceptor) {
 		if(obj==null)
 			throw new IllegalArgumentException("obj cannot be null");
@@ -71,6 +74,7 @@ public class PropertySetter {
 	 * @param name
 	 * @param value
 	 */
+	@SuppressWarnings("unchecked")
 	public void setProperty(String name, String valueStr) {
 		if (valueStr == null) return;
 		Object val = valueStr;

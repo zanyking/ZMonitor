@@ -100,7 +100,6 @@ public class XMLConfigs {
 	 * @param defaultClass
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public static <T> T newInstance(String clazzStr, Class<T> defaultClass){
 		Class<T> clazz = null;
 		try {

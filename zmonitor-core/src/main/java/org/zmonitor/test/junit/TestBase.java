@@ -16,7 +16,6 @@ import org.zmonitor.impl.MSPipe.Mode;
 import org.zmonitor.impl.ThreadLocalMonitorLifecycleManager;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.spi.MonitorLifecycle;
-import org.zmonitor.util.Loader;
 
 
 /**
@@ -26,16 +25,6 @@ import org.zmonitor.util.Loader;
 public abstract class TestBase {
 	
 	
-	
-//	private static String getMsRunCaseId(Class testCaseClass){
-//		try {
-//			Method runCaseMethod = testCaseClass.getDeclaredMethod("runCase");
-//			MonitorSequenceId msIdAnno = runCaseMethod.getAnnotation(MonitorSequenceId.class);
-//			return (msIdAnno==null)? null : msIdAnno.value();
-//		} catch (Exception e) {
-//			throw new RuntimeException(e);
-//		} 
-//	}
 	
 	private static final String ID_INTERNAL_TEST_MS_HANDLER = "ID_INTERNAL_TEST_MS_HANDLER";
 	

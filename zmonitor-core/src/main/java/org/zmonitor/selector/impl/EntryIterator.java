@@ -26,6 +26,7 @@ public class EntryIterator<E> implements Iterator<Entry<E>> {
 	private final EntryContainer<E> _container;
 	private final Entry<E> _root;
 	private final List<Selector> _selectorList;
+	@SuppressWarnings("rawtypes")
 	private final Map<String, PseudoClassDef> _localDefs = 
 		new HashMap<String, PseudoClassDef>();
 	
@@ -76,6 +77,7 @@ public class EntryIterator<E> implements Iterator<Entry<E>> {
 	 * @param name the pseudo class name
 	 * @param def the pseudo class definition
 	 */
+	@SuppressWarnings("rawtypes")
 	public void setPseudoClassDef(String name, PseudoClassDef def){
 		_localDefs.put(name, def);
 	}
@@ -85,6 +87,7 @@ public class EntryIterator<E> implements Iterator<Entry<E>> {
 	 * @param name the pseudo class name
 	 * @return the original definition
 	 */
+	@SuppressWarnings("rawtypes")
 	public PseudoClassDef removePseudoClassDef(String name){
 		return _localDefs.remove(name);
 	}
@@ -227,7 +230,7 @@ public class EntryIterator<E> implements Iterator<Entry<E>> {
 		if(IS_DEBUG){
 			System.out.println(">>>>buildNextSiblingCtx()");
 			System.out.println("parent = "+ctx.getParent()); // TODO: debugger
-			System.out.println("preSib = "+((SelectorContext)ctx).getPreviousSibling()); // TODO: debugger
+			System.out.println("preSib = "+((SelectorContext<E>)ctx).getPreviousSibling()); // TODO: debugger
 			System.out.println(ctx); // TODO: debugger
 			System.out.println("------------------------\n");
 		}
@@ -235,7 +238,6 @@ public class EntryIterator<E> implements Iterator<Entry<E>> {
 	}
 	
 	public String toString(){
-		StringBuffer sb = new StringBuffer();
 		return "EntryItor: current="+_currCtx.toString();
 	}
 	private SelectorContext<E> _rootCtx;

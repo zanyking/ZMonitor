@@ -4,7 +4,6 @@
 package org.zmonitor.logger.logback;
 
 import org.zmonitor.MarkerFactory;
-import org.zmonitor.MonitorMeta;
 import org.zmonitor.marker.Marker;
 
 /**

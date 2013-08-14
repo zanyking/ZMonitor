@@ -42,7 +42,7 @@ public class UndefinedAttributeException extends RuntimeException {
 	 * @param clz
 	 * @param name
 	 */
-	public UndefinedAttributeException(Class clz, String name) {
+	public UndefinedAttributeException(Class<?> clz, String name) {
 		super("unable to find attribute: "+name+" from type: "+clz);
 	}
 

@@ -7,6 +7,8 @@ package org.zmonitor;
  */
 public class AlreadyStartedException extends Exception {
 
+	private static final long serialVersionUID = -5745757214627581401L;
+
 	public AlreadyStartedException() {
 	}
 

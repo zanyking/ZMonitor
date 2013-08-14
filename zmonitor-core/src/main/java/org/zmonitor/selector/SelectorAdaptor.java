@@ -4,18 +4,12 @@
 package org.zmonitor.selector;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.zmonitor.MonitorMeta;
 import org.zmonitor.MonitorPoint;
-import org.zmonitor.ZMonitor;
 import org.zmonitor.impl.DefaultSelectorAdaptation;
-import org.zmonitor.marker.Marker;
 import org.zmonitor.marker.Markers;
-import org.zmonitor.util.Strings;
 
 /**
  * Common mp attribute can be used in Selector:

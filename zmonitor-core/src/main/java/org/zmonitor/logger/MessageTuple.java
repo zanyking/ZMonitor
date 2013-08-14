@@ -26,6 +26,8 @@ import java.util.Map;
  * 
  */
 public class MessageTuple implements Message, Serializable{
+	private static final long serialVersionUID = -3846352455838358099L;
+	
 	public static final MessageTuple NULL = new MessageTuple(null);
 	private static final Serializable[] EMPTY_ARR = new Serializable[0];
 	private String messagePattern;
@@ -195,6 +197,7 @@ final class MessageFormatter {
 	 *            anchors
 	 * @return The formatted message
 	 */
+	@SuppressWarnings("rawtypes")
 	final public static String arrayFormat(final String messagePattern,
 			final Object[] argArray) {
 
@@ -284,7 +287,7 @@ final class MessageFormatter {
 
 	// special treatment of array values was suggested by 'lizongbo'
 	private static void deeplyAppendParameter(StringBuffer sbuf, Object o,
-			Map seenMap) {
+			@SuppressWarnings("rawtypes") Map seenMap) {
 		if (o == null) {
 			sbuf.append("null");
 			return;
@@ -330,6 +333,7 @@ final class MessageFormatter {
 
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static void objectArrayAppend(StringBuffer sbuf, Object[] a,
 			Map seenMap) {
 		sbuf.append('[');

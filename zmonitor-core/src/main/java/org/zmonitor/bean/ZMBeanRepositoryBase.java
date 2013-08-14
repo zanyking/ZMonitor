@@ -43,6 +43,7 @@ public abstract class ZMBeanRepositoryBase extends ZMBeanBase implements ZMBeanR
 	 * @param id
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public <T> T get(String id){
 		if(id==null || id.isEmpty())
 			throw new IllegalArgumentException("id cannot be null or empty!");

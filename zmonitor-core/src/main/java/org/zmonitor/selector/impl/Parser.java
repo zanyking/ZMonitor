@@ -90,6 +90,7 @@ public class Parser {
 			}
 		}
 
+		@SuppressWarnings("incomplete-switch")
 		@Override
 		protected State getLandingState(Token input, CharClass inputClass) {
 			switch(inputClass){
@@ -163,6 +164,7 @@ public class Parser {
 	
 	
 	// helper //
+	@SuppressWarnings("incomplete-switch")
 	private Combinator getCombinator(Token token){
 		switch(token.getType()){
 		case CBN_CHILD:

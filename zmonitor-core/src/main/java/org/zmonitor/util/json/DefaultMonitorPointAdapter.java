@@ -25,6 +25,7 @@ import com.google.gson.JsonSerializer;
  */
 public class DefaultMonitorPointAdapter  implements JsonSerializer<MonitorPoint>, JsonDeserializer<MonitorPoint>{
 
+	@SuppressWarnings("unused")
 	public MonitorPoint deserialize(JsonElement json, Type typeOfT,
 			JsonDeserializationContext context) throws JsonParseException {
 		JsonObject jObj = (JsonObject) json;

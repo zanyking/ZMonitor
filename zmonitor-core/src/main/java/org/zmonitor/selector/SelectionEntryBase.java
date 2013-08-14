@@ -348,7 +348,6 @@ class NestedSelectorIterator<T> extends DetailIterator<T>{
 		private final String selector;
 		private final Map<String, PseudoClassDef<T>> pseudoClassDefs;
 		
-		@SuppressWarnings("unchecked")
 		public NestedSelectorIterator(Iterator<Entry<T>> origin, String selector, 
 				Map<String, PseudoClassDef<T>> pseudoClassDefs) {
 			super(origin, Predicate.TRUE, Predicate.TRUE);

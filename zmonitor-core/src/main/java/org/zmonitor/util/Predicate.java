@@ -26,6 +26,7 @@ package org.zmonitor.util;
 public interface Predicate<T> {
 
 	
+	@SuppressWarnings("rawtypes")
 	Predicate TRUE = new Predicate() {
 		public boolean apply(Object input) {
 			return true;

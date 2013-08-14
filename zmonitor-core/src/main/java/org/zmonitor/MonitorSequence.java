@@ -76,7 +76,7 @@ public class MonitorSequence implements Serializable{
 	}
 	
 	
-	public Class getRootTrackerClass() throws ClassNotFoundException{
+	public Class<?> getRootTrackerClass() throws ClassNotFoundException{
 		if(!isStarted())
 			throw new IllegalStateException("hasn't started yet.");
 		MonitorMeta meta = root.getMonitorMeta();

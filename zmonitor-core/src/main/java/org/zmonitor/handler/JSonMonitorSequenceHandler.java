@@ -33,6 +33,7 @@ implements MonitorSequenceHandler, CustomConfigurable{
 				.registerTypeAdapter(Marker.class, new DefaultMarkerAdapter());
 		Gson gson = gBuilder.create();
 		String jsonOutput = gson.toJson(mSequence);
+		System.out.println(jsonOutput);
 		//TODO: target channel
 	}
 

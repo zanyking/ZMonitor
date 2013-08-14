@@ -41,7 +41,8 @@ public class Base64Decoder {
         System.out.println("");
     }
 
-    private void printHex(String s) {
+    @SuppressWarnings("unused")
+	private void printHex(String s) {
         byte bytes[];
         try {
             bytes = s.getBytes("ISO-8859-1");

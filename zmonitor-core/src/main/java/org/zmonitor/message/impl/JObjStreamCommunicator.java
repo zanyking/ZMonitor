@@ -12,7 +12,6 @@ import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.message.Callback;

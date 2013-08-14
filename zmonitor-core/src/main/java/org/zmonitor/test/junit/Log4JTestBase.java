@@ -7,7 +7,6 @@ import java.net.URL;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.xml.DOMConfigurator;
-import org.junit.Before;
 import org.zmonitor.util.Loader;
 
 

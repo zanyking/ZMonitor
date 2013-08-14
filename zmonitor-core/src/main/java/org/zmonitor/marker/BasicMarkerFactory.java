@@ -40,7 +40,7 @@ import java.util.Map;
  */
 public class BasicMarkerFactory implements IMarkerFactory {
 
-  Map markerMap = new HashMap();
+  Map<String, Marker> markerMap = new HashMap<String, Marker>();
   
   /**
    * Regular users should <em>not</em> create

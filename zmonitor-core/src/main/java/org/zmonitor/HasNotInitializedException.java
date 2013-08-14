@@ -12,6 +12,8 @@ package org.zmonitor;
  */
 public class HasNotInitializedException extends Exception {
 
+	private static final long serialVersionUID = -1703050976260828507L;
+
 	/**
 	 * 
 	 */

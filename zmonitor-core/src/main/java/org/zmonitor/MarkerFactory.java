@@ -24,7 +24,6 @@
  */
 package org.zmonitor;
 
-import org.zmonitor.marker.BasicMarkerFactory;
 import org.zmonitor.marker.IMarkerFactory;
 import org.zmonitor.marker.Marker;
 

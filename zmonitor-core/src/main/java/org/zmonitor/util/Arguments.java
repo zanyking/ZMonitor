@@ -32,7 +32,7 @@ public class Arguments {
 	public static void checkNotEmpty(String str, String... errorMessages) {
 		String mesg = (errorMessages.length==0)? 
 				"The input string cannot be null or empty" : 
-					Strings.append(errorMessages);
+					Strings.append((Object[])errorMessages);
 		
 		if(str==null || str.isEmpty()){
 			throw new IllegalArgumentException(mesg);

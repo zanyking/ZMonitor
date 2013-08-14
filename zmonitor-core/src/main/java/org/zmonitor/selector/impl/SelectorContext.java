@@ -20,6 +20,7 @@ import org.zmonitor.util.Strings;
 public class SelectorContext<E> implements MatchCtx<E> {
 
 	private final List<Selector> selectors;
+	@SuppressWarnings("rawtypes")
 	private final Map<String, PseudoClassDef> defs;
 	private final SelectorContext<E> parent;
 	
@@ -38,6 +39,7 @@ public class SelectorContext<E> implements MatchCtx<E> {
 	 * @param defs
 	 * @param entry
 	 */
+	@SuppressWarnings("rawtypes")
 	private SelectorContext(List<Selector> selectors, //for root
 			Map<String, PseudoClassDef> defs, 
 			Entry<E> entry) {//Root
@@ -87,6 +89,7 @@ public class SelectorContext<E> implements MatchCtx<E> {
 	 * @return
 	 * @throws TerminateMatchException
 	 */
+	@SuppressWarnings("rawtypes")
 	public static<E> SelectorContext<E> toRoot(Entry<E> entry, 
 			List<Selector> selectors, 
 			Map<String, PseudoClassDef> defs){

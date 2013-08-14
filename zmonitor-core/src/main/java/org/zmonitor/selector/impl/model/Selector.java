@@ -6,7 +6,6 @@ package org.zmonitor.selector.impl.model;
 import java.util.ArrayList;
 
 import org.zmonitor.selector.impl.ParseException;
-import org.zmonitor.util.Arguments;
 
 /**
  * The model representing a selector.

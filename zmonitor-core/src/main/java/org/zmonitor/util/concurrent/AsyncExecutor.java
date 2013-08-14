@@ -12,6 +12,8 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.zmonitor.impl.ZMLog;
+
 
 
 
@@ -140,11 +142,11 @@ public class AsyncExecutor {
 					int currentAppThreadAmount = 0;
 					try{
 						currentAppThreadAmount = threadAmount.incrementAndGet();
-//						ZMLog.debug("AsyncExecutor: Current App Thread Amount + : "+currentAppThreadAmount);
+						ZMLog.debug("AsyncExecutor: Current App Thread Amount + : "+currentAppThreadAmount);
 						r.run();
 					}finally{
 						currentAppThreadAmount = threadAmount.decrementAndGet();
-//						ZMLog.debug("AsyncExecutor: Current App Thread Amount - : "+currentAppThreadAmount);
+						ZMLog.debug("AsyncExecutor: Current App Thread Amount - : "+currentAppThreadAmount);
 					}
 				}},
 				threadName, 0);
@@ -254,7 +256,7 @@ public class AsyncExecutor {
 							boolean isTerminated = handle(termination);
 							if(isTerminated)counter++;
 						}
-//						ZMLog.debug("AsyncExecutor: Terminated threads count:"+counter);//TODO: change this line to log!
+						ZMLog.debug("AsyncExecutor: Terminated threads count:"+counter);//TODO: change this line to log!
 					}
 				});	
 			}catch(RejectedExecutionException e){

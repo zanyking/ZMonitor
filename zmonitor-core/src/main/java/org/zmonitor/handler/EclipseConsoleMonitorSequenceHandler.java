@@ -4,9 +4,12 @@
  */
 package org.zmonitor.handler;
 
+import static org.zmonitor.util.MPUtils.retrieveMillisToEnd;
+import static org.zmonitor.util.MPUtils.retrieveMillisToPrevious;
+import static org.zmonitor.util.MPUtils.retrieveMillisToStrictNext;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -15,16 +18,12 @@ import org.zmonitor.CustomConfigurable;
 import org.zmonitor.MonitorMeta;
 import org.zmonitor.MonitorPoint;
 import org.zmonitor.MonitorSequence;
-import org.zmonitor.ZMonitorManager;
 import org.zmonitor.bean.ZMBeanBase;
 import org.zmonitor.config.ConfigContext;
 import org.zmonitor.logger.LoggerMonitorMeta;
-import org.zmonitor.marker.Marker;
 import org.zmonitor.selector.SelectorAdaptor;
 import org.zmonitor.spi.MonitorSequenceHandler;
 import org.zmonitor.util.Strings;
-
-import static org.zmonitor.util.MPUtils.*;
 
 /**
  * @author Ian YT Tsai(Zanyking)

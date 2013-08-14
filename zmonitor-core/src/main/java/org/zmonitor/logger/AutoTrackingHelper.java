@@ -4,7 +4,6 @@
 package org.zmonitor.logger;
 
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 
 import org.zmonitor.MonitorMeta;
 import org.zmonitor.MonitorPoint;
@@ -31,19 +30,19 @@ public class AutoTrackingHelper {
 	
 	private MonitorLifecycle lc;
 	private MonitorState mState;
-	private LinkedHashMap<String, Pair> stackTraceMap;
+	private LinkedHashMap<String, Integer> stackTraceMap;
 	private StackTraceElement[] elements; 
 	private void init(TrackingContext tCtx){
 		this.lc = tCtx.getLifeCycle();
 		this.mState = lc.getState();
-		stackTraceMap = new LinkedHashMap<String,Pair>();
+		stackTraceMap = new LinkedHashMap<String,Integer>();
 		elements = tCtx.getStackTraceElements();
 		String key;
 //		System.out.println("--------------------------------");
 		for(int i=0 ;i<elements.length; i++){
 			key = toKey(elements[i]);
 //			System.out.println("key["+i+"]: "+key);
-			stackTraceMap.put(key, new Pair(key, i));
+			stackTraceMap.put(key, i);
 		}
 	}
 	/*
@@ -64,7 +63,7 @@ public class AutoTrackingHelper {
 		MonitorPoint current = mState.getCurrent();
 		MonitorMeta currentMeta;
 		String key;
-		Pair pair;
+		Integer idx;
 		while(current!=null){//find a proper parent for this new mp!
 			currentMeta = current.getMonitorMeta();
 			if(currentMeta.isCallerNotAvailable()){// cannot be handled automatically, use message
@@ -73,8 +72,8 @@ public class AutoTrackingHelper {
 			}
 			key = toKey(currentMeta);
 			
-			if((pair = stackTraceMap.get(key))!=null){
-				if(pair.idx==0){// new mp is at the same method.
+			if((idx = stackTraceMap.get(key))!=null){
+				if(idx==0){// new mp is at the same method.
 					ZMonitor.record(tCtx);
 				}else{// current is 
 					ZMonitor.push(tCtx);
@@ -98,13 +97,13 @@ public class AutoTrackingHelper {
 		return currentMeta.getClassName()+"::"+currentMeta.getMethodName();
 	}
 	
-	private class Pair{
-		final String key;
-		final int idx;
-		public Pair(String key, int idx) {
-			super();
-			this.key = key;
-			this.idx = idx;
-		}
-	}
+//	private class Pair{
+//		final String key;
+//		final int idx;
+//		public Pair(String key, int idx) {
+//			super();
+//			this.key = key;
+//			this.idx = idx;
+//		}
+//	}
 }

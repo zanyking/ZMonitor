@@ -26,14 +26,12 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.util.LinkedHashMap;
-import java.util.Properties;
 
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;

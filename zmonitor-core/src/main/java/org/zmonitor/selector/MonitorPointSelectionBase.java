@@ -32,7 +32,7 @@ public class MonitorPointSelectionBase extends SelectionEntryBase<MonitorPoint, 
 		super.pseudoClassDefs.putAll(MPDefaultPseudoClassDefs.getDefaults());
 	}
 
-	public MonitorPointSelectionBase(List list) {
+	public MonitorPointSelectionBase(@SuppressWarnings("rawtypes") List list) {
 		super(list);
 		super.pseudoClassDefs.putAll(MPDefaultPseudoClassDefs.getDefaults());
 	}

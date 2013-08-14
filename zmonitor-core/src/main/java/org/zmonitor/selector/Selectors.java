@@ -94,6 +94,7 @@ public class Selectors {
 		return result;
 	}
 	
+	@SuppressWarnings("unused")
 	private static <T> List<T> toList(Iterator<T> iterator){
 		List<T> result = new ArrayList<T>();
 		while(iterator.hasNext()) 
@@ -101,6 +102,7 @@ public class Selectors {
 		
 		return result;
 	}
+	@SuppressWarnings("unused")
 	private static <T> T getIthItem(Iterator<T> iter, int index){
 		// shift (index - 1) times
 		for(int i = 1; i < index; i++) {

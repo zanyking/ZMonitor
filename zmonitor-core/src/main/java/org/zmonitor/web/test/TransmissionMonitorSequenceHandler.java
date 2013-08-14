@@ -11,7 +11,6 @@ import org.zmonitor.bean.ZMBeanBase;
 import org.zmonitor.impl.ZMLog;
 import org.zmonitor.message.Communicator;
 import org.zmonitor.message.MonitorSequenceMessage;
-import org.zmonitor.message.Transmitter;
 import org.zmonitor.spi.MonitorSequenceHandler;
 import org.zmonitor.util.concurrent.AsyncGroupingPipe;
 import org.zmonitor.util.concurrent.AsyncGroupingPipe.Executor;

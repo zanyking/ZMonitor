@@ -41,6 +41,7 @@ implements MonitorSequenceHandler {
 		return result;
 	}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void handle(MonitorSequence mSequence) {
 		MonitorMeta meta = mSequence.getRoot().getMonitorMeta();
 		Class clz;
