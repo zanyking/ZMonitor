@@ -38,7 +38,7 @@ public class MessageTupleTracker extends TrackerBase {
 								// not
 				// happened because a message of Logger.log(String message)
 				// should never be null.
-				ZMonitor.record(tCtx);
+				ZMonitor.pinpoint(tCtx);
 			} else {
 				if (mesg.startsWith(pushOp)) {
 					if (eatOperator) {
@@ -51,7 +51,7 @@ public class MessageTupleTracker extends TrackerBase {
 					}
 					ZMonitor.pop(tCtx);
 				} else {
-					ZMonitor.record(tCtx);
+					ZMonitor.pinpoint(tCtx);
 				}
 			}
 		}

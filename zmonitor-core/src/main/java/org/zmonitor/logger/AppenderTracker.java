@@ -18,7 +18,7 @@ public class AppenderTracker extends TrackerBase {
 			//No info to identify what's going on, should not 
 			//happened because a message of Logger.log(String message) 
 			//should never be null. 
-			ZMonitor.record(tCtx);
+			ZMonitor.pinpoint(tCtx);
 		}else{
 			message = message.trim();
 			if(ZMonitor.isMonitoring()){
@@ -48,7 +48,7 @@ public class AppenderTracker extends TrackerBase {
 				if(meta.getMarker()==null){
 					meta.setMarker(trackingMarcker);
 				}
-				ZMonitor.record(tCtx);
+				ZMonitor.pinpoint(tCtx);
 			}
 		}
 		

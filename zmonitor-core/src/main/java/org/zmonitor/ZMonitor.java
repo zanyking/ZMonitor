@@ -173,16 +173,16 @@ public final class ZMonitor {
 	 * @param mesg the message that you want to assign to {@link MonitorPoint}.
 	 * @return a {@link MonitorPoint} that will contain caller's java source information. 
 	 */
-	public static MonitorPoint record(Object mesg, boolean traceCallerStack){
-		return record(MK_RECORD_ZM, mesg, traceCallerStack);
+	public static MonitorPoint pinpoint(Object mesg, boolean traceCallerStack){
+		return pinpoint(MK_RECORD_ZM, mesg, traceCallerStack);
 	}
 	/**
 	 * traceCallerStack is default false.
 	 * @param mesg
 	 * @return
 	 */
-	public static MonitorPoint record(String mesg){
-		return record(MK_RECORD_ZM, mesg, false);
+	public static MonitorPoint pinpoint(String mesg){
+		return pinpoint(MK_RECORD_ZM, mesg, false);
 	}
 	/**
 	 * 
@@ -191,15 +191,15 @@ public final class ZMonitor {
 	 * @param traceCallerStack
 	 * @return
 	 */
-	public static MonitorPoint record(Marker marker, Object message, boolean traceCallerStack){
-		return record(newNativeTrackingCtx(marker, message, traceCallerStack));
+	public static MonitorPoint pinpoint(Marker marker, Object message, boolean traceCallerStack){
+		return pinpoint(newNativeTrackingCtx(marker, message, traceCallerStack));
 	}
 	/**
 	 * 
 	 * @param ctx
 	 * @return
 	 */
-	public static MonitorPoint record(TrackingContext ctx){
+	public static MonitorPoint pinpoint(TrackingContext ctx){
 		long nanosec = System.nanoTime();
 		long slSpMillis = System.currentTimeMillis();
 		MonitorLifecycle lc = ctx.getLifeCycle();
@@ -273,7 +273,11 @@ public final class ZMonitor {
 		}
 		return mp;
 	}
-	
+	/**
+	 * pop out a monitor point stack without any new mp been tagged.
+	 * @param lc
+	 * @return
+	 */
 	public static MonitorPoint pop(MonitorLifecycle lc){
 		long nanosec = System.nanoTime();
 		long slSpMillis = System.currentTimeMillis();

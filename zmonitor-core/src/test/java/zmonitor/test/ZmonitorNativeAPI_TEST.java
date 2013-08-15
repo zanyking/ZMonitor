@@ -28,13 +28,13 @@ public class ZmonitorNativeAPI_TEST extends TestBase {
 
 		try{
 			
-			ZMonitor.record("point 1");
-			ZMonitor.record("point 2");
+			ZMonitor.pinpoint("point 1");
+			ZMonitor.pinpoint("point 2");
 			Thread.sleep(1234);	
 			new BusinessObject().doBiz();
 			
 		}catch(Exception e){
-			ZMonitor.record("exception: "+e.getMessage());// logger.error(); logger.debug();
+			ZMonitor.pinpoint("exception: "+e.getMessage());// logger.error(); logger.debug();
 		}
 		
 		ZMonitor.pop(true);
@@ -51,7 +51,7 @@ public class ZmonitorNativeAPI_TEST extends TestBase {
 			ZMonitor.push("second stack", true);
 			ZMonitor.pop(true);	
 		}
-		ZMonitor.record("");
+		ZMonitor.pinpoint("");
 		
 		ZMonitor.push("> method 1", true);
 		method1();

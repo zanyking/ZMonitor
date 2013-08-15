@@ -15,7 +15,7 @@ public class Dao {
 	 * 
 	 */
 	public Dao() {
-		ZMonitor.record("| Dao constructed.", true);
+		ZMonitor.pinpoint("| Dao constructed.", true);
 	}
 
 	public void getBean() {

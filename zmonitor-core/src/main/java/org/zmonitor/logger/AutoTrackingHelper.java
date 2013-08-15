@@ -74,7 +74,7 @@ public class AutoTrackingHelper {
 			
 			if((idx = stackTraceMap.get(key))!=null){
 				if(idx==0){// new mp is at the same method.
-					ZMonitor.record(tCtx);
+					ZMonitor.pinpoint(tCtx);
 				}else{// current is 
 					ZMonitor.push(tCtx);
 				}

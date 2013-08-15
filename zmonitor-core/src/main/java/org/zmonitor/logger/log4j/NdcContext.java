@@ -27,7 +27,7 @@ import org.zmonitor.spi.MonitorLifecycle;
 	private NdcStack fNdcStack = new NdcStack(); 
 	
 	public void doRecord(TrackingContext ctx, int depth){
-		ZMonitor.record(ctx);
+		ZMonitor.pinpoint(ctx);
 //		fNdcStack.push(ndcStr, depth, getCurrentTlDepth());
 	}
  
