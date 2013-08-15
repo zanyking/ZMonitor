@@ -11,7 +11,7 @@ import org.zmonitor.TrackingContext;
 import org.zmonitor.ZMonitor;
 import org.zmonitor.logger.MessageTupleTracker.MessageTrackingHelper;
 import org.zmonitor.spi.MonitorLifecycle;
-import org.zmonitor.spi.MonitorLifecycle.MonitorState;
+import org.zmonitor.spi.MonitorLifecycle.MonitorStack;
 
 /**
  * @author Ian YT Tsai(Zanyking)
@@ -29,12 +29,12 @@ public class AutoTrackingHelper {
 	}
 	
 	private MonitorLifecycle lc;
-	private MonitorState mState;
+	private MonitorStack mState;
 	private LinkedHashMap<String, Integer> stackTraceMap;
 	private StackTraceElement[] elements; 
 	private void init(TrackingContext tCtx){
 		this.lc = tCtx.getLifeCycle();
-		this.mState = lc.getState();
+		this.mState = lc.getStack();
 		stackTraceMap = new LinkedHashMap<String,Integer>();
 		elements = tCtx.getStackTraceElements();
 		String key;

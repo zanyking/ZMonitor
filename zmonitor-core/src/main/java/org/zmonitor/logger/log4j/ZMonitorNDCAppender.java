@@ -252,7 +252,7 @@ public class ZMonitorNDCAppender extends ZMonitorAppenderBase {
 	protected static int getCurrentTlDepth(MonitorLifecycle lfc){
 		
 		MonitorSequence tl = lfc.getMonitorSequence();
-		return (tl==null)? -1 : lfc.getState().getCurrentDepth();
+		return (tl==null)? -1 : lfc.getStack().getCurrentDepth();
 	}
 	
 	protected static final String KEY_CONTROLLED_BY_SELF = "KEY_CONTROLLED_BY_SELF";

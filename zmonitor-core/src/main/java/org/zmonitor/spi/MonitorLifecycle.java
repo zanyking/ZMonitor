@@ -86,21 +86,21 @@ public interface MonitorLifecycle {
 	 * 
 	 * @return
 	 */
-	public MonitorState getState();
+	public MonitorStack getStack();
 	/**
 	 * 
 	 * @author Ian YT Tsai(Zanyking)
 	 *
 	 */
-	interface MonitorState{
+	interface MonitorStack{
 		MonitorPoint getCurrent();
 		int getCurrentDepth();
 		int increament();
 		int size();
-		boolean isFinished();
-		MonitorPoint start(TrackingContext trackingCtx);
-		MonitorPoint record(TrackingContext trackingCtx);
-		MonitorPoint end(TrackingContext trackingCtx);
+		boolean isEmpty();
+		MonitorPoint push(TrackingContext trackingCtx);
+		MonitorPoint pinpoint(TrackingContext trackingCtx);
+		MonitorPoint pop(TrackingContext trackingCtx);
 	}
 
 }

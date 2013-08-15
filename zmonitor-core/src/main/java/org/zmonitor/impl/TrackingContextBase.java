@@ -75,7 +75,7 @@ public abstract class TrackingContextBase implements TrackingContext {
 				this.getMonitorSequence(), 
 				this.getCreateMillis()
 				);
-		getLifeCycle().getState().increament();
+		getLifeCycle().getStack().increament();
 		if(parent!=null) mp.setParent(parent);
 		return mp;
 	}

@@ -46,7 +46,7 @@ import org.zmonitor.spi.MonitorLifecycle;
 	
 	private int getCurrentTlDepth(){
 		MonitorSequence ms = lfc.getMonitorSequence();
-		return (ms==null)? -1 : lfc.getState().getCurrentDepth();
+		return (ms==null)? -1 : lfc.getStack().getCurrentDepth();
 	}
 	
 	/**

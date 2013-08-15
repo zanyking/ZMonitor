@@ -126,9 +126,12 @@ public final class ZMonitor {
 		
 		StackTraceElement[] elements = StackTraceElementFinder.truncate(3);// for: newNativeTrackingCtx
 																			// push, pop, record
+		final MonitorMeta mm = new MonitorMetaBase(
+				marker, 
+				TRACKER_NAME_ZM, 
+				elements, 
+				Thread.currentThread().getName());
 		
-		
-		final MonitorMeta mm = newMonitorMeta(marker, elements);
 		TrackingContextBase ctx = new TrackingContextBase(TRACKER_NAME_ZM, elements){
 			public MonitorMeta newMonitorMeta() {
 				return mm;
@@ -136,9 +139,6 @@ public final class ZMonitor {
 		};
 		ctx.setMessage(message);
 		return ctx;
-	}
-	private static MonitorMeta newMonitorMeta(Marker marker, StackTraceElement[] elements){
-		return new MonitorMetaBase(marker, TRACKER_NAME_ZM, elements, Thread.currentThread().getName());
 	}
 	
 	/**
@@ -150,15 +150,11 @@ public final class ZMonitor {
 		long nanosec = System.nanoTime();
 		long slSpMillis = System.currentTimeMillis();
 		MonitorLifecycle lc = ctx.getLifeCycle();
-		if(lc==null){
-			throw new IllegalStateException("Not able to retrieve a MonitorLifecycle. " +
-				"please take a look at the implementation of MonitorLifecycleManager, it must always returned a value instead of null.");
-		}
-		if(!lc.shouldMonitor(ctx)) {
+		if(!shouldMonitor(lc, ctx)){
 			return null;
 		}
 		MonitorSequence ms = lc.init();
-		MonitorPoint mp = lc.getState().start(ctx);
+		MonitorPoint mp = lc.getStack().push(ctx);
 		ms.accumulateSelfSpend(System.nanoTime()- nanosec, 
 				System.currentTimeMillis() - slSpMillis);
 		
@@ -203,19 +199,15 @@ public final class ZMonitor {
 		long nanosec = System.nanoTime();
 		long slSpMillis = System.currentTimeMillis();
 		MonitorLifecycle lc = ctx.getLifeCycle();
-		if(lc==null){
-			throw new IllegalStateException("Not able to retrieve a MonitorLifecycle. " +
-				"please take a look at the implementation of MonitorLifecycleManager, it must always returned a value instead of null.");
-		}
-		if(!lc.shouldMonitor(ctx)) {
+		if(!shouldMonitor(lc, ctx)){
 			return null;
 		}
 	
 		MonitorSequence ms = lc.init();
 		
 		MonitorPoint mp = lc.isMonitorStarted() ? 
-				lc.getState().record(ctx) : 
-				lc.getState().start(ctx);
+				lc.getStack().pinpoint(ctx) : 
+				lc.getStack().push(ctx);
 		
 		ms.accumulateSelfSpend(System.nanoTime()- nanosec, 
 			System.currentTimeMillis() - slSpMillis);
@@ -255,20 +247,16 @@ public final class ZMonitor {
 		long slSpMillis = System.currentTimeMillis();
 		
 		MonitorLifecycle lc = ctx.getLifeCycle();
-		if(lc==null){
-			throw new IllegalStateException("Not able to retrieve a MonitorLifecycle. " +
-				"please take a look at the implementation of MonitorLifecycleManager, it must always returned a value instead of null.");
-		}
-		if(!lc.shouldMonitor(ctx)) {
+		if(!shouldMonitor(lc, ctx)){
 			return null;
 		}
 		
 		MonitorSequence ms = lc.getMonitorSequence();
-		MonitorPoint mp = lc.getState().end(ctx);
+		MonitorPoint mp = lc.getStack().pop(ctx);
 		ms.accumulateSelfSpend(System.nanoTime()- nanosec, 
 				System.currentTimeMillis() - slSpMillis);
 		
-		if(lc.getState().isFinished()){
+		if(lc.getStack().isEmpty()){
 			lc.finish();
 		}
 		return mp;
@@ -282,22 +270,26 @@ public final class ZMonitor {
 		long nanosec = System.nanoTime();
 		long slSpMillis = System.currentTimeMillis();
 		
-		if(lc==null){
-			throw new IllegalStateException("Not able to retrieve a MonitorLifecycle. " +
-				"please take a look at the implementation of MonitorLifecycleManager, it must always returned a value instead of null.");
-		}
-		if(!lc.shouldMonitor(null)) {
+		if(!shouldMonitor(lc, null)){
 			return null;
 		}
 		
 		MonitorSequence ms = lc.getMonitorSequence();
-		MonitorPoint mp = lc.getState().end(null);
+		MonitorPoint mp = lc.getStack().pop(null);
 		ms.accumulateSelfSpend(System.nanoTime()- nanosec, 
 				System.currentTimeMillis() - slSpMillis);
 		
-		if(lc.getState().isFinished()){
+		if(lc.getStack().isEmpty()){
 			lc.finish();
 		}
 		return mp;
+	}
+	
+	private static boolean shouldMonitor(MonitorLifecycle lc, TrackingContext ctx){
+		if(lc==null){
+			throw new IllegalStateException("Not able to retrieve a MonitorLifecycle. " +
+				"please take a look at the implementation of MonitorLifecycleManager, it must always returned a value instead of null.");
+		}
+		return lc.shouldMonitor(ctx);
 	}
 }

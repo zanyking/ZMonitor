@@ -24,7 +24,7 @@ public class SimpleMonitorLifecycle implements MonitorLifecycle {
 	protected MonitorSequence mSequence;
 	protected boolean finished;
 	protected MonitorLifecycleManager lfcManager;
-	protected MonitorState mState;
+	protected MonitorStack mState;
 	/**
 	 * 
 	 * @param lfcManager
@@ -89,7 +89,7 @@ public class SimpleMonitorLifecycle implements MonitorLifecycle {
 		return (T) storage.get(key);
 	}
 	
-	public MonitorState getState() {
+	public MonitorStack getStack() {
 		return mState;
 	}
 	
@@ -98,7 +98,7 @@ public class SimpleMonitorLifecycle implements MonitorLifecycle {
 	 * @author Ian YT Tsai(Zanyking)
 	 *
 	 */
-	private class MonitorStateImpl implements MonitorState{ 
+	private class MonitorStateImpl implements MonitorStack{ 
 		protected transient MonitorPoint current;
 		protected int currentDepth;
 		protected int counter;
@@ -115,10 +115,10 @@ public class SimpleMonitorLifecycle implements MonitorLifecycle {
 		public int size() {
 			return counter;
 		}
-		public boolean isFinished() {
+		public boolean isEmpty() {
 			return current == null;
 		}
-		public MonitorPoint start(TrackingContext trackingCtx) {
+		public MonitorPoint push(TrackingContext trackingCtx) {
 			MonitorSequence mSquence = init();
 			if(mSquence.getRoot()==null){
 				current = trackingCtx.create(null);
@@ -129,11 +129,11 @@ public class SimpleMonitorLifecycle implements MonitorLifecycle {
 			currentDepth++;
 			return current;
 		}
-		public MonitorPoint record(TrackingContext trackingCtx) {
+		public MonitorPoint pinpoint(TrackingContext trackingCtx) {
 			MonitorPoint rec = trackingCtx.create(current);
 			return rec;
 		}
-		public MonitorPoint end(TrackingContext trackingCtx) {
+		public MonitorPoint pop(TrackingContext trackingCtx) {
 			if(current==null){
 				//TODO how about return null?
 				throw new IllegalStateException("you already ended this monitor Sequence and want to end it again?");

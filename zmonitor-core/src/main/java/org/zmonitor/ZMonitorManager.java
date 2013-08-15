@@ -303,7 +303,7 @@ class NOOPZMBeanRepository implements ZMBeanRepository{
  * @author Ian YT Tsai(Zanyking)
  *
  */
-class NoOpMonitorState implements MonitorLifecycle.MonitorState{
+class NoOpMonitorState implements MonitorLifecycle.MonitorStack{
 
 	public MonitorPoint getCurrent() {
 		return null;
@@ -321,19 +321,19 @@ class NoOpMonitorState implements MonitorLifecycle.MonitorState{
 		return 0;
 	}
 
-	public boolean isFinished() {
+	public boolean isEmpty() {
 		return false;
 	}
 
-	public MonitorPoint start(TrackingContext trackingCtx) {
+	public MonitorPoint push(TrackingContext trackingCtx) {
 		return null;
 	}
 
-	public MonitorPoint record(TrackingContext trackingCtx) {
+	public MonitorPoint pinpoint(TrackingContext trackingCtx) {
 		return null;
 	}
 
-	public MonitorPoint end(TrackingContext trackingCtx) {
+	public MonitorPoint pop(TrackingContext trackingCtx) {
 		return null;
 	}
 	
@@ -369,7 +369,7 @@ class NOOPMonitorLifecycleManager implements MonitorLifecycleManager{
 		public <T> T getAttribute(String key) {
 			return null;
 		}
-		public MonitorState getState() {
+		public MonitorStack getStack() {
 			return NOOP_STATE;
 		}
 		};
